@@ -18,7 +18,7 @@ class MakeCrud extends Command
         $name = $this->argument('name');
         $modelName = Str::studly($name);
 
-        $crudStubPath = base_path('app/CrudSystem/stubs/crud.stub');
+        $crudStubPath = base_path('W88/CrudSystem/stubs/crud.stub');
         if (!File::exists($crudStubPath)) {
             $this->error("Stub file not found at path: {$crudStubPath}");
             return;

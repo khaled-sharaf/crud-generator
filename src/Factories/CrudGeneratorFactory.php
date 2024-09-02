@@ -3,7 +3,7 @@
 
 // W88/CrudSystem/Factories/CrudGeneratorFactory.php
 
-namespace App\CrudSystem\Factories;
+namespace W88\CrudSystem\Factories;
 
 class CrudGeneratorFactory
 {
