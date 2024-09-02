@@ -1,0 +1,115 @@
+<?php
+
+return [
+    'name' => '{{name}}',
+    'dashboard' => [
+        'create' => false,
+        'update' => false,
+        'profile' => false,
+        'delete' => false,
+        'table_search' => false,
+        'table_filter' => false,
+        'table_export' => false,
+    ],
+
+    'client_api' => [
+        'list' => true,
+        'create' => true,
+        'update' => true,
+        'delete' => true,
+    ],
+
+    'fields' => [
+        'title' => [
+            'type' => 'text',
+            'label' => 'Title', // translation in validation and frondend list and form
+            // 'enum' => ['key' => 'value'], // available values - selection or checkbox - will be create constant with this values
+            'nullable' => true, // default false - nullable in migration and frontend
+            'default' => 'string_test', // no default
+            'migration_type' => 'string', // default is: field type
+            'add_filter' => true, // default false - Will be add custom filter in backend and frontend
+            'translatable' => true, // default false
+            'validation' => [ // optional - default: nullable -> request validation [laravel]
+                // 'required',
+                // 'string',
+            ],
+            'frontend' => [
+                'sortable' => false, // default true
+                'searchable' => false, // default true
+                'exportable' => false, // default true
+                'advanced_searchable' => false, // default true
+                // 'advanced_search_name' => 'title', // default is: field name
+                'hide' => [
+                    'create' => true, // default false
+                    'update' => true, // default false
+                    'list'  => true, // default false
+                ],
+                'hidden_list' => false, // default true
+            ]
+        ],
+    ],
+
+    'relations' => [
+        [
+            'type' => 'hasOne', // hasOne, belongsTo, hasMany, belongsToMany
+            'table' => 'phone',
+            // 'foreign_key' => 'user_id',
+            // 'local_key' => 'id',
+
+            'type' => 'belongsTo',
+            'table' => 'department',
+            // 'foreign_key' => 'department_id',
+            // 'local_key' => 'id',
+
+            'type' => 'hasMany',
+            'table' => 'comment',
+            // 'foreign_key' => 'department_id',
+            // 'local_key' => 'id',
+
+            'type' => 'belongsToMany',
+            'table' => 'phone',
+            // 'local_key' => 'user_id',
+            // 'foreign_key' => 'phone_id',
+            'pivot' => [
+                'active' => [
+                    'type' => 'boolean',
+                    'default' => false,
+                    // 'nullable' => true,
+                ],
+                // add withPivot in model
+            ],
+            'migration' => false, // default true
+        ]
+    ],
+
+    'permissions' => true, // Add permissions to permission file with translation
+    'timestamps' => true, // Include timestamps
+    'soft_deletes' => true, // Enable soft deletes
+    'multi_selection' => true, // Enable multi selection for delete or any action in frontend list
+
+    // 'seeder' => true,
+    'seeder' => [
+        'count' => 10,
+    ],
+];
+
+$field_types = [
+    // type => migration_type, // casts
+    'text' => 'string',
+    'textarea' => 'text',
+    'editor' => 'longText',
+    'color' => 'string',
+    'boolean' => 'boolean', // boolean
+    'image' => 'string',
+    'multi_image' => 'text', // json
+    'video' => 'string',
+    'multi_video' => 'text', // json
+    'file' => 'string',
+    'multi_file' => 'text', // json
+    'checkbox' => 'tinyInteger',
+    'multi_checkbox' => 'text', // json
+    'radio' => 'tinyInteger',
+    'select' => 'tinyInteger',
+    'multi_select' => 'text', // json
+    'array' => 'text', // json
+];
