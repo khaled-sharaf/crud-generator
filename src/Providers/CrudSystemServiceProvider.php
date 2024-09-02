@@ -13,12 +13,7 @@ class CrudSystemServiceProvider extends ServiceProvider
 
     public function boot()
     {
-        // Load routes, views, migrations, etc.
-        $this->loadRoutesFrom(__DIR__.'/../../routes/web.php');
-        $this->loadMigrationsFrom(__DIR__.'/../../database/migrations');
-        $this->publishes([
-            __DIR__.'/../../config/crudsystem.php' => config_path('crudsystem.php'),
-        ]);
+        $this->registerCommands();
     }
 
     protected function registerCommands(): void
