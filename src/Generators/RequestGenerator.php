@@ -40,7 +40,7 @@ class RequestGenerator implements GeneratorInterface
 
     protected function getStubPath(): string
     {
-        return base_path('W88/CrudSystem/stubs/request.stub');
+        return base_path('vendor\w88\crud-system\src\stubs\request.stub');
     }
 
     protected function ensureStubExists(string $stubPath): void

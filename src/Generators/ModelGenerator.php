@@ -35,7 +35,7 @@ class ModelGenerator implements GeneratorInterface
 
     protected function getStubPath(): string
     {
-        return base_path('W88/CrudSystem/stubs/model.stub');
+        return base_path('vendor\w88\crud-system\src\stubs\model.stub');
     }
 
     protected function ensureStubExists(string $stubPath): void
