@@ -1,13 +1,13 @@
 <?php
 
-namespace W88\CrudSystem\Generators;
+namespace W88\CrudSystem\Generators\Backend;
 
 use W88\CrudSystem\Contracts\GeneratorInterface;
 use Illuminate\Support\Facades\File;
 use Touhidurabir\StubGenerator\Facades\StubGenerator;
 use Illuminate\Support\Str;
 
-class RequestGenerator implements GeneratorInterface
+class ControllerGenerator implements GeneratorInterface
 {
     protected array $config;
     protected string $modelName;
@@ -30,17 +30,17 @@ class RequestGenerator implements GeneratorInterface
 
         $this->ensureStubExists($stubPath);
 
-        $requestNamespace = $this->getRequestNamespace();
-        $requestDirectory = $this->getRequestDirectory();
+        $controllerNamespace = $this->getControllerNamespace();
+        $controllerDirectory = $this->getControllerDirectory();
 
-        $this->ensureDirectoryExists($requestDirectory);
+        $this->ensureDirectoryExists($controllerDirectory);
 
-        $this->generateRequest($stubPath, $requestDirectory, $requestNamespace);
+        $this->generateController($stubPath, $controllerDirectory, $controllerNamespace);
     }
 
     protected function getStubPath(): string
     {
-        return base_path('vendor\w88\crud-system\src\stubs\request.stub');
+        return __DIR__ . '/../../../backend/stubs/controller.stub';
     }
 
     protected function ensureStubExists(string $stubPath): void
@@ -50,14 +50,14 @@ class RequestGenerator implements GeneratorInterface
         }
     }
 
-    protected function getRequestNamespace(): string
+    protected function getControllerNamespace(): string
     {
-        return $this->module . '\app\Http\Requests\\' . Str::studly($this->version);
+        return $this->module . '\app\Http\Controllers\\' . Str::studly($this->version);
     }
 
-    protected function getRequestDirectory(): string
+    protected function getControllerDirectory(): string
     {
-        return $this->modulePath . '/app/Http/Requests/' . Str::studly($this->version);
+        return $this->modulePath . '/app/Http/Controllers/' . Str::studly($this->version);
     }
 
     protected function ensureDirectoryExists(string $directory): void
@@ -67,21 +67,24 @@ class RequestGenerator implements GeneratorInterface
         }
     }
 
-    protected function generateRequest(string $stubPath, string $requestDirectory, string $requestNamespace): void
+    protected function generateController(string $stubPath, string $controllerDirectory, string $controllerNamespace): void
     {
         StubGenerator::from($stubPath, true)
-            ->to($requestDirectory)
-            ->withReplacers($this->getReplacers($requestNamespace))
+            ->to($controllerDirectory)
+            ->withReplacers($this->getReplacers($controllerNamespace))
             ->replace(true)
-            ->as($this->modelName . 'Request')
+            ->as($this->modelName . 'Controller')
             ->save();
     }
 
-    protected function getReplacers(string $requestNamespace): array
+    protected function getReplacers(string $controllerNamespace): array
     {
         return [
-            'NAMESPACE' => $requestNamespace,
-            'CLASS' => $this->modelName . 'Request',
+            'CLASS_NAMESPACE' => $controllerNamespace,
+            'CLASS' => $this->modelName . 'Controller',
+            'LOWER_NAME' => strtolower($this->modelName),
+            'MODEL' => $this->modelName,
+            'MODEL_NAMESPACE' => $this->module . '\app\Models',
         ];
     }
 }

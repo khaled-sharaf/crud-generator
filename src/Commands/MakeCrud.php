@@ -9,7 +9,7 @@ use Touhidurabir\StubGenerator\Facades\StubGenerator;
 
 class MakeCrud extends Command
 {
-    protected $signature = 'fr:crud-make {module} {name}';
+    protected $signature = 'fr:crud-make {name} {module}';
     protected $description = 'Generate a CRUD configuration file for a specified module and model';
 
     public function handle()
@@ -17,23 +17,26 @@ class MakeCrud extends Command
         $module = $this->argument('module');
         $name = $this->argument('name');
         $modelName = Str::studly($name);
-
-        $crudStubPath = base_path('vendor\w88\crud-system\src\stubs\crud.stub');
+        $crudStubPath = __DIR__ . '/../stubs/crud.stub';
+        $modulePath = base_path('Modules/' . $module . '/config/cruds');
         if (!File::exists($crudStubPath)) {
             $this->error("Stub file not found at path: {$crudStubPath}");
             return;
         }
-
-
-        // Define paths
-        $modulePath = base_path('Modules/' . $module . '/config/cruds');
-
         StubGenerator::from($crudStubPath, true)
+            ->withReplacers($this->getReplacers($modelName))
             ->to($modulePath, true, true)
             ->as(strtolower($modelName))
             ->replace(true)
             ->save();
 
         $this->info("Config file for {$modelName} in module {$module} generated successfully.");
+    }
+
+    protected function getReplacers(string $modelName): array
+    {
+        return [
+            'MODEL_NAME' => $modelName
+        ];
     }
 }

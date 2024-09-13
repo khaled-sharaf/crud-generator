@@ -1,13 +1,14 @@
 <?php
 
-namespace W88\CrudSystem\Generators;
+namespace W88\CrudSystem\Generators\Backend;
+
 
 use W88\CrudSystem\Contracts\GeneratorInterface;
 use Illuminate\Support\Facades\File;
 use Touhidurabir\StubGenerator\Facades\StubGenerator;
 use Illuminate\Support\Str;
 
-class ResourceGenerator implements GeneratorInterface
+class RequestGenerator implements GeneratorInterface
 {
     protected array $config;
     protected string $modelName;
@@ -30,17 +31,17 @@ class ResourceGenerator implements GeneratorInterface
 
         $this->ensureStubExists($stubPath);
 
-        $resourceNamespace = $this->getResourceNamespace();
-        $resourceDirectory = $this->getResourceDirectory();
+        $requestNamespace = $this->getRequestNamespace();
+        $requestDirectory = $this->getRequestDirectory();
 
-        $this->ensureDirectoryExists($resourceDirectory);
+        $this->ensureDirectoryExists($requestDirectory);
 
-        $this->generateResource($stubPath, $resourceDirectory, $resourceNamespace);
+        $this->generateRequest($stubPath, $requestDirectory, $requestNamespace);
     }
 
     protected function getStubPath(): string
     {
-        return base_path('vendor\w88\crud-system\src\stubs\resource.stub');
+        return __DIR__ . '/../../../backend/stubs/request.stub';
     }
 
     protected function ensureStubExists(string $stubPath): void
@@ -50,14 +51,14 @@ class ResourceGenerator implements GeneratorInterface
         }
     }
 
-    protected function getResourceNamespace(): string
+    protected function getRequestNamespace(): string
     {
-        return $this->module . '\app\Http\Resources\\' . Str::studly($this->version);
+        return $this->module . '\app\Http\Requests\\' . Str::studly($this->version);
     }
 
-    protected function getResourceDirectory(): string
+    protected function getRequestDirectory(): string
     {
-        return $this->modulePath . '/app/Http/Resources/' . Str::studly($this->version);
+        return $this->modulePath . '/app/Http/Requests/' . Str::studly($this->version);
     }
 
     protected function ensureDirectoryExists(string $directory): void
@@ -67,21 +68,21 @@ class ResourceGenerator implements GeneratorInterface
         }
     }
 
-    protected function generateResource(string $stubPath, string $resourceDirectory, string $resourceNamespace): void
+    protected function generateRequest(string $stubPath, string $requestDirectory, string $requestNamespace): void
     {
         StubGenerator::from($stubPath, true)
-            ->to($resourceDirectory)
-            ->withReplacers($this->getReplacers($resourceNamespace))
+            ->to($requestDirectory)
+            ->withReplacers($this->getReplacers($requestNamespace))
             ->replace(true)
-            ->as($this->modelName . 'Resource')
+            ->as($this->modelName . 'Request')
             ->save();
     }
 
-    protected function getReplacers(string $resourceNamespace): array
+    protected function getReplacers(string $requestNamespace): array
     {
         return [
-            'NAMESPACE' => $resourceNamespace,
-            'CLASS' => $this->modelName . 'Resource',
+            'NAMESPACE' => $requestNamespace,
+            'CLASS' => $this->modelName . 'Request',
         ];
     }
 }

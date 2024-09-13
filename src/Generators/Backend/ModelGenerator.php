@@ -1,6 +1,7 @@
 <?php
 
-namespace W88\CrudSystem\Generators;
+namespace W88\CrudSystem\Generators\Backend;
+
 
 use W88\CrudSystem\Contracts\GeneratorInterface;
 use Illuminate\Support\Facades\File;
@@ -35,7 +36,7 @@ class ModelGenerator implements GeneratorInterface
 
     protected function getStubPath(): string
     {
-        return base_path('vendor\w88\crud-system\src\stubs\model.stub');
+        return __DIR__ . '/../../../backend/stubs/model.stub';
     }
 
     protected function ensureStubExists(string $stubPath): void

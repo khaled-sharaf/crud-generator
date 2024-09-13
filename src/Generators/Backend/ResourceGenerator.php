@@ -1,13 +1,14 @@
 <?php
 
-namespace W88\CrudSystem\Generators;
+namespace W88\CrudSystem\Generators\Backend;
+
 
 use W88\CrudSystem\Contracts\GeneratorInterface;
 use Illuminate\Support\Facades\File;
 use Touhidurabir\StubGenerator\Facades\StubGenerator;
 use Illuminate\Support\Str;
 
-class ControllerGenerator implements GeneratorInterface
+class ResourceGenerator implements GeneratorInterface
 {
     protected array $config;
     protected string $modelName;
@@ -30,17 +31,17 @@ class ControllerGenerator implements GeneratorInterface
 
         $this->ensureStubExists($stubPath);
 
-        $controllerNamespace = $this->getControllerNamespace();
-        $controllerDirectory = $this->getControllerDirectory();
+        $resourceNamespace = $this->getResourceNamespace();
+        $resourceDirectory = $this->getResourceDirectory();
 
-        $this->ensureDirectoryExists($controllerDirectory);
+        $this->ensureDirectoryExists($resourceDirectory);
 
-        $this->generateController($stubPath, $controllerDirectory, $controllerNamespace);
+        $this->generateResource($stubPath, $resourceDirectory, $resourceNamespace);
     }
 
     protected function getStubPath(): string
     {
-        return base_path('vendor\w88\crud-system\src\controller.stub');
+        return __DIR__ . '/../../../backend/stubs/resource.stub';
     }
 
     protected function ensureStubExists(string $stubPath): void
@@ -50,14 +51,14 @@ class ControllerGenerator implements GeneratorInterface
         }
     }
 
-    protected function getControllerNamespace(): string
+    protected function getResourceNamespace(): string
     {
-        return $this->module . '\app\Http\Controllers\\' . Str::studly($this->version);
+        return $this->module . '\app\Http\Resources\\' . Str::studly($this->version);
     }
 
-    protected function getControllerDirectory(): string
+    protected function getResourceDirectory(): string
     {
-        return $this->modulePath . '/app/Http/Controllers/' . Str::studly($this->version);
+        return $this->modulePath . '/app/Http/Resources/' . Str::studly($this->version);
     }
 
     protected function ensureDirectoryExists(string $directory): void
@@ -67,24 +68,21 @@ class ControllerGenerator implements GeneratorInterface
         }
     }
 
-    protected function generateController(string $stubPath, string $controllerDirectory, string $controllerNamespace): void
+    protected function generateResource(string $stubPath, string $resourceDirectory, string $resourceNamespace): void
     {
         StubGenerator::from($stubPath, true)
-            ->to($controllerDirectory)
-            ->withReplacers($this->getReplacers($controllerNamespace))
+            ->to($resourceDirectory)
+            ->withReplacers($this->getReplacers($resourceNamespace))
             ->replace(true)
-            ->as($this->modelName . 'Controller')
+            ->as($this->modelName . 'Resource')
             ->save();
     }
 
-    protected function getReplacers(string $controllerNamespace): array
+    protected function getReplacers(string $resourceNamespace): array
     {
         return [
-            'CLASS_NAMESPACE' => $controllerNamespace,
-            'CLASS' => $this->modelName . 'Controller',
-            'LOWER_NAME' => strtolower($this->modelName),
-            'MODEL' => $this->modelName,
-            'MODEL_NAMESPACE' => $this->module . '\app\Models',
+            'NAMESPACE' => $resourceNamespace,
+            'CLASS' => $this->modelName . 'Resource',
         ];
     }
 }

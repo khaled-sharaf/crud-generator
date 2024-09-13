@@ -12,12 +12,15 @@ class GenerateCrud extends Command
     protected $signature = 'fr:crud-generate {module} {name}';
     protected $description = 'Generate CRUD operations for a given model within a specified module based on config file';
 
+    private $backend_generator_types = ['model', 'migration', 'controller', 'request', 'resource', 'route'];
+    private $frontend_generator_types = ['index', 'create', 'edit', 'show'];
+
     public function handle()
     {
         $moduleName = $this->argument('module');
         $name = $this->argument('name');
         $modelName = Str::studly($name);
-        $version = env('API_VERSION', 'v1');
+        $version = config('app.api_version', 'v1');
 
         $config = $this->loadConfig($moduleName, $modelName);
 
@@ -25,8 +28,9 @@ class GenerateCrud extends Command
         $moduleNamespace = 'Modules\\' . $moduleName;
 
         // Generate CRUD components using the factory
-        foreach (['model', 'migration', 'controller', 'request', 'resource', 'route'] as $type) {
-            $generator = CrudGeneratorFactory::create($type, $config, $modelName, $modulePath, $moduleNamespace, $version);
+        foreach (array_merge($this->backend_generator_types, $this->frontend_generator_types) as $generator_type) {
+            $generators_action = in_array($generator_type, $this->backend_generator_types) ? 'backend' : 'frontend';
+            $generator = CrudGeneratorFactory::create($generators_action, $generator_type, $config, $modelName, $modulePath, $moduleNamespace, $version);
             $generator->generate();
         }
 
@@ -41,7 +45,7 @@ class GenerateCrud extends Command
             exit;
         }
 
-        return include $configPath;
+        return File::getRequire($configPath);
     }
 }
 
