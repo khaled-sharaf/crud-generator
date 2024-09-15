@@ -83,6 +83,11 @@ trait GeneratorHelpers
         return isset($this->config['dashboard']['activation']) && $this->config['dashboard']['activation'] === true;
     }
 
+    protected function hasTableExport(): bool
+    {
+        return isset($this->config['dashboard']['tableExport']) && $this->config['dashboard']['tableExport'] === true;
+    }
+
     protected function hasPermissions(): bool
     {
         return isset($this->config['permissions']) && $this->config['permissions'] === true;
