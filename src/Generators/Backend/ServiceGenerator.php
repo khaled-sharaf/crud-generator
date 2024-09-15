@@ -21,6 +21,11 @@ class ServiceGenerator extends Generator
         return __DIR__ . '/../../stubs/backend/service.stub';
     }
 
+    protected function getServiceDirectory(): string
+    {
+        return "{$this->modulePath}/app/Services/{$this->versionNamespace}";
+    }
+
     protected function ensureStubExists(): void
     {
         $stubPath = $this->getStubPath();

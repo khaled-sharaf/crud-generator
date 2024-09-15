@@ -17,11 +17,6 @@ trait GeneratorHelpers
         return $this->modelName . 'Controller';
     }
 
-    protected function getControllerDirectory(): string
-    {
-        return "{$this->modulePath}/app/Http/Controllers/{$this->versionNamespace}";
-    }
-
     protected function getControllerNamespace(): string
     {
         return "{$this->moduleNamespace}\app\Http\Controllers\\{$this->versionNamespace}";
@@ -37,24 +32,19 @@ trait GeneratorHelpers
         return Str::camel($this->getServiceName());
     }
 
-    protected function getServiceDirectory(): string
-    {
-        return "{$this->modulePath}/app/Services/{$this->versionNamespace}";
-    }
-
     protected function getServiceNamespace(): string
     {
         return "{$this->moduleNamespace}\app\Services\\{$this->versionNamespace}";
     }
 
-    protected function getRequestNamespace(): string
-    {
-        return "{$this->moduleNamespace}\app\Http\Requests\\{$this->versionNamespace}";
-    }
-
     protected function getRequestName(): string
     {
         return $this->modelName . 'Request';
+    }
+
+    protected function getRequestNamespace(): string
+    {
+        return "{$this->moduleNamespace}\app\Http\Requests\\{$this->versionNamespace}";
     }
 
     protected function getResourceName(): string
@@ -117,5 +107,22 @@ trait GeneratorHelpers
     protected function getFields(): array
     {
         return $this->config['fields'] ?? [];
+    }
+
+    protected function isPhpCode($string) {
+        $patterns = [
+            '/\$[a-zA-Z_\x80-\xff][a-zA-Z0-9_\x80-\xff]*/', // PHP variables like $this
+            '/::/', // Static method or constant calls like Rule::unique
+            '/->/', // Object method or property access like $this->post
+            '/\(.*\)/', // Function calls with parentheses
+            '/\s*new\s+/', // Object instantiation
+        ];
+        // Check if any of the patterns match the string
+        foreach ($patterns as $pattern) {
+            if (preg_match($pattern, $string)) {
+                return true; // Contains PHP code
+            }
+        }
+        return false; // Doesn't contain PHP code
     }
 }

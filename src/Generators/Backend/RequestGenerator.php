@@ -3,86 +3,81 @@
 namespace W88\CrudSystem\Generators\Backend;
 
 
-use W88\CrudSystem\Contracts\GeneratorInterface;
+use W88\CrudSystem\Generators\Generator;
 use Illuminate\Support\Facades\File;
 use Touhidurabir\StubGenerator\Facades\StubGenerator;
-use Illuminate\Support\Str;
 
-class RequestGenerator implements GeneratorInterface
+class RequestGenerator extends Generator
 {
-    protected array $config;
-    protected string $modelName;
-    protected string $modulePath;
-    protected ?string $module;
-    protected ?string $version;
-
-    public function __construct(array $config, string $modelName, string $modulePath, ?string $module = null, ?string $version = null)
-    {
-        $this->config = $config;
-        $this->modelName = $modelName;
-        $this->modulePath = $modulePath;
-        $this->module = $module;
-        $this->version = $version;
-    }
-
+ 
     public function generate(): void
     {
-        $stubPath = $this->getStubPath();
-
-        $this->ensureStubExists($stubPath);
-
-        $requestNamespace = $this->getRequestNamespace();
-        $requestDirectory = $this->getRequestDirectory();
-
-        $this->ensureDirectoryExists($requestDirectory);
-
-        $this->generateRequest($stubPath, $requestDirectory, $requestNamespace);
+        $this->ensureStubExists();
+        $this->ensureDirectoryExists();
+        $this->generateRequest();
     }
 
     protected function getStubPath(): string
     {
-        return __DIR__ . '/../../../backend/stubs/request.stub';
+        return __DIR__ . '/../../stubs/backend/request.stub';
     }
 
-    protected function ensureStubExists(string $stubPath): void
+    protected function ensureStubExists(): void
     {
+        $stubPath = $this->getStubPath();
         if (!File::exists($stubPath)) {
             throw new \Exception("Stub file not found at path: {$stubPath}");
         }
     }
 
-    protected function getRequestNamespace(): string
-    {
-        return $this->module . '\app\Http\Requests\\' . Str::studly($this->version);
-    }
-
     protected function getRequestDirectory(): string
     {
-        return $this->modulePath . '/app/Http/Requests/' . Str::studly($this->version);
+        return "{$this->modulePath}/app/Http/Requests/{$this->versionNamespace}";
     }
 
-    protected function ensureDirectoryExists(string $directory): void
+    protected function ensureDirectoryExists(): void
     {
+        $directory = $this->getRequestDirectory();
         if (!File::exists($directory)) {
             File::makeDirectory($directory, 0755, true);
         }
     }
 
-    protected function generateRequest(string $stubPath, string $requestDirectory, string $requestNamespace): void
+    protected function generateRequest(): void
     {
-        StubGenerator::from($stubPath, true)
-            ->to($requestDirectory)
-            ->withReplacers($this->getReplacers($requestNamespace))
+        StubGenerator::from($this->getStubPath(), true)
+            ->to($this->getRequestDirectory())
+            ->withReplacers($this->getReplacers())
             ->replace(true)
-            ->as($this->modelName . 'Request')
+            ->as($this->getRequestName())
             ->save();
     }
 
-    protected function getReplacers(string $requestNamespace): array
+    protected function getReplacers(): array
     {
         return [
-            'NAMESPACE' => $requestNamespace,
-            'CLASS' => $this->modelName . 'Request',
+            'CLASS_NAMESPACE' => $this->getRequestNamespace(),
+            'CLASS_NAME' => $this->getRequestName(),
+            'TRANSLATION_PATH' => "{$this->moduleNameSnake}::view.{$this->modelNameSnake}_crud.validation",
+            'RULES' => $this->getRules(),
         ];
     }
+
+    protected function getRules(): string
+    {
+        return collect($this->getFields())->map(fn($field, $name) => $this->getFieldValidationRule($name, $field))->implode(',');
+    }
+
+    protected function getFieldValidationRule(string $name, array $field): string
+    {
+        if (!isset($field['validation'])) return '';
+        $rule = is_array($field['validation']) ? $this->handleArrayValidationRule($field['validation']) : "'{$field['validation']}'";
+        return "\n\t\t\t'$name' => $rule";
+    }
+
+    public function handleArrayValidationRule(array $validation): string
+    {
+        return '[' . collect($validation)->map(fn($rule) => "\n\t\t\t\t" . ($this->isPhpCode($rule) ? $rule : "'{$rule}'"))->implode(',') . "\n\t\t\t]";
+    }
+    
 }

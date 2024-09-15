@@ -21,6 +21,11 @@ class ControllerGenerator extends Generator
         return __DIR__ . '/../../stubs/backend/controller.stub';
     }
 
+    protected function getControllerDirectory(): string
+    {
+        return "{$this->modulePath}/app/Http/Controllers/{$this->versionNamespace}";
+    }
+
     protected function ensureStubExists(): void
     {
         $stubPath = $this->getStubPath();

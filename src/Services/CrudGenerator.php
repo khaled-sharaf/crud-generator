@@ -8,7 +8,7 @@ use W88\CrudSystem\Factories\CrudGeneratorFactory;
 class CrudGenerator
 {
 
-    private $backend_generator_types = ['model', 'migration', 'route', 'controller', 'service', 'filter', 'request', 'resource', 'lang', 'permission'];
+    private $backend_generator_types = ['model', 'migration', 'route', 'controller', 'service', 'request', 'resource', 'lang', 'permission'];
     private $frontend_generator_types = ['index', 'create', 'edit', 'show'];
     
     public function generate($moduleName = null, $crudName = null)
@@ -63,7 +63,7 @@ class CrudGenerator
     {
         // return array_merge($this->backend_generator_types, $this->frontend_generator_types);
         // return $this->backend_generator_types;
-        return ['migration', 'route', 'controller', 'service'];
+        return ['migration', 'route', 'controller', 'service', 'resource', 'request'];
     }
 
     protected function loadConfig($moduleName, $crudName)

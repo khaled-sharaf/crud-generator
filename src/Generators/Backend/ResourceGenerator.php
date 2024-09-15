@@ -3,86 +3,76 @@
 namespace W88\CrudSystem\Generators\Backend;
 
 
-use W88\CrudSystem\Contracts\GeneratorInterface;
+use W88\CrudSystem\Generators\Generator;
 use Illuminate\Support\Facades\File;
 use Touhidurabir\StubGenerator\Facades\StubGenerator;
-use Illuminate\Support\Str;
 
-class ResourceGenerator implements GeneratorInterface
+class ResourceGenerator extends Generator
 {
-    protected array $config;
-    protected string $modelName;
-    protected string $modulePath;
-    protected ?string $module;
-    protected ?string $version;
-
-    public function __construct(array $config, string $modelName, string $modulePath, ?string $module = null, ?string $version = null)
-    {
-        $this->config = $config;
-        $this->modelName = $modelName;
-        $this->modulePath = $modulePath;
-        $this->module = $module;
-        $this->version = $version;
-    }
 
     public function generate(): void
     {
-        $stubPath = $this->getStubPath();
-
-        $this->ensureStubExists($stubPath);
-
-        $resourceNamespace = $this->getResourceNamespace();
-        $resourceDirectory = $this->getResourceDirectory();
-
-        $this->ensureDirectoryExists($resourceDirectory);
-
-        $this->generateResource($stubPath, $resourceDirectory, $resourceNamespace);
+        $this->ensureStubExists();
+        $this->ensureDirectoryExists();
+        $this->generateResource();
     }
 
     protected function getStubPath(): string
     {
-        return __DIR__ . '/../../../backend/stubs/resource.stub';
+        return __DIR__ . '/../../stubs/backend/resource.stub';
     }
 
-    protected function ensureStubExists(string $stubPath): void
+    protected function ensureStubExists(): void
     {
+        $stubPath = $this->getStubPath();
         if (!File::exists($stubPath)) {
             throw new \Exception("Stub file not found at path: {$stubPath}");
         }
     }
 
-    protected function getResourceNamespace(): string
-    {
-        return $this->module . '\app\Http\Resources\\' . Str::studly($this->version);
-    }
-
     protected function getResourceDirectory(): string
     {
-        return $this->modulePath . '/app/Http/Resources/' . Str::studly($this->version);
+        return "{$this->modulePath}/app/Resources/{$this->versionNamespace}";
     }
 
-    protected function ensureDirectoryExists(string $directory): void
+    protected function ensureDirectoryExists(): void
     {
+        $directory = $this->getResourceDirectory();
         if (!File::exists($directory)) {
             File::makeDirectory($directory, 0755, true);
         }
     }
 
-    protected function generateResource(string $stubPath, string $resourceDirectory, string $resourceNamespace): void
+    protected function generateResource(): void
     {
-        StubGenerator::from($stubPath, true)
-            ->to($resourceDirectory)
-            ->withReplacers($this->getReplacers($resourceNamespace))
+        StubGenerator::from($this->getStubPath(), true)
+            ->to($this->getResourceDirectory())
+            ->withReplacers($this->getReplacers())
             ->replace(true)
-            ->as($this->modelName . 'Resource')
+            ->as($this->getResourceName())
             ->save();
     }
 
-    protected function getReplacers(string $resourceNamespace): array
+    protected function getReplacers(): array
     {
         return [
-            'NAMESPACE' => $resourceNamespace,
-            'CLASS' => $this->modelName . 'Resource',
+            'CLASS_NAMESPACE' => $this->getResourceNamespace(),
+            'CLASS_NAME' => $this->getResourceName(),
+            'FIELDS' => $this->getFieldsData(),
         ];
+    }
+
+    protected function getFieldsData(): string
+    {
+        $timestamps = '';
+        if ($this->hasTimestamps()) {
+            $timestamps = ",\n\t\t\t'created_at' => formatDate(\$this->created_at),\n\t\t\t'updated_at' => formatDate(\$this->updated_at)";
+        }
+        return collect($this->getFields())->map(fn($field, $name) => $this->generateFieldData($name))->implode(",\n\t\t\t") . $timestamps;
+    }
+
+    protected function generateFieldData(string $name): string
+    {
+        return "'$name' => \$this->{$name}";
     }
 }
