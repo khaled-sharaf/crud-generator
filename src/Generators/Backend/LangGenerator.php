@@ -82,18 +82,12 @@ class LangGenerator extends Generator
     protected function getPermissionsTemplate(): string
     {
         if (!$this->hasPermissions()) return '';
-        $modelTitle = Str::title($this->modelNameKebab);
-        $permissions = "\n\t\t'permissions' => [\n\t\t\t'view-list-{$this->modelNameKebab}' => 'View {$modelTitle} List',";
-        if ($this->hasTableExport()) $permissions .= "\n\t\t\t'export-list-{$this->modelNameSnake}' => 'Export {$modelTitle} List',";
-        if ($this->hasProfileRoute()) $permissions .= "\n\t\t\t'view-profile-{$this->modelNameSnake}' => 'View {$modelTitle} Profile',";
-        if ($this->hasCreateRoute()) $permissions .= "\n\t\t\t'create-{$this->modelNameSnake}' => 'Create {$modelTitle}',";
-        if ($this->hasUpdateRoute()) $permissions .= "\n\t\t\t'edit-{$this->modelNameSnake}' => 'Edit {$modelTitle}',";
-        if ($this->hasDeleteRoute()) $permissions .= "\n\t\t\t'delete-{$this->modelNameSnake}' => 'Delete {$modelTitle}',";
-        if ($this->hasSoftDeletes()) $permissions .= "\n\t\t\t'force-delete-{$this->modelNameSnake}' => 'Delete Forever {$modelTitle}',";
-        if ($this->hasSoftDeletes()) $permissions .= "\n\t\t\t'restore-{$this->modelNameSnake}' => 'Restore {$modelTitle}',";
-        if ($this->hasSoftDeletes()) $permissions .= "\n\t\t\t'view-trashed-{$this->modelNameSnake}-list' => 'View Trashed {$modelTitle} List',";
-        if ($this->hasActivationRoute()) $permissions .= "\n\t\t\t'activation-{$this->modelNameSnake}' => 'Activation {$modelTitle}',";
-        return $permissions . "\n\t\t],";
+        $permissions = $this->getPermissionsTranslated();
+        $permissionsResult = "\n\t\t'permissions' => [";
+        $permissionsResult .= collect($permissions)->map(function ($permission, $name) {
+            return "\n\t\t\t'{$name}' => '{$permission}',";
+        })->join('');
+        return $permissionsResult . "\n\t\t],";
     }
 
     protected function getValidationTemplate(): string

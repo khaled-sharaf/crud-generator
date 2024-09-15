@@ -114,6 +114,28 @@ trait GeneratorHelpers
         return $this->config['fields'] ?? [];
     }
 
+    /* ======================== Permissions ======================== */
+    protected function getPermissionsTranslated(): array
+    {
+        $modelTitle = Str::title($this->modelNameKebab);
+        $permissions = [
+            "view-list-{$this->modelNameKebab}" => "View {$modelTitle} List"
+        ];
+        if ($this->hasTableExport()) $permissions["export-list-{$this->modelNameSnake}"] = "Export {$modelTitle} List";
+        if ($this->hasProfileRoute()) $permissions["view-profile-{$this->modelNameSnake}"] = "View {$modelTitle} Profile";
+        if ($this->hasCreateRoute()) $permissions["create-{$this->modelNameSnake}"] = "Create {$modelTitle}";
+        if ($this->hasUpdateRoute()) $permissions["edit-{$this->modelNameSnake}"] = "Edit {$modelTitle}";
+        if ($this->hasDeleteRoute()) $permissions["delete-{$this->modelNameSnake}"] = "Delete {$modelTitle}";
+        if ($this->hasSoftDeletes()) {
+            $permissions["force-delete-{$this->modelNameSnake}"] = "Delete Forever {$modelTitle}";
+            $permissions["restore-{$this->modelNameSnake}"] = "Restore {$modelTitle}";
+            $permissions["view-trashed-{$this->modelNameSnake}-list"] = "View Trashed {$modelTitle} List";
+        }
+        if ($this->hasActivationRoute()) $permissions["activation-{$this->modelNameSnake}"] = "Activation {$modelTitle}";
+        return $permissions;
+    }
+
+    /* ======================== Helpers ======================== */
     protected function isPhpCode($string) {
         $patterns = [
             '/\$[a-zA-Z_\x80-\xff][a-zA-Z0-9_\x80-\xff]*/', // PHP variables like $this

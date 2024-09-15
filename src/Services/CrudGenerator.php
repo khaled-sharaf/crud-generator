@@ -63,7 +63,7 @@ class CrudGenerator
     {
         // return array_merge($this->backend_generator_types, $this->frontend_generator_types);
         // return $this->backend_generator_types;
-        return ['migration', 'route', 'controller', 'service', 'resource', 'request', 'lang'];
+        return ['migration', 'route', 'controller', 'service', 'resource', 'request', 'lang', 'permission'];
     }
 
     protected function loadConfig($moduleName, $crudName)

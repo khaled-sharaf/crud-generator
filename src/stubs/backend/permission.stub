@@ -1,0 +1,8 @@
+<?php
+
+return [
+    'module_name' => '{{ MODULE_NAME_SNAKE }}', // get it permission modules table in database
+    'order' => 1,
+    'permissions' => [{{ PERMISSIONS }}
+    ]
+];
