@@ -12,6 +12,7 @@ class RequestGenerator extends Generator
  
     public function generate(): void
     {
+        if (!$this->hasCreateRoute() && !$this->hasUpdateRoute()) return;
         $this->ensureStubExists();
         $this->ensureDirectoryExists();
         $this->generateRequest();
@@ -55,12 +56,22 @@ class RequestGenerator extends Generator
 
     protected function getReplacers(): array
     {
+        $rules = $this->getRules();
         return [
             'CLASS_NAMESPACE' => $this->getRequestNamespace(),
             'CLASS_NAME' => $this->getRequestName(),
             'TRANSLATION_PATH' => "{$this->moduleNameSnake}::view.{$this->modelNameSnake}_crud.validation",
-            'RULES' => $this->getRules(),
+            'RULES' => $rules,
+            'USE_CLASSES' => $this->getUseClasses($rules),
         ];
+    }
+
+    protected function getUseClasses(string $rules): string
+    {
+        if (strpos($rules, 'Rule::') !== false || strpos($rules, 'new Rule') !== false) {
+            return "use Illuminate\Validation\Rule;\n";
+        }
+        return '';
     }
 
     protected function getRules(): string

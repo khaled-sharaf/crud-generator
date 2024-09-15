@@ -57,25 +57,78 @@ class ServiceGenerator extends Generator
         return [
             'CLASS_NAMESPACE' => $this->getServiceNamespace(),
             'CLASS_NAME' => $this->getServiceName(),
-            'MODEL' => $this->modelName,
-            'MODEL_LOWER' => $this->modelNameCamel,
-            'MODEL_NAMESPACE' => $this->modelNamespace(),
-            'FILTERS' => $this->getFilters(),
-            'HANDLE_FIELDS_WHEN_CREATE' => $this->handleFieldsWhenCreate(),
-            'HANDLE_FIELDS_WHEN_UPDATE' => $this->handleFieldsWhenUpdate(),
+            'USE_CLASSES' => $this->getUseClasses(),
+            'METHODS' => $this->getMethods(),
         ];
+    }
+
+    protected function getUseClasses(): string
+    {
+        $useClasses = [
+            'use App\Helpers\CrudHelpers\Facades\CrudHelper;',
+            'use ' . $this->getModelNamespace() . '\\' . $this->modelName . ';'
+        ];
+        return collect($useClasses)->implode("\n") . "\n";
+    }
+
+    protected function getMethods(): string
+    {
+        $methods = $this->getIndexMethod();
+        if ($this->hasProfileRoute()) $methods .= $this->getShowMethod();
+        if ($this->hasCreateRoute()) $methods .= $this->getStoreMethod();
+        if ($this->hasUpdateRoute()) $methods .= $this->getUpdateMethod();
+        return $methods;
+    }
+
+    protected function getIndexMethod(): string
+    {
+        $filters = $this->getFilters();
+        return "public function tableList()
+    {
+        return CrudHelper::tableList(new {$this->modelName}, [{$filters}
+            \App\Filters\Date\Date::class,
+            \App\Filters\Date\Time::class,
+            \App\Filters\Search\AdvancedSearch::class,
+            \App\Filters\Search\TableSearchText::class,
+            \App\Filters\Sorting\SortBy::class,
+        ]);
+    }";
+    }
+
+    protected function getShowMethod(): string
+    {
+    return "\n\n\tpublic function show(\$id)
+    {
+        return {$this->modelName}::findOrFail(\$id);
+    }";
+    }
+
+    protected function getStoreMethod(): string
+    {
+        $handleFieldsWhenCreate = $this->handleFieldsWhenCreate();
+        return "\n\n\tpublic function create(\$data)
+    {
+        {$handleFieldsWhenCreate}\${$this->modelNameCamel} = {$this->modelName}::create(\$data);
+        return \${$this->modelNameCamel};
+    }";
+    }
+
+    protected function getUpdateMethod(): string
+    {
+        $handleFieldsWhenUpdate = $this->handleFieldsWhenUpdate();
+        return "\n\n\tpublic function update(\${$this->modelNameCamel}, \$data)
+    {
+        {$handleFieldsWhenUpdate}\${$this->modelNameCamel}->update(\$data);
+        return \${$this->modelNameCamel};
+    }";
     }
 
     protected function getFilters(): string
     {
-        $filters = '';
-        if ($this->hasSoftDeletes()) {
-            $filters .= "\App\Filters\Boolean\Trashed::class,\n\t\t\t";
-        }
-        if ($this->hasActivationRoute()) {
-            $filters .= "new \App\Filters\Boolean\ToggleBoolean('is_active'),\n\t\t\t";
-        }
-        return $filters;
+        $filters = [];
+        if ($this->hasSoftDeletes()) $filters[] = "\App\Filters\Boolean\Trashed::class,";
+        if ($this->hasActivationRoute()) $filters[] = "new \App\Filters\Boolean\ToggleBoolean('is_active'),";
+        return collect($filters)->map(fn ($filter) => "\n\t\t\t" . $filter)->implode('');
     }
 
     protected function handleFieldsWhenCreate(): string

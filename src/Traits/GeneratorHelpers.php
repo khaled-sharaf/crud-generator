@@ -7,7 +7,7 @@ trait GeneratorHelpers
 {
 
     /* ======================== Getters ======================== */
-    protected function modelNamespace(): string
+    protected function getModelNamespace(): string
     {
         return $this->moduleNamespace . '\app\Models';
     }

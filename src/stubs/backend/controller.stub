@@ -3,11 +3,7 @@
 namespace {{ CLASS_NAMESPACE }};
 
 use App\Http\Controllers\Controller;
-use App\Helpers\CrudHelpers\Facades\CrudHelper;
-use {{ MODEL_NAMESPACE }}\{{ MODEL }};
-use {{ SERVICE_NAMESPACE }}\{{ SERVICE_NAME }};
-use {{ RESOURCE_NAMESPACE }}\{{ RESOURCE_NAME }};
-use {{ REQUEST_NAMESPACE }}\{{ REQUEST_NAME }};
+{{ USE_CLASSES }}
 
 class {{ CLASS_NAME }} extends Controller
 {

@@ -2,38 +2,10 @@
 
 namespace {{ CLASS_NAMESPACE }};
 
-use App\Helpers\CrudHelpers\Facades\CrudHelper;
-use {{ MODEL_NAMESPACE }}\{{ MODEL }};
-
+{{ USE_CLASSES}}
 class {{ CLASS_NAME }}
 {
 
-    public function tableList()
-    {
-        return CrudHelper::tableList(new {{ MODEL }}, [
-            {{ FILTERS }}\App\Filters\Date\Date::class,
-            \App\Filters\Date\Time::class,
-            \App\Filters\Search\AdvancedSearch::class,
-            \App\Filters\Search\TableSearchText::class,
-            \App\Filters\Sorting\SortBy::class,
-        ]);
-    }
-
-    public function show($id)
-    {
-        return {{ MODEL }}::findOrFail($id);
-    }
-
-    public function create($data)
-    {
-        {{ HANDLE_FIELDS_WHEN_CREATE }}${{ MODEL_LOWER }} = {{ MODEL }}::create($data);
-        return ${{ MODEL_LOWER }};
-    }
-
-    public function update(${{ MODEL_LOWER }}, $data)
-    {
-        {{ HANDLE_FIELDS_WHEN_UPDATE }}${{ MODEL_LOWER }}->update($data);
-        return ${{ MODEL_LOWER }};
-    }
+    {{ METHODS }}
 
 }

@@ -57,19 +57,27 @@ class ControllerGenerator extends Generator
         return [
             'CLASS_NAMESPACE' => $this->getControllerNamespace(),
             'CLASS_NAME' => $this->getControllerName(),
-            'MODEL' => $this->modelName,
-            'MODEL_LOWER' => $this->modelNameCamel,
-            'MODEL_NAMESPACE' => $this->modelNamespace(),
-            'SERVICE_NAMESPACE' => $this->getServiceNamespace(),
             'SERVICE_NAME' => $this->getServiceName(),
             'SERVICE_NAME_CAMEL' => $this->getServiceNameCamel(),
-            'REQUEST_NAME' => $this->getRequestName(),
-            'REQUEST_NAMESPACE' => $this->getRequestNamespace(),
-            'RESOURCE_NAME' => $this->getResourceName(),
-            'RESOURCE_NAMESPACE' => $this->getResourceNamespace(),
             'PERMISSIONS' => $this->getPermissions(),
             'METHODS' => $this->getMethods(),
+            'USE_CLASSES' => $this->getUseClasses(),
         ];
+    }
+
+    protected function getUseClasses(): string
+    {
+        $useModel = 'use ' . $this->getModelNamespace() . '\\' . $this->modelName . ';';
+        $useRequest = 'use ' . $this->getRequestNamespace() . '\\' . $this->getRequestName() . ';';
+        $useCrudHelper = 'use App\Helpers\CrudHelpers\Facades\CrudHelper;';
+        $useClasses = [
+            'use ' . $this->getServiceNamespace() . '\\' . $this->getServiceName() . ';',
+            'use ' . $this->getResourceNamespace() . '\\' . $this->getResourceName() . ';',
+        ];
+        if ($this->hasDeleteRoute() || $this->hasActivationRoute()) $useClasses[] = $useCrudHelper;
+        if ($this->hasUpdateRoute() || $this->hasDeleteRoute() || $this->hasActivationRoute()) $useClasses[] = $useModel;
+        if ($this->hasCreateRoute() || $this->hasUpdateRoute()) $useClasses[] = $useRequest;
+        return collect($useClasses)->implode("\n");
     }
 
     protected function getMethods(): string
