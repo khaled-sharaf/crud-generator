@@ -70,12 +70,20 @@ return [
             // 'enum' => ['key' => 'value'], // Possible values for selection or checkbox fields
             'nullable' => true, // Whether the field can be null (default: false)
             'default' => 'string_test', // Default value for the field
-            'migration_type' => 'string', // Database column type (default: same as 'type')
+            'migrationType' => 'string', // Database column type (default: same as 'type')
             'add_filter' => true, // Add a custom filter for this field (default: false)
             'translatable' => true, // Whether the field is translatable (default: false)
             'validation' => [ // Laravel validation rules (optional)
                 // 'required',
                 // 'string',
+            ],
+            // 'relation' => true, // or array
+            'relation' => [
+                'constrained' => true, // optional
+                'onUpdate' => 'cascade', // optional
+                'onDelete' => 'set null', // optional
+                'table' => 'categories', // optional
+                'foreign_key' => 'category_id', // optional
             ],
             'frontend' => [
                 'sortable' => false, // Allow sorting in frontend tables (default: true)

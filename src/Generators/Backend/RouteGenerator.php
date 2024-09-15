@@ -2,40 +2,20 @@
 
 namespace W88\CrudSystem\Generators\Backend;
 
-
-use W88\CrudSystem\Contracts\GeneratorInterface;
+use W88\CrudSystem\Generators\Generator;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
 
-class RouteGenerator implements GeneratorInterface
+class RouteGenerator extends Generator
 {
-    protected array $config;
-    protected string $modelName;
-    protected string $modulePath;
-    protected ?string $module;
-    protected ?string $version;
 
-    public function __construct(array $config, string $modelName, string $modulePath, ?string $module = null, ?string $version = null)
-    {
-        $this->config = $config;
-        $this->modelName = $modelName;
-        $this->modulePath = $modulePath;
-        $this->module = $module;
-        $this->version = $version;
-    }
+    const METHODS = [
+        'index', 'show', 'store', 'update', 'destroy'
+    ];
 
     public function generate(): void
     {
-        $routesPath = $this->getRoutesPath();
-        $modulePrefix = $this->getModulePrefix();
-        $apiPrefix = $this->getApiPrefix();
-        $routesTemplate = $this->getRoutesTemplate($apiPrefix);
-
-        $routesContent = $this->getRoutesContent($routesPath);
-
-        $searchPatterns = $this->getSearchPatterns($modulePrefix);
-
-        $this->insertRoute($routesContent, $searchPatterns, $routesTemplate, $routesPath);
+        $this->insertRoute();
     }
 
     protected function getRoutesPath(): string
@@ -43,27 +23,47 @@ class RouteGenerator implements GeneratorInterface
         return $this->modulePath . '/routes/' . $this->version . '/admin.php';
     }
 
-    protected function getModulePrefix(): string
+    protected function getUseController(): string
     {
-        return Str::snake($this->module);
+        return "\nuse {$this->getControllerNamespace()}\\{$this->getControllerName()};";
     }
 
-    protected function getApiPrefix(): string
+    protected function getRoutesContentFile(): string
     {
-        return strtolower(Str::plural($this->modelName));
+        return File::get($this->getRoutesPath());
     }
 
-    protected function getRoutesTemplate(string $apiPrefix): string
+    protected function getExcludedOrOnlyMethods(): string
     {
-        return "Route::apiResource('{$apiPrefix}', '{$this->module}Controller');\n";
+        $methods = ['index'];
+        if ($this->hasCreateRoute()) $methods[] = 'store';
+        if ($this->hasUpdateRoute()) $methods[] = 'update';
+        if ($this->hasProfileRoute()) $methods[] = 'show';
+        if ($this->hasDeleteRoute()) $methods[] = 'destroy';
+        if (count($methods) === count(self::METHODS)) return '';
+        $diffMethods = array_diff(self::METHODS, $methods);
+        $type = count($methods) > count($diffMethods) ? 'except' : 'only';
+        $methods = $type === 'except' ? $diffMethods : $methods;
+        $methods = collect($methods)->map(function($method) {
+            return "'{$method}'";
+        })->implode(', ');
+        return "->{$type}({$methods})";
     }
 
-    protected function getRoutesContent(string $routesPath): string
+    protected function getRouteResourceTemplate(): string
     {
-        return File::get($routesPath);
+        $methods = $this->getExcludedOrOnlyMethods();
+        return "Route::apiResource('{$this->modelNameKebabPlural}', {$this->getControllerName()}::class){$methods};\n";
     }
 
-    protected function getSearchPatterns(string $modulePrefix): array
+    protected function getRouteActivationTemplate(): string
+    {
+        if (!$this->hasActivationRoute()) return "";
+        $middleware = $this->hasPermissions() ? "->middleware('can:activation-{$this->modelNameKebab}')" : '';
+        return "Route::patch('{$this->modelNameKebabPlural}/{id}/activation', [{$this->getControllerName()}::class, 'activation']){$middleware};\n";
+    }
+
+    protected function getSearchPatterns(): array
     {
         return [
             [
@@ -71,41 +71,63 @@ class RouteGenerator implements GeneratorInterface
                 "indentation" => "\t",
             ],
             [
-                "pattern" => "Route::prefix('user')->group(function() {",
+                "pattern" => "Route::prefix('{$this->moduleNameKebab}')->group(function() {",
                 "indentation" => "",
             ]
         ];
     }
 
-    protected function insertRoute(string &$routesContent, array $searchPatterns, string $routesTemplate, string $routesPath): void
+    protected function insertRoute(): void
     {
-        foreach ($searchPatterns as $pattern) {
-            $startPos = strpos($routesContent, $pattern["pattern"]);
+        $routesPath = $this->getRoutesPath();
+        $routesContentFile = $this->getRoutesContentFile();
+        $routeResourceTemplate = $this->getRouteResourceTemplate();
+        $routeActivationTemplate = $this->getRouteActivationTemplate();
+        $routesContentFile = $this->addUseController($routesContentFile);
+        $addActivationRoute = strpos($routesContentFile, $routeActivationTemplate) === false;
+        $addResourceRoute = strpos($routesContentFile, $routeResourceTemplate) === false;
+        foreach ($this->getSearchPatterns() as $pattern) {
+            $startPos = strpos($routesContentFile, $pattern["pattern"]);
             if ($startPos !== false) {
-                $groupStartPos = $this->findGroupStartPosition($routesContent, $startPos);
-                $groupEndPos = $this->findClosingBracePosition($routesContent, $groupStartPos);
-
+                $groupStartPos = $this->findGroupStartPosition($routesContentFile, $startPos);
+                $groupEndPos = $this->findClosingBracePosition($routesContentFile, $groupStartPos);
                 if ($groupEndPos !== false) {
-                    $routesContent = substr_replace($routesContent, "\t" . $routesTemplate . $pattern["indentation"], $groupEndPos, 0);
-                    File::put($routesPath, $routesContent);
+                    if ($addResourceRoute) {
+                        $routesContentFile = substr_replace($routesContentFile, "\t" . $routeResourceTemplate . $pattern["indentation"], $groupEndPos, 0);
+                    }
+                    if ($addActivationRoute) {
+                        $routesContentFile = substr_replace($routesContentFile, "\t" . $routeActivationTemplate . $pattern["indentation"], $groupEndPos, 0);
+                    }
+                    File::put($routesPath, $routesContentFile);
                     return;
                 }
             }
         }
-
-        File::append($routesPath, $routesTemplate);
+        if ($addActivationRoute) {
+            File::append($routesPath, $routeActivationTemplate);
+        }
+        if ($addResourceRoute) {
+            File::append($routesPath, $routeResourceTemplate);
+        }
     }
 
-    protected function findGroupStartPosition(string $content, int $startPos): int
+    protected function addUseController(string $routesContentFile): string
+    {
+        if (strpos($routesContentFile, $this->getUseController()) !== false) return $routesContentFile;
+        $routesContentFile = substr_replace($routesContentFile, $this->getUseController(), 5, 0);
+        File::put($this->getRoutesPath(), $routesContentFile);
+        return $routesContentFile;
+    }
+
+    protected function findGroupStartPosition(string $content, int $startPos): int|false
     {
         return strpos($content, '{', $startPos);
     }
 
-    protected function findClosingBracePosition(string $content, int $startPos): ?int
+    protected function findClosingBracePosition(string $content, int $startPos): int|false
     {
         $openBraces = 0;
         $length = strlen($content);
-
         for ($i = $startPos; $i < $length; $i++) {
             if ($content[$i] === '{') {
                 $openBraces++;
@@ -116,8 +138,7 @@ class RouteGenerator implements GeneratorInterface
                 }
             }
         }
-
-        return null;
+        return false;
     }
 
 }

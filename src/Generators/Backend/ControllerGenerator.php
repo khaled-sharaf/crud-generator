@@ -2,89 +2,146 @@
 
 namespace W88\CrudSystem\Generators\Backend;
 
-use W88\CrudSystem\Contracts\GeneratorInterface;
+use W88\CrudSystem\Generators\Generator;
 use Illuminate\Support\Facades\File;
 use Touhidurabir\StubGenerator\Facades\StubGenerator;
-use Illuminate\Support\Str;
 
-class ControllerGenerator implements GeneratorInterface
+class ControllerGenerator extends Generator
 {
-    protected array $config;
-    protected string $modelName;
-    protected string $modulePath;
-    protected ?string $module;
-    protected ?string $version;
-
-    public function __construct(array $config, string $modelName, string $modulePath, ?string $module = null, ?string $version = null)
-    {
-        $this->config = $config;
-        $this->modelName = $modelName;
-        $this->modulePath = $modulePath;
-        $this->module = $module;
-        $this->version = $version;
-    }
 
     public function generate(): void
     {
-        $stubPath = $this->getStubPath();
-
-        $this->ensureStubExists($stubPath);
-
-        $controllerNamespace = $this->getControllerNamespace();
-        $controllerDirectory = $this->getControllerDirectory();
-
-        $this->ensureDirectoryExists($controllerDirectory);
-
-        $this->generateController($stubPath, $controllerDirectory, $controllerNamespace);
+        $this->ensureStubExists();
+        $this->ensureDirectoryExists();
+        $this->generateController();
     }
 
     protected function getStubPath(): string
     {
-        return __DIR__ . '/../../../backend/stubs/controller.stub';
+        return __DIR__ . '/../../stubs/backend/controller.stub';
     }
 
-    protected function ensureStubExists(string $stubPath): void
+    protected function ensureStubExists(): void
     {
+        $stubPath = $this->getStubPath();
         if (!File::exists($stubPath)) {
             throw new \Exception("Stub file not found at path: {$stubPath}");
         }
     }
 
-    protected function getControllerNamespace(): string
+    protected function ensureDirectoryExists(): void
     {
-        return $this->module . '\app\Http\Controllers\\' . Str::studly($this->version);
-    }
-
-    protected function getControllerDirectory(): string
-    {
-        return $this->modulePath . '/app/Http/Controllers/' . Str::studly($this->version);
-    }
-
-    protected function ensureDirectoryExists(string $directory): void
-    {
+        $directory = $this->getControllerDirectory();
         if (!File::exists($directory)) {
             File::makeDirectory($directory, 0755, true);
         }
     }
 
-    protected function generateController(string $stubPath, string $controllerDirectory, string $controllerNamespace): void
+    protected function generateController(): void
     {
-        StubGenerator::from($stubPath, true)
-            ->to($controllerDirectory)
-            ->withReplacers($this->getReplacers($controllerNamespace))
+        StubGenerator::from($this->getStubPath(), true)
+            ->to($this->getControllerDirectory())
+            ->withReplacers($this->getReplacers())
             ->replace(true)
-            ->as($this->modelName . 'Controller')
+            ->as($this->getControllerName())
             ->save();
     }
 
-    protected function getReplacers(string $controllerNamespace): array
+    protected function getReplacers(): array
     {
         return [
-            'CLASS_NAMESPACE' => $controllerNamespace,
-            'CLASS' => $this->modelName . 'Controller',
-            'LOWER_NAME' => strtolower($this->modelName),
+            'CLASS_NAMESPACE' => $this->getControllerNamespace(),
+            'CLASS_NAME' => $this->getControllerName(),
             'MODEL' => $this->modelName,
-            'MODEL_NAMESPACE' => $this->module . '\app\Models',
+            'MODEL_LOWER' => $this->modelNameCamel,
+            'MODEL_NAMESPACE' => $this->modelNamespace(),
+            'SERVICE_NAMESPACE' => $this->getServiceNamespace(),
+            'SERVICE_NAME' => $this->getServiceName(),
+            'SERVICE_NAME_CAMEL' => $this->getServiceNameCamel(),
+            'REQUEST_NAME' => $this->getRequestName(),
+            'REQUEST_NAMESPACE' => $this->getRequestNamespace(),
+            'RESOURCE_NAME' => $this->getResourceName(),
+            'RESOURCE_NAMESPACE' => $this->getResourceNamespace(),
+            'PERMISSIONS' => $this->getPermissions(),
+            'METHODS' => $this->getMethods(),
         ];
+    }
+
+    protected function getMethods(): string
+    {
+        $methods = $this->getIndexMethod();
+        if ($this->hasCreateRoute()) $methods .= $this->getStoreMethod();
+        if ($this->hasProfileRoute()) $methods .= $this->getShowMethod();
+        if ($this->hasUpdateRoute()) $methods .= $this->getUpdateMethod();
+        if ($this->hasDeleteRoute()) $methods .= $this->getDestroyMethod();
+        if ($this->hasActivationRoute()) $methods .= $this->getActivationMethod();
+        return $methods;
+    }
+
+    protected function getIndexMethod(): string
+    {
+        return 'public function index()
+    {
+        $' . $this->modelNameCamelPlural . ' = $this->' . $this->getServiceNameCamel() . '->tableList();
+        ' . $this->getResourceName() . '::collection($' . $this->modelNameCamelPlural . ');
+        return sendData($' . $this->modelNameCamelPlural . ');
+    }';
+    }
+
+    protected function getStoreMethod(): string
+    {
+        return "\n\n\t" . 'public function store(' . $this->getRequestName() . ' $request)
+    {
+        $data = $request->validated();
+        $this->' . $this->getServiceNameCamel() . '->create($data);
+        return sendData(__(\'view.messages.created_success\'));
+    }';
+    }
+
+    protected function getUpdateMethod(): string
+    {
+        return "\n\n\t" . 'public function update($id, ' . $this->getRequestName() . ' $request)
+    {
+        $' . $this->modelNameCamel . ' = ' . $this->modelName . '::findOrFail($id);
+        $data = $request->validated();
+        $this->' . $this->getServiceNameCamel() . '->update($' . $this->modelNameCamel . ', $data);
+        return sendData(__(\'view.messages.updated_success\'));
+    }';
+    }
+
+    protected function getShowMethod(): string
+    {
+        return "\n\n\t" . 'public function show($id)
+    {
+        return sendData(new ' . $this->getResourceName() . '($this->' . $this->getServiceNameCamel() . '->show($id)));
+    }';
+    }
+
+    protected function getDestroyMethod(): string
+    {
+        $hasPermission = $this->hasPermissions() ? ', \'' . $this->modelNameKebab . '\'' : '';
+        return "\n\n\t" . 'public function destroy($id)
+    {
+        return sendData(CrudHelper::deleteActions($id, new ' . $this->modelName . $hasPermission . '));
+    }';
+    }
+
+    protected function getActivationMethod(): string
+    {
+        return "\n\n\t" . 'public function activation($id)
+    {
+        $action = CrudHelper::toggleBoolean(' . $this->modelName . '::findOrFail($id), \'is_active\');
+        return sendData([\'changed\' => $action[\'isChanged\']], __(\'' . $this->moduleNameSnake . '::view.' . $this->modelNameSnake . '_crud.messages.\' . ($action[\'model\']->is_active ? \'activated\' : \'deactivated\')));
+    }';
+    }
+
+    protected function getPermissions(): string
+    {
+        if (!$this->hasPermissions()) return '';
+        $permissions = '$this->middleware(\'can:view-list-' . $this->modelNameKebab . '\')->only(\'index\');';
+        if ($this->hasProfileRoute()) $permissions .= "\n\t\t" . '$this->middleware(\'can:view-profile-' . $this->modelNameKebab . '\')->only(\'show\');';
+        if ($this->hasCreateRoute()) $permissions .= "\n\t\t" . '$this->middleware(\'can:create-' . $this->modelNameKebab . '\')->only(\'store\');';
+        if ($this->hasUpdateRoute()) $permissions .= "\n\t\t" . '$this->middleware(\'can:edit-' . $this->modelNameKebab . '\')->only(\'update\');';
+        return $permissions . "\n\t\t";
     }
 }

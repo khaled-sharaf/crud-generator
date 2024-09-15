@@ -40,6 +40,13 @@ class Crud extends Model
         $this->save();
     }
 
+    public function generate($config)
+    {
+        $this->config = $config;
+        $this->generated_at = now();
+        $this->save();
+    }
+
     public function getIsGeneratedAttribute()
     {
         return $this->generated_at !== null;
