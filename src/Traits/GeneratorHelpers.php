@@ -100,7 +100,7 @@ trait GeneratorHelpers
 
     protected function hasSoftDeletes(): bool
     {
-        return isset($this->config['soft_deletes']) && $this->config['soft_deletes'] === true;
+        return isset($this->config['softDeletes']) && $this->config['softDeletes'] === true;
     }
 
     protected function hasTimestamps(): bool

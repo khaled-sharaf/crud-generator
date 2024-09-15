@@ -20,6 +20,12 @@ php artisan fr:crud-make {name} {module}
 php artisan fr:crud-make User users
 ```
 
+## Generate a complete crud system for a models
+
+```bash
+php artisan fr:crud-generate
+```
+
 ## Configuration
 
 ```php
@@ -40,14 +46,15 @@ return [
         'update' => true,  // Enable/disable update functionality (default: true)
         'profile' => true, // Enable/disable profile view (default: true)
         'delete' => true,  // Enable/disable delete functionality (default: true)
-        'table_search' => true,  // Enable/disable table search feature (default: true)
-        'table_filter' => true,  // Enable/disable table filtering (default: true)
-        'table_export' => true,  // Enable/disable table export feature (default: true)
+        'activation' => true,  // Enable/disable activation functionality (default: true)
+        'tableSearch' => true,  // Enable/disable table search feature (default: true)
+        'tableFilter' => true,  // Enable/disable table filtering (default: true)
+        'tableExport' => true,  // Enable/disable table export feature (default: true)
     ],
 
     // Client API settings
     // These settings control which API endpoints are available for client-side use
-    'client_api' => [
+    'clientApi' => [
         'list' => true,    // Enable/disable list API endpoint (default: true)
         'create' => true,  // Enable/disable create API endpoint (default: true)
         'update' => true,  // Enable/disable update API endpoint (default: true)
@@ -71,7 +78,7 @@ return [
             'nullable' => true, // Whether the field can be null (default: false)
             'default' => 'string_test', // Default value for the field
             'migrationType' => 'string', // Database column type (default: same as 'type')
-            'add_filter' => true, // Add a custom filter for this field (default: false)
+            'addFilter' => true, // Add a custom filter for this field (default: false)
             'translatable' => true, // Whether the field is translatable (default: false)
             'validation' => [ // Laravel validation rules (optional)
                 // 'required',
@@ -83,20 +90,20 @@ return [
                 'onUpdate' => 'cascade', // optional
                 'onDelete' => 'set null', // optional
                 'table' => 'categories', // optional
-                'foreign_key' => 'category_id', // optional
+                'foreignKey' => 'category_id', // optional
             ],
             'frontend' => [
                 'sortable' => false, // Allow sorting in frontend tables (default: true)
                 'searchable' => false, // Allow searching in frontend tables (default: true)
                 'exportable' => false, // Include in exports (default: true)
-                'advanced_searchable' => false, // Include in advanced search (default: true)
-                // 'advanced_search_name' => 'title', // Custom name for advanced search (default: field name)
+                'advancedSearchable' => false, // Include in advanced search (default: true)
+                // 'advancedSearchName' => 'title', // Custom name for advanced search (default: field name)
                 'hidden' => [ // Hide field in different views
                     'create' => true, // Hide in create form (default: false)
                     'update' => true, // Hide in update form (default: false)
                     'list'  => true, // Hide in list view (default: false)
                 ],
-                'visible_list' => true, // Show in list view (default: false)
+                'visibleList' => true, // Show in list view (default: false)
             ]
         ],
         // Add more fields as needed
@@ -165,9 +172,6 @@ return [
                 ],
                 // This will add withPivot('active') in the model relationship
             ],
-            
-            // Set to false to skip migration creation (default is true)
-            'migration' => false,
         ]
     ],
 
@@ -178,10 +182,10 @@ return [
     'timestamps' => true,
 
     // Soft Deletes: When enabled, adds a deleted_at column for soft deletion functionality
-    'soft_deletes' => false,
+    'softDeletes' => false,
 
     // Multi Selection: Allows multiple items to be selected for actions like delete in the frontend list
-    'multi_selection' => true,
+    'multiSelection' => true,
 
     // Seeder: Configuration for database seeding
     'seeder' => false,

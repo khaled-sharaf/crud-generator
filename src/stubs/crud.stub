@@ -8,35 +8,34 @@ return [
         'update' => true,
         'profile' => true,
         'delete' => true,
-        'table_search' => true,
-        'table_filter' => true,
-        'table_export' => true,
+        'activation' => true,
+
+        'tableSearch' => true,
+        'tableFilter' => true,
+        'tableExport' => true,
     ],
 
     'fields' => [
         'title' => [
             'type' => 'text',
             'label' => 'Title',
-            'migration_type' => 'string', // optional
-            'validation' => [
-                // 'required',
-            ],
+            'validation' => 'required',
             'frontend' => [
                 'sortable' => true,
                 'searchable' => true,
                 'exportable' => true,
-                'advanced_searchable' => true,
+                'advancedSearchable' => true,
             ]
         ],
     ],
 
-    // Laravel relations
+    // Laravel model relations
     'relations' => [],
 
     'permissions' => true, // Add permissions to permission file with translation
     'timestamps' => true, // Include timestamps
-    'soft_deletes' => false, // Enable soft deletes
-    'multi_selection' => true, // Enable multi selection for delete or any action in frontend list
+    'softDeletes' => false, // Enable soft deletes
+    'multiSelection' => true, // Enable multi selection for delete or any action in frontend list
 
     'seeder' => false,
 ];
