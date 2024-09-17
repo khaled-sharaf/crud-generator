@@ -1,27 +1,24 @@
 <?php
 
-namespace {{NAMESPACE}};
+namespace {{ CLASS_NAMESPACE }};
 
 use Illuminate\Database\Eloquent\Model;
+{{ USE_CLASSES }}
 
-class {{CLASS}} extends Model
+class {{ CLASS_NAME }} extends Model
 {
-
-    /**
-     * The attributes that are mass assignable.
-     */
-    protected $fillable = {{FILLABLE}};
-
-    protected static function booted()
-    {
-        static::creating(function ($model) {
-        });
-    }
-
-    /* ========================== Relations ========================== */
+    {{ USES }}
+    protected $fillable = [{{ FILLABLE }}
+    ];
+    {{ OPTIONS }}
 
     /* ========================== Attrs ========================== */
+    {{ ATTRS }}
+
+    /* ========================== Relations ========================== */
+    {{ RELATIONS }}
 
     /* ========================== Scopes ========================== */
+    {{ SCOPES }}
 
 }

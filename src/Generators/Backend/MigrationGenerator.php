@@ -89,7 +89,7 @@ class MigrationGenerator extends Generator
     {
         $migrationFields = collect($this->getFields())->map(fn($field, $name) => $this->generateFieldDefinition($name, $field))->toArray();
         if ($this->hasSoftDeletes()) $migrationFields[] = '$table->softDeletes();';
-        if ($this->hasTimestamps()) $migrationFields[] = '$table->timestamps();';
+        $migrationFields[] = '$table->timestamps();';
         return implode("\n\t\t\t", $migrationFields);
     }
 

@@ -64,15 +64,10 @@ class ResourceGenerator extends Generator
 
     protected function getFieldsData(): string
     {
-        $timestamps = '';
-        if ($this->hasTimestamps()) {
-            $timestamps = ",\n\t\t\t'created_at' => formatDate(\$this->created_at),\n\t\t\t'updated_at' => formatDate(\$this->updated_at)";
-        }
-        return collect($this->getFields())->map(fn($field, $name) => $this->generateFieldData($name))->implode(",\n\t\t\t") . $timestamps;
+        $timestamps = ",\n\t\t\t'created_at' => formatDate(\$this->created_at),\n\t\t\t'updated_at' => formatDate(\$this->updated_at)";
+        return collect($this->getFields())->map(function ($field, $name) {
+            return "'$name' => \$this->{$name}";
+        })->implode(",\n\t\t\t") . $timestamps;
     }
 
-    protected function generateFieldData(string $name): string
-    {
-        return "'$name' => \$this->{$name}";
-    }
 }

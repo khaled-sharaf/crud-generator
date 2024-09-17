@@ -3,16 +3,48 @@
 return [
     'name' => '{{ MODEL_NAME }}',
 
-    'dashboard' => [
+    'dashboardApi' => [
         'create' => true,
         'update' => true,
-        'profile' => true,
         'delete' => true,
-        'activation' => true,
+        'profile' => true,
 
-        'tableSearch' => true,
-        'tableFilter' => true,
-        'tableExport' => true,
+        'activation' => true,
+        // 'activation' => [ // route name
+        //     'default' => true,
+        //     'column' => 'is_active',
+        // ],
+
+        // will be used for query client api when add this option "queryClientApiValue"
+        // 'display' => [ // route name
+        //     'default' => false,
+        //     'column' => 'is_display', // automatically create new field in database and use it for query client api
+        //     'queryClientApiValue' => true, // return api value when query client api | {{ MODEL_NAME }}::where('is_display', true)->get();
+        // ],
+        // add more api boolean options
+    ],
+
+    'apiActions' => false, // or remove it to disable api actions
+    // 'apiActions' => [
+    //     'list' => true,
+    //     'show' => true,
+    //     'store' => true,
+    //     'update' => true,
+    //     'delete' => true,
+    // ],
+
+    'options' => [
+        'profilePopup' => true, // show profile in popup
+        'formPopup' => true, // show create/edit form in popup
+        'permissions' => true, // Add permissions to permission file with translation
+        'softDeletes' => true, // Enable soft deletes
+        'seeder' => true, // Enable seeder with factory - will be add seeder file
+        'tableSettings' => [
+            'multiSelection' => true, // Enable multi selection for delete or any action in frontend list
+            'tableSearch' => true, // Enable table search
+            'tableFilter' => true, // Enable table filter
+            'tableExport' => true, // Enable table export
+        ],
     ],
 
     'fields' => [
@@ -30,12 +62,12 @@ return [
     ],
 
     // Laravel model relations
-    'relations' => [],
-
-    'permissions' => true, // Add permissions to permission file with translation
-    'timestamps' => true, // Include timestamps
-    'softDeletes' => false, // Enable soft deletes
-    'multiSelection' => true, // Enable multi selection for delete or any action in frontend list
-
-    'seeder' => false,
+    'relations' => [
+        // 'comments' => [
+        //     'type' => 'hasMany',
+        //     'model' => 'Modules\Website\app\Models\Comment',
+        //     'foreignKey' => 'post_id', // optional
+        //     'localKey' => 'id', // optional
+        // ],
+    ],
 ];

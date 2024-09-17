@@ -58,7 +58,7 @@ class RouteGenerator extends Generator
 
     protected function getRouteActivationTemplate(): string
     {
-        if (!$this->hasActivationRoute()) return "";
+        if (!$this->getActivationRouteOption()) return '';
         $middleware = $this->hasPermissions() ? "->middleware('can:activation-{$this->modelNameKebab}')" : '';
         return "Route::patch('{$this->modelNameKebabPlural}/{id}/activation', [{$this->getControllerName()}::class, 'activation']){$middleware};\n";
     }

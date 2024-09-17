@@ -9,6 +9,7 @@ class CrudGenerator
 {
 
     private $backend_generator_types = ['model', 'migration', 'route', 'controller', 'service', 'request', 'resource', 'lang', 'permission'];
+    // private $backend_generator_types = ['model', 'migration', 'controller', 'service', 'request', 'resource', 'permission'];
     private $frontend_generator_types = ['index', 'create', 'edit', 'show'];
     
     public function generate($moduleName = null, $crudName = null)
@@ -62,8 +63,7 @@ class CrudGenerator
     protected function getGeneratorsTypes()
     {
         // return array_merge($this->backend_generator_types, $this->frontend_generator_types);
-        // return $this->backend_generator_types;
-        return ['migration', 'route', 'controller', 'service', 'resource', 'request', 'lang', 'permission'];
+        return $this->backend_generator_types;
     }
 
     protected function loadConfig($moduleName, $crudName)

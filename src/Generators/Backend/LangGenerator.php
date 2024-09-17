@@ -103,8 +103,10 @@ class LangGenerator extends Generator
     {
         $modelTitle = strtolower(Str::title($this->modelNameSnake));
         $messages = "\n\t\t'messages' => [";
-        if ($this->hasActivationRoute()) $messages .= "\n\t\t\t'activated' => 'The {$modelTitle} has been activated successfully',";
-        if ($this->hasActivationRoute()) $messages .= "\n\t\t\t'deactivated' => 'The {$modelTitle} has been deactivated successfully',";
+        if ($this->getActivationRouteOption()) {
+            $messages .= "\n\t\t\t'activated' => 'The {$modelTitle} has been activated successfully',";
+            $messages .= "\n\t\t\t'deactivated' => 'The {$modelTitle} has been deactivated successfully',";
+        }
         return $messages . "\n\t\t],";
     }
 }

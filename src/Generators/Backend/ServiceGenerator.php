@@ -125,9 +125,11 @@ class ServiceGenerator extends Generator
 
     protected function getFilters(): string
     {
+        $activationRouteOption = $this->getActivationRouteOption();
+        $column = $activationRouteOption['column'] ?? 'is_active';
         $filters = [];
         if ($this->hasSoftDeletes()) $filters[] = "\App\Filters\Boolean\Trashed::class,";
-        if ($this->hasActivationRoute()) $filters[] = "new \App\Filters\Boolean\ToggleBoolean('is_active'),";
+        if ($activationRouteOption) $filters[] = "new \App\Filters\Boolean\ToggleBoolean('{$column}'),";
         return collect($filters)->map(fn ($filter) => "\n\t\t\t" . $filter)->implode('');
     }
 

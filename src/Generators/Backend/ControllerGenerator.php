@@ -74,8 +74,8 @@ class ControllerGenerator extends Generator
             'use ' . $this->getServiceNamespace() . '\\' . $this->getServiceName() . ';',
             'use ' . $this->getResourceNamespace() . '\\' . $this->getResourceName() . ';',
         ];
-        if ($this->hasDeleteRoute() || $this->hasActivationRoute()) $useClasses[] = $useCrudHelper;
-        if ($this->hasUpdateRoute() || $this->hasDeleteRoute() || $this->hasActivationRoute()) $useClasses[] = $useModel;
+        if ($this->hasDeleteRoute() || $this->getActivationRouteOption()) $useClasses[] = $useCrudHelper;
+        if ($this->hasUpdateRoute() || $this->hasDeleteRoute() || $this->getActivationRouteOption()) $useClasses[] = $useModel;
         if ($this->hasCreateRoute() || $this->hasUpdateRoute()) $useClasses[] = $useRequest;
         return collect($useClasses)->implode("\n");
     }
@@ -87,7 +87,7 @@ class ControllerGenerator extends Generator
         if ($this->hasProfileRoute()) $methods .= $this->getShowMethod();
         if ($this->hasUpdateRoute()) $methods .= $this->getUpdateMethod();
         if ($this->hasDeleteRoute()) $methods .= $this->getDestroyMethod();
-        if ($this->hasActivationRoute()) $methods .= $this->getActivationMethod();
+        if ($this->getActivationRouteOption()) $methods .= $this->getActivationMethod();
         return $methods;
     }
 
@@ -141,10 +141,11 @@ class ControllerGenerator extends Generator
 
     protected function getActivationMethod(): string
     {
+        $column = $this->getActivationRouteOption()['column'] ?? 'is_active';
         return "\n\n\t" . 'public function activation($id)
     {
-        $action = CrudHelper::toggleBoolean(' . $this->modelName . '::findOrFail($id), \'is_active\');
-        return sendData([\'changed\' => $action[\'isChanged\']], __(\'' . $this->moduleNameSnake . '::view.' . $this->modelNameSnake . '_crud.messages.\' . ($action[\'model\']->is_active ? \'activated\' : \'deactivated\')));
+        $action = CrudHelper::toggleBoolean(' . $this->modelName . '::findOrFail($id), \'' . $column . '\');
+        return sendData([\'changed\' => $action[\'isChanged\']], __(\'' . $this->moduleNameSnake . '::view.' . $this->modelNameSnake . '_crud.messages.\' . ($action[\'model\']->' . $column . ' ? \'activated\' : \'deactivated\')));
     }';
     }
 

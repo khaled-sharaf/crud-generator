@@ -5,6 +5,56 @@ use Illuminate\Support\Str;
 
 trait GeneratorHelpers
 {
+    /* ======================== Checks ======================== */
+    protected function hasCreateRoute(): bool
+    {
+        return isset($this->config['dashboardApi']['create']) && $this->config['dashboardApi']['create'] === true;
+    }
+
+    protected function hasProfileRoute(): bool
+    {
+        return isset($this->config['dashboardApi']['profile']) && $this->config['dashboardApi']['profile'] === true;
+    }
+
+    protected function hasUpdateRoute(): bool
+    {
+        return isset($this->config['dashboardApi']['update']) && $this->config['dashboardApi']['update'] === true;
+    }
+
+    protected function hasDeleteRoute(): bool
+    {
+        return isset($this->config['dashboardApi']['delete']) && $this->config['dashboardApi']['delete'] === true;
+    }
+
+    protected function hasAddLogs(): bool
+    {
+        return isset($this->config['options']['addLogs']) && $this->config['options']['addLogs'] === true;
+    }
+
+    protected function hasPermissions(): bool
+    {
+        return isset($this->config['options']['permissions']) && $this->config['options']['permissions'] === true;
+    }
+
+    protected function hasSoftDeletes(): bool
+    {
+        return isset($this->config['options']['softDeletes']) && $this->config['options']['softDeletes'] === true;
+    }
+
+    protected function hasTableSearch(): bool
+    {
+        return isset($this->config['options']['tableSettings']['tableSearch']) && $this->config['options']['tableSettings']['tableSearch'] === true;
+    }
+
+    protected function hasTableFilter(): bool
+    {
+        return isset($this->config['options']['tableSettings']['tableFilter']) && $this->config['options']['tableSettings']['tableFilter'] === true;
+    }
+    
+    protected function hasTableExport(): bool
+    {
+        return isset($this->config['options']['tableSettings']['tableExport']) && $this->config['options']['tableSettings']['tableExport'] === true;
+    }
 
     /* ======================== Getters ======================== */
     protected function getModelNamespace(): string
@@ -57,64 +107,44 @@ trait GeneratorHelpers
         return "{$this->moduleNamespace}\app\Http\Resources\\{$this->versionNamespace}";
     }
     
-    /* ======================== Checks ======================== */
-    protected function hasCreateRoute(): bool
+    protected function getSeederName(): string
     {
-        return isset($this->config['dashboard']['create']) && $this->config['dashboard']['create'] === true;
+        return $this->modelName . 'Seeder';
+    }
+    
+    protected function getSeederOption()
+    {
+        return $this->config['options']['seeder'] ?? false;
     }
 
-    protected function hasProfileRoute(): bool
+    protected function getActivationRouteOption()
     {
-        return isset($this->config['dashboard']['profile']) && $this->config['dashboard']['profile'] === true;
+        return $this->config['dashboardApi']['activation'] ?? false;
     }
-
-    protected function hasUpdateRoute(): bool
-    {
-        return isset($this->config['dashboard']['update']) && $this->config['dashboard']['update'] === true;
-    }
-
-    protected function hasDeleteRoute(): bool
-    {
-        return isset($this->config['dashboard']['delete']) && $this->config['dashboard']['delete'] === true;
-    }
-
-    protected function hasActivationRoute(): bool
-    {
-        return isset($this->config['dashboard']['activation']) && $this->config['dashboard']['activation'] === true;
-    }
-
-    protected function hasTableExport(): bool
-    {
-        return isset($this->config['dashboard']['tableExport']) && $this->config['dashboard']['tableExport'] === true;
-    }
-
-    protected function hasPermissions(): bool
-    {
-        return isset($this->config['permissions']) && $this->config['permissions'] === true;
-    }
-
-    protected function hasSoftDeletes(): bool
-    {
-        return isset($this->config['softDeletes']) && $this->config['softDeletes'] === true;
-    }
-
-    protected function hasTimestamps(): bool
-    {
-        return isset($this->config['timestamps']) && $this->config['timestamps'] === true;
-    }
-
-    protected function hasSeeder(): bool
-    {
-        return isset($this->config['seeder']);
-    }
-
-    /* ======================== Fields ======================== */
+    
     protected function getFields(): array
     {
-        return $this->config['fields'] ?? [];
+        $fields = $this->config['fields'] ?? [];
+        $fields = $this->appendActivationField($fields);
+        return $fields;
     }
 
-    /* ======================== Permissions ======================== */
+    protected function appendActivationField($fields): array
+    {
+        $activationRouteOption = $this->getActivationRouteOption();
+        $activationColumn = $activationRouteOption['column'] ?? 'is_active';
+        $activationDefault = $activationRouteOption['default'] ?? true;
+        if ($activationRouteOption) {
+            $fields[$activationColumn] = [
+                'type' => 'boolean',
+                'label' => 'Active',
+                'default' => $activationDefault,
+                'validation' => 'boolean',
+            ];
+        }
+        return $fields;
+    }
+
     protected function getPermissionsTranslated(): array
     {
         $modelTitle = Str::title($this->modelNameKebab);
@@ -131,7 +161,7 @@ trait GeneratorHelpers
             $permissions["restore-{$this->modelNameSnake}"] = "Restore {$modelTitle}";
             $permissions["view-trashed-{$this->modelNameSnake}-list"] = "View Trashed {$modelTitle} List";
         }
-        if ($this->hasActivationRoute()) $permissions["activation-{$this->modelNameSnake}"] = "Activation {$modelTitle}";
+        if ($this->getActivationRouteOption()) $permissions["activation-{$this->modelNameSnake}"] = "Activation {$modelTitle}";
         return $permissions;
     }
 

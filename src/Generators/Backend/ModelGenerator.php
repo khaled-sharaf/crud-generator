@@ -2,45 +2,29 @@
 
 namespace W88\CrudSystem\Generators\Backend;
 
-
-use W88\CrudSystem\Contracts\GeneratorInterface;
+use W88\CrudSystem\Generators\Generator;
 use Illuminate\Support\Facades\File;
 use Touhidurabir\StubGenerator\Facades\StubGenerator;
+use Illuminate\Support\Str;
 
-class ModelGenerator implements GeneratorInterface
+class ModelGenerator extends Generator
 {
-    protected array $config;
-    protected string $modelName;
-    protected string $modulePath;
-    protected string $module;
-
-    public function __construct(array $config, string $modelName, string $modulePath, string $module)
-    {
-        $this->config = $config;
-        $this->modelName = $modelName;
-        $this->modulePath = $modulePath;
-        $this->module = $module;
-    }
 
     public function generate(): void
     {
-        $stubPath = $this->getStubPath();
-
-        $this->ensureStubExists($stubPath);
-
-        $modelDirectory = $this->getModelDirectory();
-        $this->ensureDirectoryExists($modelDirectory);
-
-        $this->generateModel($stubPath, $modelDirectory);
+        $this->ensureStubExists();
+        $this->ensureDirectoryExists();
+        $this->generateModel();
     }
 
     protected function getStubPath(): string
     {
-        return __DIR__ . '/../../../backend/stubs/model.stub';
+        return __DIR__ . '/../../stubs/backend/model.stub';
     }
 
-    protected function ensureStubExists(string $stubPath): void
+    protected function ensureStubExists(): void
     {
+        $stubPath = $this->getStubPath();
         if (!File::exists($stubPath)) {
             throw new \Exception("Stub file not found at path: {$stubPath}");
         }
@@ -51,17 +35,18 @@ class ModelGenerator implements GeneratorInterface
         return $this->modulePath . '/app/Models/';
     }
 
-    protected function ensureDirectoryExists(string $directory): void
+    protected function ensureDirectoryExists(): void
     {
+        $directory = $this->getModelDirectory();
         if (!File::exists($directory)) {
             File::makeDirectory($directory, 0755, true);
         }
     }
 
-    protected function generateModel(string $stubPath, string $modelDirectory): void
+    protected function generateModel(): void
     {
-        StubGenerator::from($stubPath, true)
-            ->to($modelDirectory, true, true)
+        StubGenerator::from($this->getStubPath(), true)
+            ->to($this->getModelDirectory(), true, true)
             ->withReplacers($this->getReplacers())
             ->as($this->modelName)
             ->replace(true)
@@ -71,15 +56,71 @@ class ModelGenerator implements GeneratorInterface
     protected function getReplacers(): array
     {
         return [
-            'NAMESPACE' => $this->module . '\app\Models',
-            'CLASS' => $this->modelName,
-            'FILLABLE' => $this->getFillableFields($this->config['table']['fields']),
+            'CLASS_NAMESPACE' => $this->moduleNamespace . '\app\Models',
+            'CLASS_NAME' => $this->modelName,
+            'USE_CLASSES' => $this->getUseClassesString(),
+            'USES' => $this->getUses(),
+            'FILLABLE' => $this->getFillable(),
+            'OPTIONS' => $this->getOptions(),
+            'ATTRS' => $this->getAttrs(),
+            'RELATIONS' => $this->getRelations(),
+            'SCOPES' => $this->getScopes(),
         ];
     }
 
-    protected function getFillableFields(array $fields): string
+    protected function getUseClassesString(): string
     {
-        $fillableFields = array_map(fn($field) => "'{$field['name']}'", $fields);
-        return "[\n            " . implode(",\n            ", $fillableFields) . "\n        ]";
+        $useClasses = $this->getUseClasses();
+        return count($useClasses) ? collect($useClasses)->implode(";\n") . ';' : '';
     }
+
+    protected function getUseClasses(): array
+    {
+        $useSoftDeletes = 'use Illuminate\Database\Eloquent\SoftDeletes';
+        $useActivityLogHelper = 'use App\Helpers\CrudHelpers\Traits\ActivityLogHelper';
+        $useFileHelper = 'use App\Helpers\File\Traits\FileHelper';
+        $useClasses = [];
+        if ($this->hasSoftDeletes()) $useClasses[] = $useSoftDeletes;
+        if ($this->hasAddLogs()) $useClasses[] = $useActivityLogHelper;
+        return $useClasses;
+    }
+
+    protected function getUses(): string
+    {
+        $uses = collect($this->getUseClasses())->map(fn ($use) => Str::of($use)->explode('\\')->last() )->implode(", ");
+        return $uses ? 'use ' . $uses . ";\n" : '';
+    }
+
+    protected function getFillable(): string
+    {
+        return collect($this->getFields())->map(function ($field, $name) {
+            return "\n\t\t'$name'";
+        })->implode(",");
+    }
+
+    protected function getOptions(): string
+    {
+        // protected static function booted()
+        // {
+        //     static::creating(function ($model) {
+        //     });
+        // }
+        return '';
+    }
+
+    protected function getAttrs(): string
+    {
+        return '';
+    }
+
+    protected function getRelations(): string
+    {
+        return '';
+    }
+
+    protected function getScopes(): string
+    {
+        return '';
+    }
+
 }
