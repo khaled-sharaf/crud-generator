@@ -5,6 +5,7 @@ namespace W88\CrudSystem\Generators\Backend;
 use W88\CrudSystem\Generators\Generator;
 use Illuminate\Support\Facades\File;
 use Touhidurabir\StubGenerator\Facades\StubGenerator;
+use Illuminate\Support\Str;
 
 class ServiceGenerator extends Generator
 {
@@ -23,7 +24,7 @@ class ServiceGenerator extends Generator
 
     protected function getServiceDirectory(): string
     {
-        return "{$this->modulePath}/app/Services/{$this->versionNamespace}";
+        return "{$this->modulePath}/app/Services";
     }
 
     protected function ensureStubExists(): void
@@ -85,40 +86,33 @@ class ServiceGenerator extends Generator
         $filters = $this->getFilters();
         return "public function tableList()
     {
-        return CrudHelper::tableList(new {$this->modelName}, [{$filters}
-            \App\Filters\Date\Date::class,
-            \App\Filters\Date\Time::class,
-            \App\Filters\Search\AdvancedSearch::class,
-            \App\Filters\Search\TableSearchText::class,
-            \App\Filters\Sorting\SortBy::class,
+        return CrudHelper::tableList(new {$this->modelName}, [
+            \App\Filters\Sorting\SortBy::class{$filters}
         ]);
     }";
     }
 
     protected function getShowMethod(): string
     {
-    return "\n\n\tpublic function show(\$id)
-    {
-        return {$this->modelName}::findOrFail(\$id);
-    }";
+    return "\n\n\tpublic function show(\$id)\n\t{\n\t\treturn {$this->modelName}::findOrFail(\$id);\n\t}";
     }
 
     protected function getStoreMethod(): string
     {
-        $handleFieldsWhenCreate = $this->handleFieldsWhenCreate();
+        $handleFieldsWhenCreate = $this->handleFieldsWhenCreateAndUpdate();
         return "\n\n\tpublic function create(\$data)
-    {
-        {$handleFieldsWhenCreate}\${$this->modelNameCamel} = {$this->modelName}::create(\$data);
+    {{$handleFieldsWhenCreate}
+        \${$this->modelNameCamel} = {$this->modelName}::create(\$data);
         return \${$this->modelNameCamel};
     }";
     }
 
     protected function getUpdateMethod(): string
     {
-        $handleFieldsWhenUpdate = $this->handleFieldsWhenUpdate();
+        $handleFieldsWhenUpdate = $this->handleFieldsWhenCreateAndUpdate('update');
         return "\n\n\tpublic function update(\${$this->modelNameCamel}, \$data)
-    {
-        {$handleFieldsWhenUpdate}\${$this->modelNameCamel}->update(\$data);
+    {{$handleFieldsWhenUpdate}
+        \${$this->modelNameCamel}->update(\$data);
         return \${$this->modelNameCamel};
     }";
     }
@@ -128,20 +122,31 @@ class ServiceGenerator extends Generator
         $activationRouteOption = $this->getActivationRouteOption();
         $column = $activationRouteOption['column'] ?? 'is_active';
         $filters = [];
-        if ($this->hasSoftDeletes()) $filters[] = "\App\Filters\Boolean\Trashed::class,";
-        if ($activationRouteOption) $filters[] = "new \App\Filters\Boolean\ToggleBoolean('{$column}'),";
-        return collect($filters)->map(fn ($filter) => "\n\t\t\t" . $filter)->implode('');
+        if ($this->hasTableFilter()) {
+            $filters[] = '\App\Filters\Date\Date::class';
+            $filters[] = '\App\Filters\Date\Time::class';
+            $filters[] = '\App\Filters\Search\AdvancedSearch::class';
+        }
+        if ($this->hasTableSearch()) $filters[] = "\App\Filters\Search\TableSearchText::class";
+        if ($this->hasSoftDeletes()) $filters[] = "\App\Filters\Boolean\Trashed::class";
+        if ($this->hasTableFilter() && $activationRouteOption) $filters[] = "new \App\Filters\Boolean\ToggleBoolean('{$column}')";
+        return count($filters) ? ',' . collect($filters)->map(fn ($filter) => "\n\t\t\t" . $filter)->implode(',') : '';
     }
 
-    protected function handleFieldsWhenCreate(): string
+    protected function handleFieldsWhenCreateAndUpdate($formType = 'create'): string
     {
-        return '';
-        return "\n\t\t";
+        $fileFields = $this->getFileFields();
+        if (!count($fileFields)) return '';
+        $fileUploads = collect($fileFields)->map(function ($field, $name) use ($formType) {
+            $hasAddQuality = !Str::contains($field['type'], 'video') ? '->quality(80)' : '';
+            if (Str::contains($field['type'], 'multi_')) {
+                $oldValues = $formType == 'update' ? ", \${$this->modelNameCamel}->{$name}" : '';
+                return "\n\t\t\$data['{$name}'] = multi_uploader(request()->{$name}{$oldValues})->path((new {$this->modelName})->filePaths['multi']){$hasAddQuality}->upload();";
+            }
+            $addModel = $formType == 'update' ? "->model(\${$this->modelNameCamel})" : '';
+            return "\n\t\t\$data['{$name}'] = uploader(){$addModel}->path((new {$this->modelName})->filePaths['single'])->fieldName('{$name}'){$hasAddQuality}->upload();";
+        })->implode('');
+        return $fileUploads;
     }
 
-    protected function handleFieldsWhenUpdate(): string
-    {
-        return '';
-        return "\n\t\t";
-    }
 }

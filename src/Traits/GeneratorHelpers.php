@@ -85,7 +85,7 @@ trait GeneratorHelpers
 
     protected function getServiceNamespace(): string
     {
-        return "{$this->moduleNamespace}\app\Services\\{$this->versionNamespace}";
+        return "{$this->moduleNamespace}\app\Services";
     }
 
     protected function getRequestName(): string
@@ -144,7 +144,7 @@ trait GeneratorHelpers
                 'type' => 'boolean',
                 'label' => 'Active',
                 'default' => $activationDefault,
-                'validation' => 'boolean',
+                'validation' => 'nullable|boolean',
             ];
         }
         return $fields;
