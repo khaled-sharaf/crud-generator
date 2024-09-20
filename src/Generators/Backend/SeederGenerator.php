@@ -2,28 +2,37 @@
 
 namespace W88\CrudSystem\Generators\Backend;
 
+use Illuminate\Support\Facades\Artisan;
 use W88\CrudSystem\Generators\Generator;
 use Illuminate\Support\Facades\File;
-use Touhidurabir\StubGenerator\Facades\StubGenerator;
+use Touhidurabir\StubGenerator\StubGenerator;
 use W88\CrudSystem\Field;
 
 class SeederGenerator extends Generator
 {
 
     protected $seederOption;
+    protected $moduleSeederFileName;
 
     public function generate(): void
     {
         $this->seederOption = $this->getSeederOption();
         if (!$this->seederOption) return;
+        $this->moduleSeederFileName = "{$this->moduleName}DatabaseSeeder";
         $this->ensureStubExists();
         $this->ensureDirectoryExists();
         $this->generateSeeder();
+        $this->addSeederToModuleSeeder();
     }
 
     protected function getStubPath(): string
     {
         return __DIR__ . '/../../stubs/backend/seeder.stub';
+    }
+
+    protected function getModuleStubPath(): string
+    {
+        return __DIR__ . '/../../stubs/backend/moduleSeeder.stub';
     }
 
     protected function getSeederDirectory(): string
@@ -55,11 +64,33 @@ class SeederGenerator extends Generator
         if (!File::exists($directory)) {
             File::makeDirectory($directory, 0755, true);
         }
+        $this->ensureSeederModuleFileExists();
+    }
+
+    protected function ensureSeederModuleFileExists(): void
+    {
+        $filePath = $this->getSeederDirectory() . "/{$this->moduleSeederFileName}.php";
+        if (!File::exists($filePath)) {
+            $this->createSeederModuleFile($this->moduleSeederFileName);
+        }
+    }
+    
+    protected function createSeederModuleFile(): void
+    {
+        (new StubGenerator)->from($this->getModuleStubPath(), true)
+            ->to($this->getSeederDirectory())
+            ->withReplacers([
+                'CLASS_NAME' => $this->moduleSeederFileName,
+                'CLASS_NAMESPACE' => $this->getSeederNamespace(),
+            ])
+            ->replace(true)
+            ->as($this->moduleSeederFileName)
+            ->save();
     }
 
     protected function generateSeeder(): void
     {
-        StubGenerator::from($this->getStubPath(), true)
+        (new StubGenerator)->from($this->getStubPath(), true)
             ->to($this->getSeederDirectory())
             ->withReplacers($this->getReplacers())
             ->replace(true)
@@ -86,6 +117,18 @@ class SeederGenerator extends Generator
             $value = Field::getSeederType($field);
             return "\n\t\t\t\t'{$name}' => {$value},";
         })->join('');
+    }
+
+    protected function addSeederToModuleSeeder(): void
+    {
+        $filePath = $this->getSeederDirectory() . "/{$this->moduleSeederFileName}.php";
+        $content = File::get($filePath);
+        $contentTemplate = "\n\t\t\$this->call({$this->getSeederName()}::class);";
+        if (strpos($content, $contentTemplate) === false) {
+            $pattern = '/public function run\(\)(?:\s*:\s*void)?\s*\{/';
+            $content = preg_replace($pattern, '$0' . $contentTemplate, $content);
+            File::put($filePath, $content);
+        }
     }
 
 }
