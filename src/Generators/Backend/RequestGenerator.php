@@ -6,6 +6,7 @@ namespace W88\CrudSystem\Generators\Backend;
 use W88\CrudSystem\Generators\Generator;
 use Illuminate\Support\Facades\File;
 use Touhidurabir\StubGenerator\Facades\StubGenerator;
+use Illuminate\Support\Str;
 
 class RequestGenerator extends Generator
 {
@@ -76,15 +77,18 @@ class RequestGenerator extends Generator
 
     protected function getRules(): string
     {
-        $fieldsHasValidation = collect($this->getFields())->filter(fn($field) => isset($field['validation']));
-        return $fieldsHasValidation->map(fn($field, $name) => $this->getFieldValidationRule($name, $field))->implode(',');
+        return collect($this->getFields())->map(fn($field, $name) => $this->getFieldValidationRule($name, $field))->implode(',');
     }
 
     protected function getFieldValidationRule(string $name, array $field): string
     {
-        if (!isset($field['validation'])) return '';
-        $rule = is_array($field['validation']) ? $this->handleArrayValidationRule($field['validation']) : "'{$field['validation']}'";
-        return "\n\t\t\t'$name' => $rule";
+        $validations = collect($field)->filter(fn($value, $key) => Str::startsWith($key, 'validation'))->map(function($value, $key) use ($name) {
+            $key = str_replace('validation', $name, $key);
+            $rule = is_array($value) ? $this->handleArrayValidationRule($value) : "'{$value}'";
+            return "\n\t\t\t'{$key}' => $rule";
+        });
+        $defaultValidation = "\n\t\t\t'$name' => 'nullable'";
+        return count($validations) ? $validations->implode(',') : $defaultValidation;
     }
 
     public function handleArrayValidationRule(array $validation): string

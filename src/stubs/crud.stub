@@ -57,7 +57,7 @@ return [
             // 'migrationType' => 'string',
             // 'addToFilter' => true,
             // 'translatable' => true,
-            // 'validation' => 'required',
+            // 'validation' => 'required', // or 'validation.*', 'validation.*.objectKey'
             // 'relation' => true, // or array for more options
             // 'relation' => [
             //     'constrained' => true, // optional

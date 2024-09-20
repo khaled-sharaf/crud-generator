@@ -88,6 +88,7 @@ class ModelGenerator extends Generator
             'ActivityLogHelper' => 'use App\Helpers\CrudHelpers\Traits\ActivityLogHelper',
         ];
     }
+    
     protected function getUseClasses(): array
     {
         $classesNeedUsing = $this->getClassesNeedUsing();
