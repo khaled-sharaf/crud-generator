@@ -1,0 +1,20 @@
+<?php
+
+namespace {{ CLASS_NAMESPACE }};
+
+use Illuminate\Database\Seeder;
+use {{ MODEL_NAMESPACE }}\{{ MODEL_NAME }};
+
+class {{ CLASS_NAME }} extends Seeder
+{
+    /**
+     * Run the database seeds.
+     */
+    public function run(): void
+    {
+        for ($i = 0; $i < {{ COUNT }}; $i++) {
+            {{ MODEL_NAME }}::create([{{ FIELDS }}
+            ]);
+        }
+    }
+}

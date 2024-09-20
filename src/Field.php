@@ -1,6 +1,7 @@
 <?php
 
 namespace W88\CrudSystem;
+
 use Illuminate\Support\Str;
 
 class Field
@@ -16,7 +17,20 @@ class Field
         if (isset($field['relation'])) {
             return static::isRelationConstrained($field) ? 'foreignId' : 'unsignedBigInteger';
         }
-        return static::types()[$field['type']] ?? 'string';
+        return isset(static::types()[$field['type']]['migration']) ? static::types()[$field['type']]['migration'] : 'string';
+    }
+
+    public static function getSeederType(array $field): string
+    {
+        // try {
+        //     $method = Str::camel($field['name']);
+        //     $result = fake()->{$method}();
+        //     $method = $result ? "fake()->{$method}()" : null;
+        // } catch (\Exception $e) {
+        //     $method = null;
+        // }
+        $method = $field['name'] == 'email' ? 'fake()->email()' : (Str::endsWith($field['name'], '_id') ? 'fake()->numberBetween(1, 100)' : null);
+        return $method ?? (isset(static::types()[$field['type']]['seeder']) ? static::types()[$field['type']]['seeder'] : 'fake()->text(20)');
     }
 
     public static function isNullable(array $field): bool
@@ -48,40 +62,40 @@ class Field
     public static function normalFields(): array
     {
         return [
-            'text' => 'string',
-            'number' => 'string',
-            'password' => 'string',
-            'textarea' => 'text',
-            'editor' => 'mediumText',
-            'color' => 'string',
-            'boolean' => 'boolean',
-            'time' => 'time',
-            'date' => 'date',
-            'datetime' => 'dateTime',
-            'image' => 'string',
-            'video' => 'string',
-            'file' => 'string',
-            'checkbox' => 'string',
-            'radio' => 'string',
-            'select' => 'string',
-            'slider' => 'string',
+            'text' => ['migration' => 'string', 'seeder' => 'fake()->text(20)'],
+            'number' => ['migration' => 'string', 'seeder' => 'fake()->numberBetween(1, 100)'],
+            'password' => ['migration' => 'string', 'seeder' => "\Illuminate\Support\Facades\Hash::make('12345678')"],
+            'textarea' => ['migration' => 'text', 'seeder' => 'fake()->text()'],
+            'editor' => ['migration' => 'mediumText', 'seeder' => 'fake()->text()'],
+            'color' => ['migration' => 'string', 'seeder' => 'fake()->hexColor()'],
+            'boolean' => ['migration' => 'boolean', 'seeder' => 'fake()->boolean()'],
+            'time' => ['migration' => 'time', 'seeder' => 'fake()->time()'],
+            'date' => ['migration' => 'date', 'seeder' => 'fake()->date()'],
+            'datetime' => ['migration' => 'dateTime', 'seeder' => 'fake()->dateTime()'],
+            'image' => ['migration' => 'string', 'seeder' => 'null'],
+            'video' => ['migration' => 'string', 'seeder' => 'null'],
+            'file' => ['migration' => 'string', 'seeder' => 'null'],
+            'checkbox' => ['migration' => 'string', 'seeder' => 'null'],
+            'radio' => ['migration' => 'string', 'seeder' => 'null'],
+            'select' => ['migration' => 'string', 'seeder' => 'null'],
         ];
     }
 
     public static function jsonFields(): array
     {
         return [
-            'range_date' => 'array',
-            'multi_date' => 'array',
-            'multi_range_date' => 'array',
-            'multi_image' => 'array',
-            'multi_video' => 'array',
-            'multi_file' => 'array',
-            'multi_checkbox' => 'array',
-            'multi_select' => 'array',
-            'range' => 'array',
-            'array' => 'array',
-            'location' => 'array',
+            'range_date' => ['migration' => 'array', 'seeder' => '[]'],
+            'multi_date' => ['migration' => 'array', 'seeder' => '[]'],
+            'multi_range_date' => ['migration' => 'array', 'seeder' => '[]'],
+            'multi_image' => ['migration' => 'array', 'seeder' => '[]'],
+            'multi_video' => ['migration' => 'array', 'seeder' => '[]'],
+            'multi_file' => ['migration' => 'array', 'seeder' => '[]'],
+            'multi_checkbox' => ['migration' => 'array', 'seeder' => '[]'],
+            'multi_select' => ['migration' => 'array', 'seeder' => '[]'],
+            'slider' => ['migration' => 'array', 'seeder' => '[]'],
+            'range' => ['migration' => 'array', 'seeder' => '[]'],
+            'array' => ['migration' => 'array', 'seeder' => '[]'],
+            'location' => ['migration' => 'array', 'seeder' => '[]'],
         ];
     }
 

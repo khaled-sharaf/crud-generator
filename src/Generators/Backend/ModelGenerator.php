@@ -171,7 +171,7 @@ class ModelGenerator extends Generator
     {
         $fileFields = $this->getFileFields();
         if (!count($fileFields)) return '';
-        $deleteMethod = $this->hasSoftDeletes() ? 'forceDelete' : 'delete';
+        $deleteMethod = $this->hasSoftDeletes() ? 'forceDeleted' : 'deleted';
         $modelFieldsDelete = $this->getModelFieldsDelete();
         return "\n\tprotected static function booted()\n\t{\n\t\tstatic::{$deleteMethod}(function (\$model) {{$modelFieldsDelete}\n\t\t});\n\t}";
     }

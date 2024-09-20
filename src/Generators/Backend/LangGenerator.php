@@ -71,8 +71,7 @@ class LangGenerator extends Generator
     protected function getContentTemplate(): string
     {
         $modelTitle = Str::title($this->modelNameSnakePlural);
-        $content = "'{$this->modelNameSnake}_crud' => [
-        'label' => '{$modelTitle}',";
+        $content = "'{$this->modelNameSnake}_crud' => [\n\t\t'label' => '{$modelTitle}',";
         $content .= $this->getPermissionsTemplate();
         $content .= $this->getValidationTemplate();
         $content .= $this->getMessagesTemplate();
