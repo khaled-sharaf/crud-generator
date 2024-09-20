@@ -2,6 +2,7 @@
 
 namespace W88\CrudSystem\Traits;
 use Illuminate\Support\Str;
+use W88\CrudSystem\Field;
 
 trait GeneratorHelpers
 {
@@ -116,6 +117,11 @@ trait GeneratorHelpers
     {
         return $this->config['options']['seeder'] ?? false;
     }
+    
+    protected function getLookupOption()
+    {
+        return $this->config['options']['lookup'] ?? false;
+    }
 
     protected function getActivationRouteOption()
     {
@@ -124,13 +130,12 @@ trait GeneratorHelpers
     
     protected function getFields(): array
     {
-        $fields = $this->config['fields'] ?? [];
-        $fields = $this->appendActivationField($fields);
-        return $fields;
+        return array_merge($this->config['fields'] ?? [], $this->appendActivationField());
     }
 
-    protected function appendActivationField($fields): array
+    protected function appendActivationField(): array
     {
+        $fields = [];
         $activationRouteOption = $this->getActivationRouteOption();
         $activationColumn = $activationRouteOption['column'] ?? 'is_active';
         $activationDefault = $activationRouteOption['default'] ?? true;
@@ -143,6 +148,52 @@ trait GeneratorHelpers
             ];
         }
         return $fields;
+    }
+    
+    protected function getModelRelations(): array
+    {
+        $relations = array_merge($this->appendRelationFields(), $this->config['relations'] ?? []);
+        return collect($relations)->filter(fn ($relation) => isset($relation['type']) && in_array($relation['type'], $this->getAllowedRelations()))->toArray();
+    }
+
+    protected function appendRelationFields(): array
+    {
+        $relations = [];
+        foreach ($this->getFields() as $name => $field) {
+            if (isset($field['relation']['model'])) {
+                $isEndById = Str::endsWith($name, '_id');
+                $relationName = $isEndById ? Str::beforeLast($name, '_id') : $name;
+                $relations[$relationName] = [
+                    'type' => $field['relation']['type'] ?? 'belongsTo',
+                    'model' => $field['relation']['model'],
+                ];
+                if (!$isEndById) $relations[$relationName]['foreignKey'] = $name;
+            }
+        }
+        return $relations;
+    }
+
+    protected function getBooleanFields(): array
+    {
+        return collect($this->getFields())->filter(fn ($field) => $field['type'] === 'boolean')->toArray();
+    }
+
+    protected function getFileFields(): array
+    {
+        return collect($this->getFields())->filter(fn ($field) => Field::hasFile($field))->toArray();
+    }
+
+    protected function getTranslatableFields(): array
+    {
+        return collect($this->getFields())->filter(fn ($field) => Field::hasTranslatable($field))->toArray();
+    }
+
+    protected function getCastFields(): array
+    {
+        return collect($this->getFields())->map(function ($field) {
+            $field['cast'] = array_key_exists($field['type'], Field::jsonFields()) ? 'array' : ($field['type'] === 'boolean' ? 'boolean' : null);
+            return $field;
+        })->filter(fn ($field) => $field['cast'] !== null)->toArray();
     }
 
     protected function getPermissionsTranslated(): array
@@ -165,6 +216,21 @@ trait GeneratorHelpers
         return $permissions;
     }
 
+    protected function getAllowedRelations(): array
+    {
+        return [
+            'belongsTo',
+            'hasOne',
+            'hasMany',
+            'belongsToMany',
+            'morphTo',
+            'morphOne',
+            'morphMany',
+            'morphToMany',
+            'morphedByMany',
+        ];
+    }
+
     /* ======================== Helpers ======================== */
     protected function isPhpCode($string) {
         $patterns = [
@@ -181,5 +247,11 @@ trait GeneratorHelpers
             }
         }
         return false; // Doesn't contain PHP code
+    }
+
+    /* ======================== Helpers ======================== */
+    protected function makePolymorphic($name) {
+        if (preg_match('/([aeiou])([bcdfghjklmnpqrstvwxyz])$/i', $name)) $name = $name . substr($name, -1);
+        return $name . 'able';
     }
 }

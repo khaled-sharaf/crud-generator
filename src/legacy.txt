@@ -1,0 +1,7 @@
+// will be used for query client api when add this option "queryClientApiValue"
+// 'display' => [ // route name
+//     'default' => false,
+//     'column' => 'is_display', // automatically create new field in database and use it for query client api
+//     'queryClientApiValue' => true, // return api value when query client api | {{ MODEL_NAME }}::where('is_display', true)->get();
+// ],
+// add more api boolean options

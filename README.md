@@ -78,7 +78,7 @@ return [
             'nullable' => true, // Whether the field can be null (default: false)
             'default' => 'string_test', // Default value for the field
             'migrationType' => 'string', // Database column type (default: same as 'type')
-            'addFilter' => true, // Add a custom filter for this field (default: false)
+            'addToFilter' => true, // Add a custom filter for this field (default: false)
             'translatable' => true, // Whether the field is translatable (default: false)
             'validation' => [ // Laravel validation rules (optional)
                 // 'required',

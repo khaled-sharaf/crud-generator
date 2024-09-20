@@ -14,14 +14,6 @@ return [
         //     'default' => true,
         //     'column' => 'is_active',
         // ],
-
-        // will be used for query client api when add this option "queryClientApiValue"
-        // 'display' => [ // route name
-        //     'default' => false,
-        //     'column' => 'is_display', // automatically create new field in database and use it for query client api
-        //     'queryClientApiValue' => true, // return api value when query client api | {{ MODEL_NAME }}::where('is_display', true)->get();
-        // ],
-        // add more api boolean options
     ],
 
     'apiActions' => false, // or remove it to disable api actions
@@ -34,11 +26,20 @@ return [
     // ],
 
     'options' => [
-        'profilePopup' => true, // show profile in popup
-        'formPopup' => true, // show create/edit form in popup
+        'profilePopup' => false, // show profile in popup
+        'formPopup' => false, // show create/edit form in popup
         'permissions' => true, // Add permissions to permission file with translation
-        'softDeletes' => true, // Enable soft deletes
-        'seeder' => true, // Enable seeder with factory - will be add seeder file
+        'addLogs' => false, // Enable add logs
+        'softDeletes' => false, // Enable soft deletes
+        'seeder' => false, // Enable seeder with factory - will be add seeder file
+        // 'seeder' => [
+        //     'count' => 10,
+        // ],
+        'lookup' => false, // default field: name - Add lookup for select field
+        // 'lookup' => [ // type array for add more options
+        //     'title' => 'title', // show title field in lookup and id value
+        //     'id' => 'id', // optional - show id field in lookup and id value
+        // ],
         'tableSettings' => [
             'multiSelection' => true, // Enable multi selection for delete or any action in frontend list
             'tableSearch' => true, // Enable table search
@@ -51,23 +52,68 @@ return [
         'title' => [
             'type' => 'text',
             'label' => 'Title',
-            'validation' => 'required',
+            // 'nullable' => true,
+            // 'default' => 'string_test',
+            // 'migrationType' => 'string',
+            // 'addToFilter' => true,
+            // 'translatable' => true,
+            // 'validation' => 'required',
+            // 'relation' => true, // or array for more options
+            // 'relation' => [
+            //     'constrained' => true, // optional
+            //     'onUpdate' => 'cascade', // optional
+            //     'onDelete' => 'set null', // optional
+            //     'table' => 'users', // optional
+            //     'foreignKey' => 'user_id', // optional
+            //     'model' => 'Modules\User\app\Models\User', // optional - if add model will be add relation in model with default belongsTo type
+            //     'type' => 'belongsTo', // default: belongsTo
+            // ],
             'frontend' => [
+                'visibleList' => true,
                 'sortable' => true,
                 'searchable' => true,
                 'exportable' => true,
-                'advancedSearchable' => true,
+                // 'advancedSearchable' => true, // add field to advanced search (default: false)
+                // 'advancedSearchName' => 'name', // name of field in database (default: false)
+                // 'hidden' => [ // Hide field in different views
+                //     'create' => true, // Hide in create form (default: false)
+                //     'update' => true, // Hide in update form (default: false)
+                //     'list'  => true, // Hide in list view (default: false)
+                // ],
             ]
         ],
     ],
 
     // Laravel model relations
     'relations' => [
+        // 'user' => [
+        //     'type' => 'belongsTo',
+        //     'model' => 'Modules\Website\app\Models\User',
+        //     'foreignKey' => 'user_id', // optional
+        //     'localKey' => 'id', // optional
+        // ],
         // 'comments' => [
         //     'type' => 'hasMany',
         //     'model' => 'Modules\Website\app\Models\Comment',
         //     'foreignKey' => 'post_id', // optional
         //     'localKey' => 'id', // optional
+        // ],
+        // 'tags' => [
+        //     'type' => 'belongsToMany',
+        //     'model' => 'Modules\Website\app\Models\Tag',
+        //     'addMigrationFile' => true,
+        //     'table' => 'post_tag', // optional
+        //     'foreignKey' => 'post_id', // optional
+        //     'localKey' => 'tag_id', // optional
+        //     // Define pivot table attributes for many-to-many relationships
+        //     'pivot' => [ // optional
+        //         'active' => [ // pivot table column name
+        //             'type' => 'boolean', // pivot table column type
+        //             'nullable' => true, // pivot table column nullable (Default false)
+        //             'default' => false, // pivot table column default value
+        //         ],
+        //         // This will add withPivot('active') in the model relationship
+        //     ],
         // ],
     ],
 ];

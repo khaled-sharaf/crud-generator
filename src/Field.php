@@ -1,20 +1,43 @@
 <?php
 
 namespace W88\CrudSystem;
+use Illuminate\Support\Str;
 
 class Field
 {
+
     public static function getMigrationType(array $field): string
     {
+        $typeAfterRemovingMulti = str_replace('multi_', '', $field['type']);
         if (isset($field['migrationType'])) return $field['migrationType'];
-        if (isset($field['translatable']) && $field['translatable'] === true && isset(static::translatableFields()[$field['type']])) {
-            return static::translatableFields()[$field['type']];
-        }
+        if (static::hasTranslatable($field)) return static::translatableFields()[$field['type']];
+        if (in_array($field['type'], static::fileFields())) return 'string';
+        if (in_array($typeAfterRemovingMulti, static::fileFields())) return 'text';
         if (isset($field['relation'])) {
-            $isConstrained = isset($field['relation']['constrained']) && $field['relation']['constrained'] === true;
-            return $isConstrained ? 'foreignId' : 'unsignedBigInteger';
+            return static::isRelationConstrained($field) ? 'foreignId' : 'unsignedBigInteger';
         }
-        return static::types()[$field['type']];
+        return static::types()[$field['type']] ?? 'string';
+    }
+
+    public static function isNullable(array $field): bool
+    {
+        return isset($field['nullable']) && $field['nullable'] === true;
+    }
+
+    public static function isRelationConstrained(array $field): bool
+    {
+        return isset($field['relation']) && ($field['relation'] === true || (isset($field['relation']['constrained']) && $field['relation']['constrained'] === true));
+    }
+
+    public static function hasTranslatable(array $field): bool
+    {
+        return isset($field['translatable']) && $field['translatable'] === true && isset(static::translatableFields()[$field['type']]);
+    }
+
+    public static function hasFile(array $field): bool
+    {
+        $typeAfterRemovingMulti = str_replace('multi_', '', $field['type']);
+        return in_array($field['type'], static::fileFields()) || in_array($typeAfterRemovingMulti, static::fileFields());
     }
 
     public static function types(): array
@@ -68,7 +91,16 @@ class Field
             'text' => 'text',
             'textarea' => 'mediumText',
             'editor' => 'longText',
-            'array' => 'mediumText',
+            // 'array' => 'mediumText',
+        ];
+    }
+
+    public static function fileFields(): array
+    {
+        return [
+            'image',
+            'video',
+            'file',
         ];
     }
 

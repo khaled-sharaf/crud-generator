@@ -8,8 +8,8 @@ use W88\CrudSystem\Factories\CrudGeneratorFactory;
 class CrudGenerator
 {
 
-    private $backend_generator_types = ['model', 'migration', 'route', 'controller', 'service', 'request', 'resource', 'lang', 'permission'];
-    // private $backend_generator_types = ['model', 'migration', 'controller', 'service', 'request', 'resource', 'permission'];
+    // private $backend_generator_types = ['migration', 'model', 'route', 'controller', 'service', 'request', 'resource', 'lang', 'permission'];
+    private $backend_generator_types = ['migration', 'model', 'controller', 'service', 'request', 'resource', 'permission'];
     private $frontend_generator_types = ['index', 'create', 'edit', 'show'];
     
     public function generate($moduleName = null, $crudName = null)

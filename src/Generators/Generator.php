@@ -10,6 +10,7 @@ abstract class Generator implements GeneratorInterface
 {
     use GeneratorHelpers;
 
+    protected array $configData;
     protected array $config;
 
     protected string $version;
@@ -22,6 +23,7 @@ abstract class Generator implements GeneratorInterface
     protected string $modulePath;
 
     protected string $modelName;
+    protected string $modelNamespace;
     protected string $modelNameCamel;
     protected string $modelNameSnake;
     protected string $modelNameKebab;
@@ -31,6 +33,7 @@ abstract class Generator implements GeneratorInterface
 
     public function __construct(array $configData)
     {
+        $this->configData = $configData;
         $this->config = $configData['config'];
         $this->version = $configData['version'];
         $this->versionNamespace = Str::studly($configData['version']);
@@ -40,8 +43,9 @@ abstract class Generator implements GeneratorInterface
         $this->moduleNameSnake = strtolower(Str::snake($this->moduleName));
         $this->moduleNameKebab = strtolower(Str::kebab($this->moduleName));
         $this->modulePath = module_path($this->moduleName);
-
+        
         $this->modelName = Str::studly($configData['config']['name']);
+        $this->modelNamespace = $this->moduleNamespace . '\\app\\Models';
         $this->modelNameCamel = Str::camel($this->modelName);
         $this->modelNameSnake = strtolower(Str::snake($this->modelName));
         $this->modelNameKebab = strtolower(Str::kebab($this->modelName));

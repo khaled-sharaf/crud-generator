@@ -11,14 +11,14 @@ class {{ CLASS_NAME }} extends Model
     protected $fillable = [{{ FILLABLE }}
     ];
     {{ OPTIONS }}
-
-    /* ========================== Attrs ========================== */
-    {{ ATTRS }}
-
     /* ========================== Relations ========================== */
     {{ RELATIONS }}
-
     /* ========================== Scopes ========================== */
     {{ SCOPES }}
+    /* ========================== Attrs ========================== */
 
+    // public function getTitleAttribute()
+    // {
+    //     return $this->title;
+    // }
 }

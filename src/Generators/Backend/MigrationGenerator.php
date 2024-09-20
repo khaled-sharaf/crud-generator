@@ -2,10 +2,11 @@
 
 namespace W88\CrudSystem\Generators\Backend;
 
+use W88\CrudSystem\Generators\Generator;
 use Illuminate\Support\Facades\File;
 use Touhidurabir\StubGenerator\Facades\StubGenerator;
 use W88\CrudSystem\Field;
-use W88\CrudSystem\Generators\Generator;
+use Illuminate\Support\Str;
 
 class MigrationGenerator extends Generator
 {
@@ -16,11 +17,11 @@ class MigrationGenerator extends Generator
     {
         $this->ensureStubExists();
         $this->ensureDirectoryExists();
-        $this->deleteOldMigration();
+        $this->deleteOldMigration($this->generateMigrationName(), $this->migrationName);
         $this->generateMigrationFile();
     }
 
-    protected function getStubPath(): string
+    public function getStubPath(): string
     {
         return __DIR__ . '/../../stubs/backend/migration.stub';
     }
@@ -33,22 +34,23 @@ class MigrationGenerator extends Generator
         }
     }
 
-    protected function generateMigrationNameWithTimestamp(): string
+    protected function generateMigrationName(): string
     {
         return 'create_' . $this->modelNameSnakePlural . '_table';
     }
 
-    protected function generateMigrationName(): string
+    public function generateMigrationFileName(string $name, string $oldMigrationName = null, int $padding = 0): string
     {
-        return $this->migrationName ?? now()->format('Y_m_d_His') . '_' . $this->generateMigrationNameWithTimestamp();
+        $time = intval(now()->format('His')) + $padding;
+        return ($oldMigrationName ?? $this->migrationName) ?? now()->format('Y_m_d_') . "{$time}_$name";
     }
 
-    protected function getMigrationDirectory(): string
+    public function getMigrationDirectory(): string
     {
         return $this->modulePath . '/database/migrations';
     }
 
-    protected function ensureDirectoryExists(): void
+    public function ensureDirectoryExists(): void
     {
         $directory = $this->getMigrationDirectory();
         if (!File::exists($directory)) {
@@ -56,13 +58,12 @@ class MigrationGenerator extends Generator
         }
     }
 
-    protected function deleteOldMigration(): void
+    public function deleteOldMigration(string $name, string &$oldMigrationFileName = null): void
     {
         foreach (File::files($this->getMigrationDirectory()) as $file) {
-            if (strpos($file->getFilename(), $this->generateMigrationNameWithTimestamp() . '.php') !== false) {
-                $this->migrationName = pathinfo($file->getFilename(), PATHINFO_FILENAME);
+            if (Str::endsWith($file->getFilename(), $name . '.php')) {
+                $oldMigrationFileName = pathinfo($file->getFilename(), PATHINFO_FILENAME);
                 File::delete($file->getPathname());
-                break;
             }
         }
     }
@@ -72,7 +73,7 @@ class MigrationGenerator extends Generator
         StubGenerator::from($this->getStubPath(), true)
             ->to($this->getMigrationDirectory(), true, true)
             ->withReplacers($this->getReplacers())
-            ->as($this->generateMigrationName())
+            ->as($this->generateMigrationFileName($this->generateMigrationName()))
             ->replace(true)
             ->save();
     }
@@ -87,7 +88,7 @@ class MigrationGenerator extends Generator
 
     protected function getMigrationFields(): string
     {
-        $migrationFields = collect($this->getFields())->map(fn($field, $name) => $this->generateFieldDefinition($name, $field))->toArray();
+        $migrationFields = ['$table->id();', ...collect($this->getFields())->map(fn($field, $name) => $this->generateFieldDefinition($name, $field))->toArray()];
         if ($this->hasSoftDeletes()) $migrationFields[] = '$table->softDeletes();';
         $migrationFields[] = '$table->timestamps();';
         return implode("\n\t\t\t", $migrationFields);
@@ -112,7 +113,8 @@ class MigrationGenerator extends Generator
     {
         $relation = $field['relation'];
         $definition = '';
-        $isConstrained = isset($relation['constrained']) && $relation['constrained'] === true;
+        $isConstrained = Field::isRelationConstrained($field);
+        if ($isConstrained && Field::isNullable($field) && !isset($relation['onDelete'])) $relation = ['onDelete' => 'set null'];
         $foreignKey = isset($field['relation']['foreignKey']) ? $field['relation']['foreignKey'] : null;
         $table = isset($field['relation']['table']) ? $field['relation']['table'] : null;
         $tableConstraint = $table ? "table: '{$relation['table']}'" : '';
