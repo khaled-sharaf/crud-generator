@@ -107,6 +107,16 @@ trait GeneratorHelpers
     {
         return "{$this->moduleNamespace}\app\Http\Resources\\{$this->versionNamespace}";
     }
+
+    protected function getConstantDirectory(): string
+    {
+        return "{$this->modulePath}/app/Constants/{$this->modelName}";
+    }
+
+    protected function getConstantNamespace(): string
+    {
+        return "{$this->moduleNamespace}\app\Constants\\{$this->modelName}";
+    }
     
     protected function getSeederName(): string
     {
@@ -117,15 +127,15 @@ trait GeneratorHelpers
     {
         return $this->config['options']['seeder'] ?? false;
     }
-    
-    protected function getLookupOption()
-    {
-        return $this->config['options']['lookup'] ?? false;
-    }
 
     protected function getActivationRouteOption()
     {
         return $this->config['dashboardApi']['activation'] ?? false;
+    }
+
+    protected function getLookupRouteOption()
+    {
+        return $this->config['dashboardApi']['lookup'] ?? false;
     }
     
     protected function getFields(): array
@@ -133,7 +143,7 @@ trait GeneratorHelpers
         return array_merge($this->config['fields'] ?? [], $this->appendActivationField());
     }
 
-    protected function appendActivationField(): array
+    private function appendActivationField(): array
     {
         $fields = [];
         $activationRouteOption = $this->getActivationRouteOption();
@@ -149,29 +159,6 @@ trait GeneratorHelpers
         }
         return $fields;
     }
-    
-    protected function getModelRelations(): array
-    {
-        $relations = array_merge($this->appendRelationFields(), $this->config['relations'] ?? []);
-        return collect($relations)->filter(fn ($relation) => isset($relation['type']) && in_array($relation['type'], $this->getAllowedRelations()))->toArray();
-    }
-
-    protected function appendRelationFields(): array
-    {
-        $relations = [];
-        foreach ($this->getFields() as $name => $field) {
-            if (isset($field['relation']['model'])) {
-                $isEndById = Str::endsWith($name, '_id');
-                $relationName = $isEndById ? Str::beforeLast($name, '_id') : $name;
-                $relations[$relationName] = [
-                    'type' => $field['relation']['type'] ?? 'belongsTo',
-                    'model' => $field['relation']['model'],
-                ];
-                if (!$isEndById) $relations[$relationName]['foreignKey'] = $name;
-            }
-        }
-        return $relations;
-    }
 
     protected function getBooleanFields(): array
     {
@@ -186,6 +173,16 @@ trait GeneratorHelpers
     protected function getTranslatableFields(): array
     {
         return collect($this->getFields())->filter(fn ($field) => Field::hasTranslatable($field))->toArray();
+    }
+
+    protected function getConstantFields(): array
+    {
+        return collect($this->getFields())->filter(fn ($field) => Field::hasConstant($field))->toArray();
+    }
+
+    protected function getLookupFields(): array
+    {
+        return collect($this->getFields())->filter(fn ($field) => Field::hasLookup($field))->toArray();
     }
 
     protected function getCastFields(): array
@@ -216,7 +213,30 @@ trait GeneratorHelpers
         return $permissions;
     }
 
-    protected function getAllowedRelations(): array
+    protected function getModelRelations(): array
+    {
+        $relations = array_merge($this->appendRelationFields(), $this->config['relations'] ?? []);
+        return collect($relations)->filter(fn ($relation) => isset($relation['type']) && in_array($relation['type'], $this->getAllowedRelations()))->toArray();
+    }
+
+    private function appendRelationFields(): array
+    {
+        $relations = [];
+        foreach ($this->getFields() as $name => $field) {
+            if (isset($field['relation']['model'])) {
+                $isEndById = Str::endsWith($name, '_id');
+                $relationName = $isEndById ? Str::beforeLast($name, '_id') : $name;
+                $relations[$relationName] = [
+                    'type' => $field['relation']['type'] ?? 'belongsTo',
+                    'model' => $field['relation']['model'],
+                ];
+                if (!$isEndById) $relations[$relationName]['foreignKey'] = $name;
+            }
+        }
+        return $relations;
+    }
+    
+    private function getAllowedRelations(): array
     {
         return [
             'belongsTo',

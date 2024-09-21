@@ -32,14 +32,14 @@ class RequestGenerator extends Generator
         }
     }
 
-    protected function getRequestDirectory(): string
+    protected function getGeneratorDirectory(): string
     {
         return "{$this->modulePath}/app/Http/Requests/{$this->versionNamespace}";
     }
 
     protected function ensureDirectoryExists(): void
     {
-        $directory = $this->getRequestDirectory();
+        $directory = $this->getGeneratorDirectory();
         if (!File::exists($directory)) {
             File::makeDirectory($directory, 0755, true);
         }
@@ -48,7 +48,7 @@ class RequestGenerator extends Generator
     protected function generateRequest(): void
     {
         StubGenerator::from($this->getStubPath(), true)
-            ->to($this->getRequestDirectory())
+            ->to($this->getGeneratorDirectory())
             ->withReplacers($this->getReplacers())
             ->replace(true)
             ->as($this->getRequestName())

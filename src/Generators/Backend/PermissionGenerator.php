@@ -30,14 +30,14 @@ class PermissionGenerator extends Generator
         }
     }
 
-    protected function getPermissionDirectory(): string
+    protected function getGeneratorDirectory(): string
     {
         return "{$this->modulePath}/config/permissions";
     }
 
     protected function ensureDirectoryExists(): void
     {
-        $directory = $this->getPermissionDirectory();
+        $directory = $this->getGeneratorDirectory();
         if (!File::exists($directory)) {
             File::makeDirectory($directory, 0755, true);
         }
@@ -46,7 +46,7 @@ class PermissionGenerator extends Generator
     protected function generatePermission(): void
     {
         StubGenerator::from($this->getStubPath(), true)
-            ->to($this->getPermissionDirectory())
+            ->to($this->getGeneratorDirectory())
             ->withReplacers($this->getReplacers())
             ->replace(true)
             ->as($this->modelNameSnake)

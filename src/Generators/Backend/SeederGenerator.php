@@ -35,7 +35,7 @@ class SeederGenerator extends Generator
         return __DIR__ . '/../../stubs/backend/moduleSeeder.stub';
     }
 
-    protected function getSeederDirectory(): string
+    protected function getGeneratorDirectory(): string
     {
         return "{$this->modulePath}/database/seeders";
     }
@@ -60,7 +60,7 @@ class SeederGenerator extends Generator
 
     protected function ensureDirectoryExists(): void
     {
-        $directory = $this->getSeederDirectory();
+        $directory = $this->getGeneratorDirectory();
         if (!File::exists($directory)) {
             File::makeDirectory($directory, 0755, true);
         }
@@ -69,7 +69,7 @@ class SeederGenerator extends Generator
 
     protected function ensureSeederModuleFileExists(): void
     {
-        $filePath = $this->getSeederDirectory() . "/{$this->moduleSeederFileName}.php";
+        $filePath = $this->getGeneratorDirectory() . "/{$this->moduleSeederFileName}.php";
         if (!File::exists($filePath)) {
             $this->createSeederModuleFile($this->moduleSeederFileName);
         }
@@ -78,7 +78,7 @@ class SeederGenerator extends Generator
     protected function createSeederModuleFile(): void
     {
         (new StubGenerator)->from($this->getModuleStubPath(), true)
-            ->to($this->getSeederDirectory())
+            ->to($this->getGeneratorDirectory())
             ->withReplacers([
                 'CLASS_NAME' => $this->moduleSeederFileName,
                 'CLASS_NAMESPACE' => $this->getSeederNamespace(),
@@ -91,7 +91,7 @@ class SeederGenerator extends Generator
     protected function generateSeeder(): void
     {
         (new StubGenerator)->from($this->getStubPath(), true)
-            ->to($this->getSeederDirectory())
+            ->to($this->getGeneratorDirectory())
             ->withReplacers($this->getReplacers())
             ->replace(true)
             ->as($this->getSeederName())
@@ -121,7 +121,7 @@ class SeederGenerator extends Generator
 
     protected function addSeederToModuleSeeder(): void
     {
-        $filePath = $this->getSeederDirectory() . "/{$this->moduleSeederFileName}.php";
+        $filePath = $this->getGeneratorDirectory() . "/{$this->moduleSeederFileName}.php";
         $content = File::get($filePath);
         $contentTemplate = "\n\t\t\$this->call({$this->getSeederName()}::class);";
         if (strpos($content, $contentTemplate) === false) {

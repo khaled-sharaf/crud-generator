@@ -21,7 +21,7 @@ class ControllerGenerator extends Generator
         return __DIR__ . '/../../stubs/backend/controller.stub';
     }
 
-    protected function getControllerDirectory(): string
+    protected function getGeneratorDirectory(): string
     {
         return "{$this->modulePath}/app/Http/Controllers/{$this->versionNamespace}";
     }
@@ -36,7 +36,7 @@ class ControllerGenerator extends Generator
 
     protected function ensureDirectoryExists(): void
     {
-        $directory = $this->getControllerDirectory();
+        $directory = $this->getGeneratorDirectory();
         if (!File::exists($directory)) {
             File::makeDirectory($directory, 0755, true);
         }
@@ -45,7 +45,7 @@ class ControllerGenerator extends Generator
     protected function generateController(): void
     {
         StubGenerator::from($this->getStubPath(), true)
-            ->to($this->getControllerDirectory())
+            ->to($this->getGeneratorDirectory())
             ->withReplacers($this->getReplacers())
             ->replace(true)
             ->as($this->getControllerName())

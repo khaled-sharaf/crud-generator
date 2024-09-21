@@ -36,14 +36,14 @@ class ModelGenerator extends Generator
         }
     }
 
-    protected function getModelDirectory(): string
+    protected function getGeneratorDirectory(): string
     {
         return $this->modulePath . '/app/Models/';
     }
 
     protected function ensureDirectoryExists(): void
     {
-        $directory = $this->getModelDirectory();
+        $directory = $this->getGeneratorDirectory();
         if (!File::exists($directory)) {
             File::makeDirectory($directory, 0755, true);
         }
@@ -52,7 +52,7 @@ class ModelGenerator extends Generator
     protected function generateModel(): void
     {
         (new StubGenerator())->from($this->getStubPath(), true)
-            ->to($this->getModelDirectory(), true, true)
+            ->to($this->getGeneratorDirectory(), true, true)
             ->withReplacers($this->getReplacers())
             ->as($this->modelName)
             ->replace(true)
@@ -303,7 +303,7 @@ class ModelGenerator extends Generator
     protected function generateMigrationRelationFile($fileName, $replacers): void
     {
         (new StubGenerator())->from($this->migrationGenerator->getStubPath(), true)
-            ->to($this->migrationGenerator->getMigrationDirectory(), true, true)
+            ->to($this->migrationGenerator->getGeneratorDirectory(), true, true)
             ->withReplacers($replacers)
             ->as($fileName)
             ->replace(true)

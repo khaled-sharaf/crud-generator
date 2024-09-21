@@ -14,13 +14,20 @@ return [
         //     'default' => true,
         //     'column' => 'is_active',
         // ],
+
+        // 'lookup' => true, // default false
+        // 'lookup' => 'title', // assign field name to return in lookup - default: name
+        // 'lookup' => [ // type array for add more options
+        //     'label' => 'name', // get label from 'name' column of database table
+        //     'value' => 'id', // optional - get value from 'id' column of database table
+        // ],
     ],
 
     'apiActions' => false, // or remove it to disable api actions
     // 'apiActions' => [
     //     'list' => true,
-    //     'show' => true,
-    //     'store' => true,
+    //     'profile' => true,
+    //     'create' => true,
     //     'update' => true,
     //     'delete' => true,
     // ],
@@ -34,11 +41,6 @@ return [
         'seeder' => false, // Enable seeder with factory - will be add seeder file
         // 'seeder' => [
         //     'count' => 10,
-        // ],
-        'lookup' => false, // default field: name - Add lookup for select field
-        // 'lookup' => [ // type array for add more options
-        //     'title' => 'title', // show title field in lookup and id value
-        //     'id' => 'id', // optional - show id field in lookup and id value
         // ],
         'tableSettings' => [
             'multiSelection' => true, // Enable multi selection for delete or any action in frontend list

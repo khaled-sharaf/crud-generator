@@ -5,58 +5,38 @@ namespace W88\CrudSystem\Generators\Backend;
 use W88\CrudSystem\Generators\Generator;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
-use Touhidurabir\StubGenerator\Facades\StubGenerator;
 
 class LangGenerator extends Generator
 {
 
     public function generate(): void
     {
-        $this->ensureStubExists();
         $this->ensureFileExists();
         $this->insertLang();
     }
 
-    protected function getStubPath(): string
-    {
-        return __DIR__ . '/../../stubs/backend/lang.stub';
-    }
-
-    protected function getLangDirectory(): string
+    protected function getGeneratorDirectory(): string
     {
         return $this->modulePath . '/lang/en';
     }
 
     protected function getFilePath(): string
     {
-        return $this->getLangDirectory() . '/view.php';
-    }
-
-    protected function ensureStubExists(): void
-    {
-        $stubPath = $this->getStubPath();
-        if (!File::exists($stubPath)) {
-            throw new \Exception("Stub file not found at path: {$stubPath}");
-        }
+        return $this->getGeneratorDirectory() . '/view.php';
     }
 
     protected function ensureFileExists(): void
     {
         $filePath = $this->getFilePath();
         if (!File::exists($filePath)) {
-            StubGenerator::from($this->getStubPath(), true)->to($this->getLangDirectory())->as('view')->save();
+            File::put($filePath, "<?php\n\nreturn [\n\n];");
         }
-    }
-
-    protected function getContentFile(): string
-    {
-        return File::get($this->getFilePath());
     }
 
     protected function insertLang(): void
     {
         $filePath = $this->getFilePath();
-        $contentFile = $this->getContentFile();
+        $contentFile = File::get($filePath);
         $contentTemplate = $this->getContentTemplate();
         if (strpos($contentFile, $contentTemplate) === false) {
             $pattern = '/\s*\];/';

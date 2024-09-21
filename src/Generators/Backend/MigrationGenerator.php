@@ -45,14 +45,14 @@ class MigrationGenerator extends Generator
         return ($oldMigrationName ?? $this->migrationName) ?? now()->format('Y_m_d_') . "{$time}_$name";
     }
 
-    public function getMigrationDirectory(): string
+    public function getGeneratorDirectory(): string
     {
         return $this->modulePath . '/database/migrations';
     }
 
     public function ensureDirectoryExists(): void
     {
-        $directory = $this->getMigrationDirectory();
+        $directory = $this->getGeneratorDirectory();
         if (!File::exists($directory)) {
             File::makeDirectory($directory, 0755, true);
         }
@@ -60,7 +60,7 @@ class MigrationGenerator extends Generator
 
     public function deleteOldMigration(string $name, string &$oldMigrationFileName = null): void
     {
-        foreach (File::files($this->getMigrationDirectory()) as $file) {
+        foreach (File::files($this->getGeneratorDirectory()) as $file) {
             if (Str::endsWith($file->getFilename(), $name . '.php')) {
                 $oldMigrationFileName = pathinfo($file->getFilename(), PATHINFO_FILENAME);
                 File::delete($file->getPathname());
@@ -71,7 +71,7 @@ class MigrationGenerator extends Generator
     protected function generateMigrationFile(): void
     {
         StubGenerator::from($this->getStubPath(), true)
-            ->to($this->getMigrationDirectory(), true, true)
+            ->to($this->getGeneratorDirectory(), true, true)
             ->withReplacers($this->getReplacers())
             ->as($this->generateMigrationFileName($this->generateMigrationName()))
             ->replace(true)

@@ -54,6 +54,16 @@ class Field
         return in_array($field['type'], static::fileFields()) || in_array($typeAfterRemovingMulti, static::fileFields());
     }
 
+    public static function hasConstant(array $field): bool
+    {
+        return isset($field['options']);
+    }
+
+    public static function hasLookup(array $field): bool
+    {
+        return self::hasConstant($field) && isset($field['lookup']) && $field['lookup'] === true;
+    }
+
     public static function types(): array
     {
         return array_merge(static::normalFields(), static::jsonFields());

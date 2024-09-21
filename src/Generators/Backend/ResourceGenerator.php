@@ -30,14 +30,14 @@ class ResourceGenerator extends Generator
         }
     }
 
-    protected function getResourceDirectory(): string
+    protected function getGeneratorDirectory(): string
     {
         return "{$this->modulePath}/app/Resources/{$this->versionNamespace}";
     }
 
     protected function ensureDirectoryExists(): void
     {
-        $directory = $this->getResourceDirectory();
+        $directory = $this->getGeneratorDirectory();
         if (!File::exists($directory)) {
             File::makeDirectory($directory, 0755, true);
         }
@@ -46,7 +46,7 @@ class ResourceGenerator extends Generator
     protected function generateResource(): void
     {
         StubGenerator::from($this->getStubPath(), true)
-            ->to($this->getResourceDirectory())
+            ->to($this->getGeneratorDirectory())
             ->withReplacers($this->getReplacers())
             ->replace(true)
             ->as($this->getResourceName())

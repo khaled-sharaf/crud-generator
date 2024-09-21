@@ -22,7 +22,7 @@ class ServiceGenerator extends Generator
         return __DIR__ . '/../../stubs/backend/service.stub';
     }
 
-    protected function getServiceDirectory(): string
+    protected function getGeneratorDirectory(): string
     {
         return "{$this->modulePath}/app/Services";
     }
@@ -37,7 +37,7 @@ class ServiceGenerator extends Generator
 
     protected function ensureDirectoryExists(): void
     {
-        $directory = $this->getServiceDirectory();
+        $directory = $this->getGeneratorDirectory();
         if (!File::exists($directory)) {
             File::makeDirectory($directory, 0755, true);
         }
@@ -46,7 +46,7 @@ class ServiceGenerator extends Generator
     protected function generateService(): void
     {
         StubGenerator::from($this->getStubPath(), true)
-            ->to($this->getServiceDirectory())
+            ->to($this->getGeneratorDirectory())
             ->withReplacers($this->getReplacers())
             ->replace(true)
             ->as($this->getServiceName())
