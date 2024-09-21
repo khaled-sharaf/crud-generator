@@ -108,11 +108,6 @@ trait GeneratorHelpers
         return "{$this->moduleNamespace}\app\Http\Resources\\{$this->versionNamespace}";
     }
 
-    protected function getConstantDirectory(): string
-    {
-        return "{$this->modulePath}/app/Constants/{$this->modelName}";
-    }
-
     protected function getConstantNamespace(): string
     {
         return "{$this->moduleNamespace}\app\Constants\\{$this->modelName}";

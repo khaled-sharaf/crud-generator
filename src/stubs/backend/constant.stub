@@ -1,0 +1,17 @@
+<?php
+
+namespace {{ CLASS_NAMESPACE }};
+
+use App\Constants\Constant;
+
+class {{ CLASS_NAME }} extends Constant
+{
+    {{ CONSTANTS }}
+
+    static function getList(): array
+    {
+        return [{{ CONSTANTS_LIST }}
+        ];
+    }
+
+}

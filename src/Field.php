@@ -64,6 +64,13 @@ class Field
         return self::hasConstant($field) && isset($field['lookup']) && $field['lookup'] === true;
     }
 
+    public static function getOptions(array $field): array
+    {
+        return collect($field['options'])->filter(function ($value, $key) {
+            return is_string($value) || (isset($value['label']) && isset($value['value']));
+        })->toArray();
+    }
+
     public static function types(): array
     {
         return array_merge(static::normalFields(), static::jsonFields());

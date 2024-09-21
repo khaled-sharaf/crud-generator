@@ -5,6 +5,7 @@ namespace W88\CrudSystem\Generators\Backend;
 use W88\CrudSystem\Generators\Generator;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
+use W88\CrudSystem\Field;
 
 class LangGenerator extends Generator
 {
@@ -54,6 +55,7 @@ class LangGenerator extends Generator
         $content = "'{$this->modelNameSnake}_crud' => [\n\t\t'label' => '{$modelTitle}',";
         $content .= $this->getPermissionsTemplate();
         $content .= $this->getValidationTemplate();
+        $content .= $this->getConstantsTemplate();
         $content .= $this->getMessagesTemplate();
         return $content . "\n\t],\n";
     }
@@ -76,6 +78,22 @@ class LangGenerator extends Generator
             return "\n\t\t\t'{$name}' => '{$field['label']}',";
         })->join('');
         return $validation . "\n\t\t],";
+    }
+
+    protected function getConstantsTemplate(): string
+    {
+        $constants = "\n\t\t'constants' => [";
+        foreach ($this->getConstantFields() as $fieldName => $field) {
+            $fieldName = strtolower(Str::snake($fieldName));
+            $constants .= "\n\t\t\t'{$fieldName}' => [";
+            foreach (Field::getOptions($field) as $key => $value) {
+                $key = strtolower(Str::snake($key));
+                $value = $value['label'] ?? $value;
+                $constants .= "\n\t\t\t\t'{$key}' => '{$value}',";
+            }
+            $constants .= "\n\t\t\t],";
+        }
+        return $constants . "\n\t\t],";
     }
 
     protected function getMessagesTemplate(): string
