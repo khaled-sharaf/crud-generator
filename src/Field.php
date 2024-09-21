@@ -13,7 +13,7 @@ class Field
         if (isset($field['migrationType'])) return $field['migrationType'];
         if (static::hasTranslatable($field)) return static::translatableFields()[$field['type']];
         if (in_array($field['type'], static::fileFields())) return 'string';
-        if (in_array($typeAfterRemovingMulti, static::fileFields())) return 'text';
+        if (in_array($typeAfterRemovingMulti, static::fileFields())) return 'json';
         if (isset($field['relation'])) {
             return static::isRelationConstrained($field) ? 'foreignId' : 'unsignedBigInteger';
         }
@@ -36,6 +36,11 @@ class Field
     public static function isNullable(array $field): bool
     {
         return isset($field['nullable']) && $field['nullable'] === true;
+    }
+
+    public static function isBoolean(array $field): bool
+    {
+        return $field['type'] === 'boolean';
     }
 
     public static function isRelationConstrained(array $field): bool
@@ -64,11 +69,58 @@ class Field
         return self::hasConstant($field) && isset($field['lookup']) && $field['lookup'] === true;
     }
 
+    public static function isFilterable(array $field): bool
+    {
+        return isset($field['filter']) && ($field['filter'] === true || in_array($field['filter'], ['single', 'multi']));
+    }
+
+    public static function hasBoolean(array $field): bool
+    {
+        return $field['type'] === 'boolean' && isset($field['filter']) && $field['filter'] === true;
+    }
+    
+
+    public static function hasBooleanFilter(array $field): bool
+    {
+        return $field['type'] === 'boolean' && isset($field['filter']) && $field['filter'] === true;
+    }
+    
+    public static function hasFieldSingleConstant(array $field): bool
+    {
+        return in_array($field['type'], static::filterFields());
+    }
+    
+    public static function hasFieldMultiConstant(array $field): bool
+    {
+        return in_array(str_replace('multi_', '', $field['type']), static::filterFields());
+    }
+
+    public static function hasFieldAllowedFilter(array $field): bool
+    {
+        return self::hasFieldSingleConstant($field) || self::hasFieldMultiConstant($field);
+    }
+
+    public static function hasConstantFilter(array $field): bool
+    {
+        return self::isFilterable($field) && self::hasFieldAllowedFilter($field) && self::hasConstant($field);
+    }
+
+    public static function hasBooleanRouteFilter(array $field): bool
+    {
+        return self::isBoolean($field) && isset($field['route']) && is_string($field['route']);
+    }
+
     public static function getOptions(array $field): array
     {
         return collect($field['options'])->filter(function ($value, $key) {
             return is_string($value) || (isset($value['label']) && isset($value['value']));
         })->toArray();
+    }
+
+    public static function getFilter(array $field)
+    {
+        if (!self::isFilterable($field)) return false;
+        return $field['filter'] === true ? 'single' : $field['filter'];
     }
 
     public static function types(): array
@@ -89,40 +141,41 @@ class Field
             'time' => ['migration' => 'time', 'seeder' => 'fake()->time()'],
             'date' => ['migration' => 'date', 'seeder' => 'fake()->date()'],
             'datetime' => ['migration' => 'dateTime', 'seeder' => 'fake()->dateTime()'],
+            'timestamp' => ['migration' => 'timestamp', 'seeder' => 'fake()->dateTime()'],
             'image' => ['migration' => 'string', 'seeder' => 'null'],
             'video' => ['migration' => 'string', 'seeder' => 'null'],
             'file' => ['migration' => 'string', 'seeder' => 'null'],
             'checkbox' => ['migration' => 'string', 'seeder' => 'null'],
-            'radio' => ['migration' => 'string', 'seeder' => 'null'],
             'select' => ['migration' => 'string', 'seeder' => 'null'],
+            'radio' => ['migration' => 'string', 'seeder' => 'null'],
         ];
     }
 
     public static function jsonFields(): array
     {
         return [
-            'range_date' => ['migration' => 'array', 'seeder' => '[]'],
-            'multi_date' => ['migration' => 'array', 'seeder' => '[]'],
-            'multi_range_date' => ['migration' => 'array', 'seeder' => '[]'],
-            'multi_image' => ['migration' => 'array', 'seeder' => '[]'],
-            'multi_video' => ['migration' => 'array', 'seeder' => '[]'],
-            'multi_file' => ['migration' => 'array', 'seeder' => '[]'],
-            'multi_checkbox' => ['migration' => 'array', 'seeder' => '[]'],
-            'multi_select' => ['migration' => 'array', 'seeder' => '[]'],
-            'slider' => ['migration' => 'array', 'seeder' => '[]'],
-            'range' => ['migration' => 'array', 'seeder' => '[]'],
-            'array' => ['migration' => 'array', 'seeder' => '[]'],
-            'location' => ['migration' => 'array', 'seeder' => '[]'],
+            'range_date' => ['migration' => 'json', 'seeder' => '[]'],
+            'multi_date' => ['migration' => 'json', 'seeder' => '[]'],
+            'multi_range_date' => ['migration' => 'json', 'seeder' => '[]'],
+            'multi_image' => ['migration' => 'json', 'seeder' => '[]'],
+            'multi_video' => ['migration' => 'json', 'seeder' => '[]'],
+            'multi_file' => ['migration' => 'json', 'seeder' => '[]'],
+            'multi_checkbox' => ['migration' => 'json', 'seeder' => '[]'],
+            'multi_select' => ['migration' => 'json', 'seeder' => '[]'],
+            'slider' => ['migration' => 'json', 'seeder' => '[]'],
+            'range' => ['migration' => 'json', 'seeder' => '[]'],
+            'array' => ['migration' => 'json', 'seeder' => '[]'],
+            'location' => ['migration' => 'json', 'seeder' => '[]'],
         ];
     }
 
     public static function translatableFields(): array
     {
         return [
-            'text' => 'text',
-            'textarea' => 'mediumText',
-            'editor' => 'longText',
-            // 'array' => 'mediumText',
+            'text' => 'json',
+            'textarea' => 'json',
+            'editor' => 'json',
+            'array' => 'json',
         ];
     }
 
@@ -132,6 +185,15 @@ class Field
             'image',
             'video',
             'file',
+        ];
+    }
+
+    public static function filterFields(): array
+    {
+        return [
+            'checkbox',
+            'select',
+            'radio',
         ];
     }
 

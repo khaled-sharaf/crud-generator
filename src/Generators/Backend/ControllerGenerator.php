@@ -5,6 +5,7 @@ namespace W88\CrudSystem\Generators\Backend;
 use W88\CrudSystem\Generators\Generator;
 use Illuminate\Support\Facades\File;
 use Touhidurabir\StubGenerator\Facades\StubGenerator;
+use Illuminate\Support\Str;
 
 class ControllerGenerator extends Generator
 {
@@ -88,6 +89,9 @@ class ControllerGenerator extends Generator
         if ($this->hasUpdateRoute()) $methods .= $this->getUpdateMethod();
         if ($this->hasDeleteRoute()) $methods .= $this->getDestroyMethod();
         if ($this->getActivationRouteOption()) $methods .= $this->getActivationMethod();
+        foreach ($this->getBooleanRouteFields() as $field) {
+            $methods .= $this->getBooleanMethod($field);
+        }
         return $methods;
     }
 
@@ -142,11 +146,17 @@ class ControllerGenerator extends Generator
     protected function getActivationMethod(): string
     {
         $column = $this->getActivationRouteOption()['column'] ?? 'is_active';
-        return "\n\n\t" . 'public function activation($id)
+        return "\n\n\tpublic function activation(\$id)\n\t{
+        \$action = CrudHelper::toggleBoolean({$this->modelName}::findOrFail(\$id), '{$column}');
+        return sendData(['changed' => \$action['isChanged']], __('{$this->moduleNameSnake}::view.{$this->modelNameSnake}_crud.messages.' . (\$action['model']->{$column} ? 'activated' : 'deactivated')));\n\t}";
+    }
+
+    protected function getBooleanMethod(array $field): string
     {
-        $action = CrudHelper::toggleBoolean(' . $this->modelName . '::findOrFail($id), \'' . $column . '\');
-        return sendData([\'changed\' => $action[\'isChanged\']], __(\'' . $this->moduleNameSnake . '::view.' . $this->modelNameSnake . '_crud.messages.\' . ($action[\'model\']->' . $column . ' ? \'activated\' : \'deactivated\')));
-    }';
+        $method = Str::camel($field['route']);
+        return "\n\n\tpublic function {$method}(\$id)\n\t{
+        \$action = CrudHelper::toggleBoolean({$this->modelName}::findOrFail(\$id), '{$field['name']}');
+        return sendData(['changed' => \$action['isChanged']], __('view.messages.updated_success'));\n\t}";
     }
 
     protected function getPermissions(): string
@@ -158,4 +168,5 @@ class ControllerGenerator extends Generator
         if ($this->hasUpdateRoute()) $permissions .= "\n\t\t" . '$this->middleware(\'can:edit-' . $this->modelNameKebab . '\')->only(\'update\');';
         return $permissions . "\n\t\t";
     }
+
 }

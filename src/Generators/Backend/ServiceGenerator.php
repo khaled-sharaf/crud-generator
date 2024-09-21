@@ -6,6 +6,7 @@ use W88\CrudSystem\Generators\Generator;
 use Illuminate\Support\Facades\File;
 use Touhidurabir\StubGenerator\Facades\StubGenerator;
 use Illuminate\Support\Str;
+use W88\CrudSystem\Field;
 
 class ServiceGenerator extends Generator
 {
@@ -117,22 +118,6 @@ class ServiceGenerator extends Generator
     }";
     }
 
-    protected function getFilters(): string
-    {
-        $activationRouteOption = $this->getActivationRouteOption();
-        $column = $activationRouteOption['column'] ?? 'is_active';
-        $filters = [];
-        if ($this->hasTableFilter()) {
-            $filters[] = '\App\Filters\Date\Date::class';
-            $filters[] = '\App\Filters\Date\Time::class';
-            $filters[] = '\App\Filters\Search\AdvancedSearch::class';
-        }
-        if ($this->hasTableSearch()) $filters[] = "\App\Filters\Search\TableSearchText::class";
-        if ($this->hasSoftDeletes()) $filters[] = "\App\Filters\Boolean\Trashed::class";
-        if ($this->hasTableFilter() && $activationRouteOption) $filters[] = "new \App\Filters\Boolean\ToggleBoolean('{$column}')";
-        return count($filters) ? ',' . collect($filters)->map(fn ($filter) => "\n\t\t\t" . $filter)->implode(',') : '';
-    }
-
     protected function handleFieldsWhenCreateAndUpdate($formType = 'create'): string
     {
         $fileFields = $this->getFileFields();
@@ -147,6 +132,49 @@ class ServiceGenerator extends Generator
             return "\n\t\t\$data['{$name}'] = uploader(){$addModel}->path((new {$this->modelName})->filePaths['single'])->fieldName('{$name}'){$hasAddQuality}->upload();";
         })->implode('');
         return $fileUploads;
+    }
+
+    protected function getFilters(): string
+    {
+        $filters = [];
+        if ($this->hasTableFilter()) {
+            $filters[] = '\App\Filters\Date\Date::class';
+            $filters[] = '\App\Filters\Date\Time::class';
+            $filters[] = '\App\Filters\Search\AdvancedSearch::class';
+        }
+        if ($this->hasTableSearch()) $filters[] = "\App\Filters\Search\TableSearchText::class";
+        if ($this->hasSoftDeletes()) $filters[] = "\App\Filters\Boolean\Trashed::class";
+        if ($this->hasTableFilter()) $filters = array_merge($filters, $this->getBooleanFilters(), $this->getConstantFilters());
+        return count($filters) ? ',' . collect($filters)->map(fn ($filter) => "\n\t\t\t" . $filter)->implode(',') : '';
+    }
+
+    protected function getBooleanFilters(): array
+    {
+        $filters = [];
+        $activationRouteOption = $this->getActivationRouteOption();
+        $fieldNames = collect($this->getBooleanFilterFields())->pluck('name')->toArray();
+        if ($activationRouteOption) array_unshift($fieldNames, $activationRouteOption['column'] ?? 'is_active');
+        foreach ($fieldNames as $fieldName) {
+            $filters[] = "new \App\Filters\Boolean\ToggleBoolean('{$fieldName}')";
+        }
+        return $filters;
+    }
+
+    protected function getConstantFilters(): array
+    {
+        $filters = [];
+        foreach ($this->getConstantFilterFields() as $name => $field) {
+            $filterType = Field::getFilter($field);
+            $databaseType = Field::hasFieldSingleConstant($field) ? 'single' : 'multi';
+            if ($databaseType === 'single' && $filterType === 'single') {
+                $filters[] = "new \App\Filters\General\EqualFilter('{$name}')";
+            } else if ($databaseType === 'single' && $filterType === 'multi') {
+                $filters[] = "new \App\Filters\General\ArrayCheckSingleFilter('{$name}')";
+            } else if ($databaseType === 'multi') { // && $filterType === 'multi' -- الفلتر فى الفرونت ملتى يبعت قيمة او اكتر عادى
+                $filters[] = "new \App\Filters\General\ArrayCheckMultiFilter('{$name}')";
+            }
+        }
+        return $filters;
     }
 
 }

@@ -9,13 +9,11 @@ use Illuminate\Support\Str;
 class RouteGenerator extends Generator
 {
 
-    const METHODS = [
-        'index', 'show', 'store', 'update', 'destroy'
-    ];
+    const METHODS = ['index', 'show', 'store', 'update', 'destroy'];
 
     public function generate(): void
     {
-        $this->insertRoute();
+        $this->generateRoutes();
     }
 
     protected function getRoutesPath(): string
@@ -28,7 +26,7 @@ class RouteGenerator extends Generator
         return "\nuse {$this->getControllerNamespace()}\\{$this->getControllerName()};";
     }
 
-    protected function getRoutesContentFile(): string
+    protected function getContentFile(): string
     {
         return File::get($this->getRoutesPath());
     }
@@ -50,6 +48,51 @@ class RouteGenerator extends Generator
         return "->{$type}({$methods})";
     }
 
+    protected function generateRoutes(): void
+    {
+        $this->appendUseController();
+        $this->appendRoutes();
+    }
+
+    protected function appendRoutes(): void
+    {
+        $content = $this->getContentFile();
+        foreach ($this->getRoutes() as $route) {
+            $routeIsExists = strpos($content, $route) !== false;
+            $routeMatchPattern = false;
+            if ($routeIsExists) continue;
+            foreach ($this->getSearchPatterns() as $pattern) {
+                $startPos = strpos($content, $pattern["pattern"]);
+                if ($startPos === false) continue;
+                $groupStartPos = $this->findGroupStartPosition($content, $startPos);
+                $groupEndPos = $this->findClosingBracePosition($content, $groupStartPos);
+                if ($groupEndPos === false) continue;
+                $content = substr_replace($content, "\t{$route}{$pattern['indentation']}", $groupEndPos, 0);
+                $this->putToFile($content);
+                $routeMatchPattern = true;
+                break;
+            }
+            if (!$routeMatchPattern) $this->putToFile($route, 'append');
+        }
+    }
+
+    protected function appendUseController(): void
+    {
+        $content = $this->getContentFile();
+        if (strpos($content, $this->getUseController()) !== false) return;
+        $content = substr_replace($content, $this->getUseController(), strpos($content, '<?php ') + 5, 0);
+        $this->putToFile($content);
+    }
+
+    protected function getRoutes(): array
+    {
+        $routes = [];
+        foreach ($this->getBooleanRouteFields() as $field) {
+            $routes[] = $this->getRouteBooleanTemplate($field);
+        }
+        return array_merge($routes, [$this->getRouteActivationTemplate(), $this->getRouteResourceTemplate()]);
+    }
+
     protected function getRouteResourceTemplate(): string
     {
         $methods = $this->getExcludedOrOnlyMethods();
@@ -61,6 +104,17 @@ class RouteGenerator extends Generator
         if (!$this->getActivationRouteOption()) return '';
         $middleware = $this->hasPermissions() ? "->middleware('can:activation-{$this->modelNameKebab}')" : '';
         return "Route::patch('{$this->modelNameKebabPlural}/{id}/activation', [{$this->getControllerName()}::class, 'activation']){$middleware};\n";
+    }
+
+    protected function getRouteBooleanTemplate(array $field): string
+    {
+        $method = Str::camel($field['route']);
+        return "Route::patch('{$this->modelNameKebabPlural}/{id}/{$field['route']}', [{$this->getControllerName()}::class, '{$method}']);\n";
+    }
+
+    protected function putToFile($content, $method = 'put'): void
+    {
+        File::$method($this->getRoutesPath(), $content);
     }
 
     protected function getSearchPatterns(): array
@@ -75,48 +129,6 @@ class RouteGenerator extends Generator
                 "indentation" => "",
             ]
         ];
-    }
-
-    protected function insertRoute(): void
-    {
-        $routesPath = $this->getRoutesPath();
-        $routesContentFile = $this->getRoutesContentFile();
-        $routeResourceTemplate = $this->getRouteResourceTemplate();
-        $routeActivationTemplate = $this->getRouteActivationTemplate();
-        $routesContentFile = $this->addUseController($routesContentFile);
-        $addActivationRoute = strpos($routesContentFile, $routeActivationTemplate) === false;
-        $addResourceRoute = strpos($routesContentFile, $routeResourceTemplate) === false;
-        foreach ($this->getSearchPatterns() as $pattern) {
-            $startPos = strpos($routesContentFile, $pattern["pattern"]);
-            if ($startPos !== false) {
-                $groupStartPos = $this->findGroupStartPosition($routesContentFile, $startPos);
-                $groupEndPos = $this->findClosingBracePosition($routesContentFile, $groupStartPos);
-                if ($groupEndPos !== false) {
-                    if ($addResourceRoute) {
-                        $routesContentFile = substr_replace($routesContentFile, "\t" . $routeResourceTemplate . $pattern["indentation"], $groupEndPos, 0);
-                    }
-                    if ($addActivationRoute) {
-                        $routesContentFile = substr_replace($routesContentFile, "\t" . $routeActivationTemplate . $pattern["indentation"], $groupEndPos, 0);
-                    }
-                    File::put($routesPath, $routesContentFile);
-                    return;
-                }
-            }
-        }
-        if ($addActivationRoute) {
-            File::append($routesPath, $routeActivationTemplate);
-        }
-        if ($addResourceRoute) {
-            File::append($routesPath, $routeResourceTemplate);
-        }
-    }
-
-    protected function addUseController(string $routesContentFile): string
-    {
-        if (strpos($routesContentFile, $this->getUseController()) !== false) return $routesContentFile;
-        $routesContentFile = substr_replace($routesContentFile, $this->getUseController(), 5, 0);
-        File::put($this->getRoutesPath(), $routesContentFile);
-        return $routesContentFile;
     }
 
     protected function findGroupStartPosition(string $content, int $startPos): int|false

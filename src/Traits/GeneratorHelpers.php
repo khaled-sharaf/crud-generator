@@ -135,7 +135,10 @@ trait GeneratorHelpers
     
     protected function getFields(): array
     {
-        return array_merge($this->config['fields'] ?? [], $this->appendActivationField());
+        return collect(array_merge($this->config['fields'] ?? [], $this->appendActivationField()))->map(function ($field, $name) {
+            $field['name'] = $name;
+            return $field;
+        })->toArray();
     }
 
     private function appendActivationField(): array
@@ -157,7 +160,12 @@ trait GeneratorHelpers
 
     protected function getBooleanFields(): array
     {
-        return collect($this->getFields())->filter(fn ($field) => $field['type'] === 'boolean')->toArray();
+        return collect($this->getFields())->filter(fn ($field) => Field::isBoolean($field))->toArray();
+    }
+
+    protected function getBooleanRouteFields(): array
+    {
+        return collect($this->getFields())->filter(fn ($field) => Field::hasBooleanRouteFilter($field))->toArray();
     }
 
     protected function getFileFields(): array
@@ -178,6 +186,16 @@ trait GeneratorHelpers
     protected function getLookupFields(): array
     {
         return collect($this->getFields())->filter(fn ($field) => Field::hasLookup($field))->toArray();
+    }
+
+    protected function getBooleanFilterFields(): array
+    {
+        return collect($this->getFields())->filter(fn ($field) => Field::hasBooleanFilter($field))->toArray();
+    }
+
+    protected function getConstantFilterFields(): array
+    {
+        return collect($this->getFields())->filter(fn ($field) => Field::hasConstantFilter($field))->toArray();
     }
 
     protected function getCastFields(): array

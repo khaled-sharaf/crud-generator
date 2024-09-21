@@ -57,9 +57,19 @@ return [
             // 'nullable' => true,
             // 'default' => 'string_test',
             // 'migrationType' => 'string',
-            // 'addToFilter' => true,
+            // add boolean and constant (with options) only to filter
+            // 'filter' => true, // true, 'single', 'multi' | add options for constant and assign it single or multi will be add to filter
             // 'translatable' => true,
             // 'validation' => 'required', // or 'validation.*', 'validation.*.objectKey'
+            // 'options' => [
+            //     'key_and_value' => 'Title', // 'key and value' => label
+            // ],
+            // 'options' => [ // add custom value
+            //     'key' => [
+            //         'label' => 'Title',
+            //         'value' => 1,
+            //     ],
+            // ],
             // 'relation' => true, // or array for more options
             // 'relation' => [
             //     'constrained' => true, // optional
@@ -73,14 +83,17 @@ return [
             'frontend' => [
                 'visibleList' => true,
                 'sortable' => true,
-                'searchable' => true,
                 'exportable' => true,
-                // 'advancedSearchable' => true, // add field to advanced search (default: false)
-                // 'advancedSearchName' => 'name', // name of field in database (default: false)
-                // 'hidden' => [ // Hide field in different views
-                //     'create' => true, // Hide in create form (default: false)
-                //     'update' => true, // Hide in update form (default: false)
-                //     'list'  => true, // Hide in list view (default: false)
+                'searchable' => true,
+                // 'searchableName' => 'name', // optional - name of field in database
+                // 'advancedSearchable' => true, // optional - add field to advanced search
+                // 'advancedSearchName' => 'name', // optional - name of field in database
+
+                // 'hidden' => true, // Hide field in frontend
+                // 'hidden' => [ // Hide field in frontend views
+                //     'list'  => true, // Hide in list view
+                //     'create' => true, // Hide in create form
+                //     'update' => true, // Hide in update form
                 // ],
             ]
         ],
@@ -103,7 +116,7 @@ return [
         // 'tags' => [
         //     'type' => 'belongsToMany',
         //     'model' => 'Modules\Website\app\Models\Tag',
-        //     'addMigrationFile' => true,
+        //     'addMigrationFile' => true, // optional - add migration file
         //     'table' => 'post_tag', // optional
         //     'foreignKey' => 'post_id', // optional
         //     'localKey' => 'tag_id', // optional
