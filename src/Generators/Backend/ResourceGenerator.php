@@ -65,7 +65,7 @@ class ResourceGenerator extends Generator
     protected function getFieldsData(): string
     {
         $timestamps = ",\n\t\t\t'created_at' => formatDate(\$this->created_at),\n\t\t\t'updated_at' => formatDate(\$this->updated_at)";
-        return collect($this->getFields())->map(function ($field, $name) {
+        return collect($this->getNotHiddenFields())->map(function ($field, $name) {
             return "'$name' => \$this->{$name}";
         })->implode(",\n\t\t\t") . $timestamps;
     }

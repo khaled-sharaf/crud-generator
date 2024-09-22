@@ -158,6 +158,11 @@ trait GeneratorHelpers
         return $fields;
     }
 
+    protected function getNotHiddenFields(): array
+    {
+        return collect($this->getFields())->filter(fn ($field) => !Field::isHidden($field))->toArray();
+    }
+
     protected function getBooleanFields(): array
     {
         return collect($this->getFields())->filter(fn ($field) => Field::isBoolean($field))->toArray();

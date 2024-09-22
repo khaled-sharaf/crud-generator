@@ -74,6 +74,14 @@ class Field
         return isset($field['filter']) && ($field['filter'] === true || in_array($field['filter'], ['single', 'multi']));
     }
 
+    public static function isHidden(array $field): bool
+    {
+        return isset($field['hidden']) && (
+            $field['hidden'] === true ||
+            ($field['hidden']['list'] ?? false === true && $field['hidden']['create'] ?? false === true && $field['hidden']['update'] ?? false === true)
+        );
+    }
+
     public static function hasBoolean(array $field): bool
     {
         return $field['type'] === 'boolean' && isset($field['filter']) && $field['filter'] === true;

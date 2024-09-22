@@ -74,7 +74,7 @@ class LangGenerator extends Generator
     protected function getValidationTemplate(): string
     {
         $validation = "\n\t\t'validation' => [";
-        $validation .= collect($this->getFields())->map(function ($field, $name) {
+        $validation .= collect($this->getNotHiddenFields())->map(function ($field, $name) {
             return "\n\t\t\t'{$name}' => '{$field['label']}',";
         })->join('');
         return $validation . "\n\t\t],";

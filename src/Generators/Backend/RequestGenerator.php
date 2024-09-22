@@ -77,7 +77,7 @@ class RequestGenerator extends Generator
 
     protected function getRules(): string
     {
-        return collect($this->getFields())->map(fn($field, $name) => $this->getFieldValidationRule($name, $field))->implode(',');
+        return collect($this->getNotHiddenFields())->map(fn($field, $name) => $this->getFieldValidationRule($name, $field))->implode(',');
     }
 
     protected function getFieldValidationRule(string $name, array $field): string
