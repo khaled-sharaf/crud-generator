@@ -1,6 +1,7 @@
 <?php
 
-namespace W88\CrudSystem\Traits;
+namespace W88\CrudSystem\Generators;
+
 use Illuminate\Support\Str;
 use W88\CrudSystem\Field;
 

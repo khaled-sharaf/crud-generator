@@ -4,7 +4,6 @@ namespace W88\CrudSystem\Generators;
 
 use W88\CrudSystem\Contracts\GeneratorInterface;
 use Illuminate\Support\Str;
-use W88\CrudSystem\Traits\GeneratorHelpers;
 
 abstract class Generator implements GeneratorInterface
 {

@@ -8,7 +8,7 @@ use W88\CrudSystem\Services\CrudGeneratorService;
 
 class GenerateCrud extends Command
 {
-    protected $signature = 'fr:crud-generate {module?} {name?}';
+    protected $signature = 'fr:crud-generate {name?} {module?}';
     protected $description = 'Generate CRUD operations for a given model within a specified module based on config file';
 
     

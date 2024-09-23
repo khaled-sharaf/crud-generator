@@ -180,7 +180,7 @@ class ModelGenerator extends Generator
     {
         $modelFieldsDelete = collect($this->getFileFields())->map(function ($field, $name) {
             if (Str::contains($field['type'], 'multi_')) {
-                return "\n\t\t\tforeach (\$model->{$name} as \$file) {\n\t\t\t\t\$model->deleteFile(\$file['url'], \$model->filePaths['multi']);\n\t\t\t}";
+                return "\n\t\t\tforeach (\$model->{$name}Urls as \$file) {\n\t\t\t\t\$model->deleteFile(\$file['url'], \$model->filePaths['multi']);\n\t\t\t}";
             }
             return "\n\t\t\t\$model->deleteFile(\$model->{$name}, \$model->filePaths['single']);";
         });
