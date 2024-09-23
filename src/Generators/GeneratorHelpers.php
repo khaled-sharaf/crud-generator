@@ -3,7 +3,7 @@
 namespace W88\CrudSystem\Generators;
 
 use Illuminate\Support\Str;
-use W88\CrudSystem\Field;
+use W88\CrudSystem\Facades\Field;
 
 trait GeneratorHelpers
 {

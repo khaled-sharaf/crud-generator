@@ -1,6 +1,6 @@
 <?php
 
-namespace W88\CrudSystem;
+namespace W88\CrudSystem\Facades;
 
 use Illuminate\Support\Str;
 
@@ -9,11 +9,12 @@ class Field
 
     public static function getMigrationType(array $field): string
     {
+        $fileFields = static::fileFields();
         $typeAfterRemovingMulti = str_replace('multi_', '', $field['type']);
         if (isset($field['migrationType'])) return $field['migrationType'];
         if (static::hasTranslatable($field)) return static::translatableFields()[$field['type']];
-        if (in_array($field['type'], static::fileFields())) return 'string';
-        if (in_array($typeAfterRemovingMulti, static::fileFields())) return 'json';
+        if (in_array($field['type'], $fileFields)) return 'string';
+        if (in_array($typeAfterRemovingMulti, $fileFields)) return 'json';
         if (isset($field['relation'])) {
             return static::isRelationConstrained($field) ? 'foreignId' : 'unsignedBigInteger';
         }
@@ -55,8 +56,9 @@ class Field
 
     public static function hasFile(array $field): bool
     {
+        $fileFields = static::fileFields();
         $typeAfterRemovingMulti = str_replace('multi_', '', $field['type']);
-        return in_array($field['type'], static::fileFields()) || in_array($typeAfterRemovingMulti, static::fileFields());
+        return in_array($field['type'], $fileFields) || in_array($typeAfterRemovingMulti, $fileFields);
     }
 
     public static function hasConstant(array $field): bool
@@ -138,71 +140,27 @@ class Field
 
     public static function normalFields(): array
     {
-        return [
-            'text' => ['migration' => 'string', 'seeder' => 'fake()->text(20)'],
-            'number' => ['migration' => 'string', 'seeder' => 'fake()->numberBetween(1, 100)'],
-            'password' => ['migration' => 'string', 'seeder' => "\Illuminate\Support\Facades\Hash::make('12345678')"],
-            'textarea' => ['migration' => 'text', 'seeder' => 'fake()->text()'],
-            'editor' => ['migration' => 'mediumText', 'seeder' => 'fake()->text()'],
-            'color' => ['migration' => 'string', 'seeder' => 'fake()->hexColor()'],
-            'boolean' => ['migration' => 'boolean', 'seeder' => 'fake()->boolean()'],
-            'time' => ['migration' => 'time', 'seeder' => 'fake()->time()'],
-            'date' => ['migration' => 'date', 'seeder' => 'fake()->date()'],
-            'datetime' => ['migration' => 'dateTime', 'seeder' => 'fake()->dateTime()'],
-            'timestamp' => ['migration' => 'timestamp', 'seeder' => 'fake()->dateTime()'],
-            'image' => ['migration' => 'string', 'seeder' => 'null'],
-            'video' => ['migration' => 'string', 'seeder' => 'null'],
-            'file' => ['migration' => 'string', 'seeder' => 'null'],
-            'checkbox' => ['migration' => 'string', 'seeder' => 'null'],
-            'select' => ['migration' => 'string', 'seeder' => 'null'],
-            'radio' => ['migration' => 'string', 'seeder' => 'null'],
-        ];
+        return Crud::config('field.types.normal');
     }
 
     public static function jsonFields(): array
     {
-        return [
-            'range_date' => ['migration' => 'json', 'seeder' => '[]'],
-            'multi_date' => ['migration' => 'json', 'seeder' => '[]'],
-            'multi_range_date' => ['migration' => 'json', 'seeder' => '[]'],
-            'multi_image' => ['migration' => 'json', 'seeder' => '[]'],
-            'multi_video' => ['migration' => 'json', 'seeder' => '[]'],
-            'multi_file' => ['migration' => 'json', 'seeder' => '[]'],
-            'multi_checkbox' => ['migration' => 'json', 'seeder' => '[]'],
-            'multi_select' => ['migration' => 'json', 'seeder' => '[]'],
-            'slider' => ['migration' => 'json', 'seeder' => '[]'],
-            'range' => ['migration' => 'json', 'seeder' => '[]'],
-            'array' => ['migration' => 'json', 'seeder' => '[]'],
-            'location' => ['migration' => 'json', 'seeder' => '[]'],
-        ];
+        return Crud::config('field.types.json');
     }
 
     public static function translatableFields(): array
     {
-        return [
-            'text' => 'json',
-            'textarea' => 'json',
-            'editor' => 'json',
-            'array' => 'json',
-        ];
+        return Crud::config('field.types.translatable');
     }
 
     public static function fileFields(): array
     {
-        return [
-            'image',
-            'video',
-            'file',
-        ];
+        return Crud::config('field.types.file');
     }
 
     public static function filterFields(): array
     {
-        return [
-            'checkbox',
-            'select',
-            'radio',
-        ];
+        return Crud::config('field.types.filter');
     }
 
 }

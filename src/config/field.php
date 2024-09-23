@@ -1,0 +1,55 @@
+<?php
+
+return [
+    'types' => [
+        'normal' => [
+            'text' => ['migration' => 'string', 'seeder' => 'fake()->text(20)'],
+            'number' => ['migration' => 'string', 'seeder' => 'fake()->numberBetween(1, 100)'],
+            'password' => ['migration' => 'string', 'seeder' => "\Illuminate\Support\Facades\Hash::make('12345678')"],
+            'textarea' => ['migration' => 'text', 'seeder' => 'fake()->text()'],
+            'editor' => ['migration' => 'mediumText', 'seeder' => 'fake()->text()'],
+            'color' => ['migration' => 'string', 'seeder' => 'fake()->hexColor()'],
+            'boolean' => ['migration' => 'boolean', 'seeder' => 'fake()->boolean()'],
+            'time' => ['migration' => 'time', 'seeder' => 'fake()->time()'],
+            'date' => ['migration' => 'date', 'seeder' => 'fake()->date()'],
+            'datetime' => ['migration' => 'dateTime', 'seeder' => 'fake()->dateTime()'],
+            'timestamp' => ['migration' => 'timestamp', 'seeder' => 'fake()->dateTime()'],
+            'image' => ['migration' => 'string', 'seeder' => 'null'],
+            'video' => ['migration' => 'string', 'seeder' => 'null'],
+            'file' => ['migration' => 'string', 'seeder' => 'null'],
+            'checkbox' => ['migration' => 'string', 'seeder' => 'null'],
+            'select' => ['migration' => 'string', 'seeder' => 'null'],
+            'radio' => ['migration' => 'string', 'seeder' => 'null'],
+        ],
+        'json' => [
+            'range_date' => ['migration' => 'json', 'seeder' => '[]'],
+            'multi_date' => ['migration' => 'json', 'seeder' => '[]'],
+            'multi_range_date' => ['migration' => 'json', 'seeder' => '[]'],
+            'multi_image' => ['migration' => 'json', 'seeder' => '[]'],
+            'multi_video' => ['migration' => 'json', 'seeder' => '[]'],
+            'multi_file' => ['migration' => 'json', 'seeder' => '[]'],
+            'multi_checkbox' => ['migration' => 'json', 'seeder' => '[]'],
+            'multi_select' => ['migration' => 'json', 'seeder' => '[]'],
+            'slider' => ['migration' => 'json', 'seeder' => '[]'],
+            'range' => ['migration' => 'json', 'seeder' => '[]'],
+            'array' => ['migration' => 'json', 'seeder' => '[]'],
+            'location' => ['migration' => 'json', 'seeder' => '[]'],
+        ],
+        'translatable' => [
+            'text' => 'json',
+            'textarea' => 'json',
+            'editor' => 'json',
+            'array' => 'json',
+        ],
+        'file' => [
+            'image',
+            'video',
+            'file',
+        ],
+        'filter' => [
+            'checkbox',
+            'select',
+            'radio',
+        ],
+    ],
+];

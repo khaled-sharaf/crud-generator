@@ -1,6 +1,6 @@
 <?php
 
-namespace W88\CrudSystem\Providers;
+namespace W88\CrudSystem;
 
 use Illuminate\Support\ServiceProvider;
 

@@ -6,7 +6,7 @@ use W88\CrudSystem\Generators\Generator;
 use Illuminate\Support\Facades\File;
 use Touhidurabir\StubGenerator\StubGenerator;
 use Illuminate\Support\Str;
-use W88\CrudSystem\Field;
+use W88\CrudSystem\Facades\Field;
 
 class ConstantGenerator extends Generator
 {

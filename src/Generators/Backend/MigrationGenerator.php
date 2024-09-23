@@ -5,7 +5,7 @@ namespace W88\CrudSystem\Generators\Backend;
 use W88\CrudSystem\Generators\Generator;
 use Illuminate\Support\Facades\File;
 use Touhidurabir\StubGenerator\Facades\StubGenerator;
-use W88\CrudSystem\Field;
+use W88\CrudSystem\Facades\Field;
 use Illuminate\Support\Str;
 
 class MigrationGenerator extends Generator

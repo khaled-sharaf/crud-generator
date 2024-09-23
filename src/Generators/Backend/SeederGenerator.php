@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Artisan;
 use W88\CrudSystem\Generators\Generator;
 use Illuminate\Support\Facades\File;
 use Touhidurabir\StubGenerator\StubGenerator;
-use W88\CrudSystem\Field;
+use W88\CrudSystem\Facades\Field;
 
 class SeederGenerator extends Generator
 {

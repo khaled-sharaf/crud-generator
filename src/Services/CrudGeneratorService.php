@@ -3,15 +3,11 @@
 namespace W88\CrudSystem\Services;
 
 use Illuminate\Support\Facades\File;
-use W88\CrudSystem\Factories\CrudGeneratorFactory;
-
+use W88\CrudSystem\Facades\Crud;
+use Illuminate\Support\Str;
 class CrudGeneratorService
 {
 
-    private $backend_generator_types = ['migration', 'model', 'route', 'controller', 'service', 'request', 'resource', 'seeder', 'constant', 'lookup', 'lang', 'permission'];
-    private $frontend_generator_types = ['index', 'create', 'edit', 'show'];
-    
-    
     public function generate($moduleName = null, $crudName = null)
     {
         if ($moduleName && $crudName) {
@@ -24,19 +20,18 @@ class CrudGeneratorService
     protected function singleGenerator($moduleName, $crudName)
     {
         $version = strtolower(config('app.api_version', 'v1'));
-        $config = $this->loadConfig($moduleName, $crudName);
-        if (!$config) {
-            throw new \Exception('Config not found for ' . $moduleName . ' ' . $crudName);
-        }
-        foreach ($this->getGeneratorsTypes() as $generator_type) {
-            $generators_action = $this->getGeneratorsAction($generator_type);
-            $configData = [
-                'moduleName' => $moduleName,
-                'config' => $config,
-                'version' => $version,
-            ];
-            $generator = CrudGeneratorFactory::create($generators_action, $generator_type, $configData);
-            $generator->generate();
+        $config = $this->loadCrudClientConfig($moduleName, $crudName);
+        foreach ($this->getGenerators() as $fileName => $generators) {
+            foreach ($generators as $generatorType) {
+                $configData = [
+                    'moduleName' => $moduleName,
+                    'config' => $config,
+                    'version' => $version,
+                ];
+                $generatorClass = $this->getGeneratorClass($fileName, $generatorType);
+                $generator = new $generatorClass($configData);
+                $generator->generate();
+            }
         }
     }
 
@@ -55,21 +50,28 @@ class CrudGeneratorService
         }
     }
 
-    protected function getGeneratorsAction($generator_type)
+    protected function getGenerators()
     {
-        return in_array($generator_type, $this->backend_generator_types) ? 'backend' : 'frontend';
+        return Crud::config('generator.generators');
     }
 
-    protected function getGeneratorsTypes()
+    protected function getGeneratorClass($fileName, $generatorType)
     {
-        // return array_merge($this->backend_generator_types, $this->frontend_generator_types);
-        return $this->backend_generator_types;
+        $fileName = Str::studly($fileName);
+        $generatorType = Str::studly($generatorType) . 'Generator';
+        $className = "W88\CrudSystem\Generators\\{$fileName}\\{$generatorType}";
+        if (!class_exists($className)) {
+            throw new \Exception('Unknown generator type: ' . $generatorType);
+        }
+        return $className;
     }
 
-    protected function loadConfig($moduleName, $crudName)
+    protected function loadCrudClientConfig($moduleName, $crudName)
     {
         $configPath = base_path("Modules/{$moduleName}/config/cruds/" . $crudName . '.php');
-        if (!File::exists($configPath)) return null;
+        if (!File::exists($configPath)) {
+            throw new \Exception('Config not found for ' . $moduleName . ' ' . $crudName);
+        }
         return File::getRequire($configPath);
     }
 
