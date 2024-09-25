@@ -56,7 +56,6 @@ class LangGenerator extends Generator
         $content .= $this->getPermissionsTemplate();
         $content .= $this->getValidationTemplate();
         $content .= $this->getConstantsTemplate();
-        $content .= $this->getMessagesTemplate();
         return $content . "\n\t],\n";
     }
 
@@ -82,8 +81,10 @@ class LangGenerator extends Generator
 
     protected function getConstantsTemplate(): string
     {
+        $constantFields = $this->getConstantFields();
+        if (empty($constantFields)) return '';
         $constants = "\n\t\t'constants' => [";
-        foreach ($this->getConstantFields() as $fieldName => $field) {
+        foreach ($constantFields as $fieldName => $field) {
             $fieldName = strtolower(Str::snake($fieldName));
             $constants .= "\n\t\t\t'{$fieldName}' => [";
             foreach (Field::getOptions($field) as $key => $value) {
@@ -96,14 +97,4 @@ class LangGenerator extends Generator
         return $constants . "\n\t\t],";
     }
 
-    protected function getMessagesTemplate(): string
-    {
-        $modelTitle = strtolower(Str::title($this->modelNameSnake));
-        $messages = "\n\t\t'messages' => [";
-        if ($this->getActivationRouteOption()) {
-            $messages .= "\n\t\t\t'activated' => 'The {$modelTitle} has been activated successfully',";
-            $messages .= "\n\t\t\t'deactivated' => 'The {$modelTitle} has been deactivated successfully',";
-        }
-        return $messages . "\n\t\t],";
-    }
 }

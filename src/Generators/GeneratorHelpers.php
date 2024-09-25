@@ -20,6 +20,12 @@ trait GeneratorHelpers
         return boolval($clientApi);
     }
 
+    protected function allClientApiIsAllowed(): bool
+    {
+        $clientApi = $this->config['clientApi'] ?? false;
+        return $clientApi === true || (is_array($clientApi) && count($clientApi) === 5 && collect($clientApi)->every(fn ($route) => $route === true));
+    }
+
     protected function hasAddLogs(): bool
     {
         return $this->config['options']['addLogs'] ?? false;

@@ -27,6 +27,11 @@ class ControllerGenerator extends Generator
         return "{$this->modulePath}/app/Http/Controllers/{$this->versionNamespace}";
     }
 
+    protected function getLocalControllerNamespace(): string
+    {
+        return $this->getControllerNamespace();
+    }
+
     protected function ensureStubExists(): void
     {
         $stubPath = $this->getStubPath();
@@ -56,7 +61,7 @@ class ControllerGenerator extends Generator
     protected function getReplacers(): array
     {
         return [
-            'CLASS_NAMESPACE' => $this->getControllerNamespace(),
+            'CLASS_NAMESPACE' => $this->getLocalControllerNamespace(),
             'CLASS_NAME' => $this->getControllerName(),
             'SERVICE_NAME' => $this->getServiceName(),
             'SERVICE_NAME_CAMEL' => $this->getServiceNameCamel(),
@@ -68,12 +73,12 @@ class ControllerGenerator extends Generator
 
     protected function getUseClasses(): string
     {
-        $useModel = 'use ' . $this->getModelNamespace() . '\\' . $this->modelName . ';';
-        $useRequest = 'use ' . $this->getRequestNamespace() . '\\' . $this->getRequestName() . ';';
-        $useCrudHelper = 'use App\Helpers\CrudHelpers\Facades\CrudHelper;';
+        $useModel = "use {$this->getModelNamespace()}\\{$this->modelName};";
+        $useRequest = "use {$this->getRequestNamespace()}\\{$this->getRequestName()};";
+        $useCrudHelper = "use App\Helpers\CrudHelpers\Facades\CrudHelper;";
         $useClasses = [
-            'use ' . $this->getServiceNamespace() . '\\' . $this->getServiceName() . ';',
-            'use ' . $this->getResourceNamespace() . '\\' . $this->getResourceName() . ';',
+            "use {$this->getServiceNamespace()}\\{$this->getServiceName()};",
+            "use {$this->getResourceNamespace()}\\{$this->getResourceName()};",
         ];
         if ($this->checkApiRoute('delete') || $this->getActivationRouteOption()) $useClasses[] = $useCrudHelper;
         if ($this->checkApiRoute('edit') || $this->checkApiRoute('delete') || $this->getActivationRouteOption()) $useClasses[] = $useModel;
@@ -97,50 +102,45 @@ class ControllerGenerator extends Generator
 
     protected function getIndexMethod(): string
     {
-        return 'public function index()
-    {
-        $' . $this->modelNameCamelPlural . ' = $this->' . $this->getServiceNameCamel() . '->tableList();
-        ' . $this->getResourceName() . '::collection($' . $this->modelNameCamelPlural . ');
-        return sendData($' . $this->modelNameCamelPlural . ');
-    }';
+        return "\n\n\tpublic function index()\n\t{
+        \${$this->modelNameCamelPlural} = \$this->{$this->getServiceNameCamel()}->tableList();
+        {$this->getResourceName()}::collection(\${$this->modelNameCamelPlural});
+        return sendData(\${$this->modelNameCamelPlural});
+    }";
     }
 
     protected function getStoreMethod(): string
     {
-        return "\n\n\t" . 'public function store(' . $this->getRequestName() . ' $request)
-    {
-        $data = $request->validated();
-        $this->' . $this->getServiceNameCamel() . '->create($data);
-        return sendData(__(\'view.messages.created_success\'));
-    }';
+        return "\n\n\t" . "public function store(" . $this->getRequestName() . " \$request)\n\t{
+        \$data = \$request->validated();
+        \$this->{$this->getServiceNameCamel()}->create(\$data);
+        return sendData(__('view.messages.created_success'));
+    }";
     }
 
     protected function getUpdateMethod(): string
     {
-        return "\n\n\t" . 'public function update($id, ' . $this->getRequestName() . ' $request)
-    {
-        $' . $this->modelNameCamel . ' = ' . $this->modelName . '::findOrFail($id);
-        $data = $request->validated();
-        $this->' . $this->getServiceNameCamel() . '->update($' . $this->modelNameCamel . ', $data);
-        return sendData(__(\'view.messages.updated_success\'));
-    }';
+        return "\n\n\tpublic function update(\$id, {$this->getRequestName()} \$request)\n\t{
+        \${$this->modelNameCamel} = {$this->modelName}::findOrFail(\$id);
+        \$data = \$request->validated();
+        \$this->{$this->getServiceNameCamel()}->update(\$id, \$data);
+        return sendData(__('view.messages.updated_success'));
+    }";
     }
 
     protected function getShowMethod(): string
     {
-        return "\n\n\t" . 'public function show($id)
-    {
-        return sendData(new ' . $this->getResourceName() . '($this->' . $this->getServiceNameCamel() . '->show($id)));
-    }';
+        return "\n\n\tpublic function show(\$id)\n\t{
+        return sendData(new {$this->getResourceName()}(\$this->{$this->getServiceNameCamel()}->show(\$id)));
+    }";
     }
 
     protected function getDestroyMethod(): string
     {
         $hasPermission = $this->hasPermissions() ? ', \'' . $this->modelNameKebab . '\'' : '';
-        return "\n\n\t" . 'public function destroy($id)
-    {
-        return sendData(CrudHelper::deleteActions($id, new ' . $this->modelName . $hasPermission . '));
-    }';
+        return "\n\n\tpublic function destroy(\$id)\n\t{
+        return sendData(CrudHelper::deleteActions(\$id, new {$this->modelName} $hasPermission));
+    }";
     }
 
     protected function getActivationMethod(): string
@@ -148,7 +148,7 @@ class ControllerGenerator extends Generator
         $column = $this->getActivationRouteOption()['column'] ?? 'is_active';
         return "\n\n\tpublic function activation(\$id)\n\t{
         \$action = CrudHelper::toggleBoolean({$this->modelName}::findOrFail(\$id), '{$column}');
-        return sendData(['changed' => \$action['isChanged']], __('{$this->moduleNameSnake}::view.{$this->modelNameSnake}_crud.messages.' . (\$action['model']->{$column} ? 'activated' : 'deactivated')));\n\t}";
+        return sendData(['changed' => \$action['isChanged']], __('view.messages.changed_success'));\n\t}";
     }
 
     protected function getBooleanMethod(array $field): string
@@ -156,7 +156,7 @@ class ControllerGenerator extends Generator
         $method = Str::camel($field['route']);
         return "\n\n\tpublic function {$method}(\$id)\n\t{
         \$action = CrudHelper::toggleBoolean({$this->modelName}::findOrFail(\$id), '{$field['name']}');
-        return sendData(['changed' => \$action['isChanged']], __('view.messages.updated_success'));\n\t}";
+        return sendData(['changed' => \$action['isChanged']], __('view.messages.changed_success'));\n\t}";
     }
 
     protected function getPermissions(): string

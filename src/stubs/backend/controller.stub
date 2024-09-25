@@ -12,8 +12,6 @@ class {{ CLASS_NAME }} extends Controller
     public function __construct({{ SERVICE_NAME }} ${{ SERVICE_NAME_CAMEL }})
     {
         {{ PERMISSIONS }}$this->{{ SERVICE_NAME_CAMEL }} = ${{ SERVICE_NAME_CAMEL }};
-    }
-    
-    {{ METHODS }}
+    }{{ METHODS }}
 
 }
