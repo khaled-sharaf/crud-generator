@@ -33,11 +33,11 @@ class ControllerGenerator extends BackendControllerGenerator
     protected function getMethods(): string
     {
         $methods = '';
-        if ($this->allClientApiIsAllowed() || $this->checkApiRoute('list', 'clientApi')) $methods .= $this->getIndexMethod();
-        if ($this->allClientApiIsAllowed() || $this->checkApiRoute('create', 'clientApi')) $methods .= $this->getStoreMethod();
-        if ($this->allClientApiIsAllowed() || $this->checkApiRoute('show', 'clientApi')) $methods .= $this->getShowMethod();
-        if ($this->allClientApiIsAllowed() || $this->checkApiRoute('edit', 'clientApi')) $methods .= $this->getUpdateMethod();
-        if ($this->allClientApiIsAllowed() || $this->checkApiRoute('delete', 'clientApi')) $methods .= $this->getDestroyMethod();
+        if ($this->checkApiRoute('list', 'clientApi')) $methods .= $this->getIndexMethod();
+        if ($this->checkApiRoute('create', 'clientApi')) $methods .= $this->getStoreMethod();
+        if ($this->checkApiRoute('show', 'clientApi')) $methods .= $this->getShowMethod();
+        if ($this->checkApiRoute('edit', 'clientApi')) $methods .= $this->getUpdateMethod();
+        if ($this->checkApiRoute('delete', 'clientApi')) $methods .= $this->getDestroyMethod();
         return $methods;
     }
 

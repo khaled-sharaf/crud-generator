@@ -2,7 +2,6 @@
 
 namespace W88\CrudSystem\Generators\Backend;
 
-
 use W88\CrudSystem\Generators\Generator;
 use Illuminate\Support\Facades\File;
 use Touhidurabir\StubGenerator\Facades\StubGenerator;
@@ -13,10 +12,15 @@ class RequestGenerator extends Generator
  
     public function generate(): void
     {
-        if (!$this->checkApiRoute('create') && !$this->checkApiRoute('edit')) return;
+        if (!$this->conditionForCreate()) return;
         $this->ensureStubExists();
         $this->ensureDirectoryExists();
         $this->generateRequest();
+    }
+
+    protected function conditionForCreate(): bool
+    {
+        return $this->checkApiRoute('create') || $this->checkApiRoute('edit');
     }
 
     protected function getStubPath(): string
@@ -35,6 +39,11 @@ class RequestGenerator extends Generator
     protected function getGeneratorDirectory(): string
     {
         return "{$this->modulePath}/app/Http/Requests/{$this->versionNamespace}";
+    }
+
+    protected function getLocalRequestNamespace(): string
+    {
+        return $this->getRequestNamespace();
     }
 
     protected function ensureDirectoryExists(): void
@@ -59,7 +68,7 @@ class RequestGenerator extends Generator
     {
         $rules = $this->getRules();
         return [
-            'CLASS_NAMESPACE' => $this->getRequestNamespace(),
+            'CLASS_NAMESPACE' => $this->getLocalRequestNamespace(),
             'CLASS_NAME' => $this->getRequestName(),
             'TRANSLATION_PATH' => "{$this->moduleNameSnake}::view.{$this->modelNameSnake}_crud.validation",
             'RULES' => $rules,

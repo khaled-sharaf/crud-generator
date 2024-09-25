@@ -10,7 +10,8 @@ trait GeneratorHelpers
     /* ======================== Checks ======================== */
     protected function checkApiRoute($route, $type = 'dashboardApi'): bool|array
     {
-        return $this->config[$type ?? 'dashboardApi'][$route] ?? false;
+        $checkClientApi = $type === 'clientApi' ? $this->allClientApiIsAllowed() : false;
+        return $this->config[$type ?? 'dashboardApi'][$route] ?? $checkClientApi;
     }
 
     protected function hasClientApi(): bool
