@@ -5,9 +5,9 @@ return [
 
     'dashboardApi' => [
         'create' => true,
-        'update' => true,
+        'show' => true,
+        'edit' => true,
         'delete' => true,
-        'profile' => true,
 
         'activation' => true,
         // 'activation' => [ // route name
@@ -23,17 +23,17 @@ return [
         // ],
     ],
 
-    'apiActions' => false, // or remove it to disable api actions
-    // 'apiActions' => [
+    'clientApi' => false, // or remove it to disable api actions
+    // 'clientApi' => [
     //     'list' => true,
-    //     'profile' => true,
     //     'create' => true,
-    //     'update' => true,
+    //     'show' => true,
+    //     'edit' => true,
     //     'delete' => true,
     // ],
 
     'options' => [
-        'profilePopup' => false, // show profile in popup
+        'showPopup' => false, // show show in popup
         'formPopup' => false, // show create/edit form in popup
         'permissions' => true, // Add permissions to permission file with translation
         'addLogs' => false, // Enable add logs

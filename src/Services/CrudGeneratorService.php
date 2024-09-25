@@ -5,6 +5,7 @@ namespace W88\CrudSystem\Services;
 use Illuminate\Support\Facades\File;
 use W88\CrudSystem\Facades\Crud;
 use Illuminate\Support\Str;
+
 class CrudGeneratorService
 {
 

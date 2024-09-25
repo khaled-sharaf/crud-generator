@@ -76,9 +76,9 @@ class ServiceGenerator extends Generator
     protected function getMethods(): string
     {
         $methods = $this->getIndexMethod();
-        if ($this->hasProfileRoute()) $methods .= $this->getShowMethod();
-        if ($this->hasCreateRoute()) $methods .= $this->getStoreMethod();
-        if ($this->hasUpdateRoute()) $methods .= $this->getUpdateMethod();
+        if ($this->checkApiRoute('show')) $methods .= $this->getShowMethod();
+        if ($this->checkApiRoute('create')) $methods .= $this->getStoreMethod();
+        if ($this->checkApiRoute('edit')) $methods .= $this->getUpdateMethod();
         return $methods;
     }
 

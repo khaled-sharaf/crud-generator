@@ -8,54 +8,46 @@ use W88\CrudSystem\Facades\Field;
 trait GeneratorHelpers
 {
     /* ======================== Checks ======================== */
-    protected function hasCreateRoute(): bool
+    protected function checkApiRoute($route, $type = 'dashboardApi'): bool|array
     {
-        return isset($this->config['dashboardApi']['create']) && $this->config['dashboardApi']['create'] === true;
+        return $this->config[$type ?? 'dashboardApi'][$route] ?? false;
     }
 
-    protected function hasProfileRoute(): bool
+    protected function hasClientApi(): bool
     {
-        return isset($this->config['dashboardApi']['profile']) && $this->config['dashboardApi']['profile'] === true;
-    }
-
-    protected function hasUpdateRoute(): bool
-    {
-        return isset($this->config['dashboardApi']['update']) && $this->config['dashboardApi']['update'] === true;
-    }
-
-    protected function hasDeleteRoute(): bool
-    {
-        return isset($this->config['dashboardApi']['delete']) && $this->config['dashboardApi']['delete'] === true;
+        $clientApi = $this->config['clientApi'] ?? false;
+        if (is_array($clientApi)) $clientApi = !collect($clientApi)->every(fn ($route) => $route === false);
+        return boolval($clientApi);
     }
 
     protected function hasAddLogs(): bool
     {
-        return isset($this->config['options']['addLogs']) && $this->config['options']['addLogs'] === true;
+        return $this->config['options']['addLogs'] ?? false;
     }
 
     protected function hasPermissions(): bool
     {
-        return isset($this->config['options']['permissions']) && $this->config['options']['permissions'] === true;
+        return $this->config['options']['permissions'] ?? false;
     }
 
     protected function hasSoftDeletes(): bool
     {
-        return isset($this->config['options']['softDeletes']) && $this->config['options']['softDeletes'] === true;
+        return $this->config['options']['softDeletes'] ?? false;
     }
 
     protected function hasTableSearch(): bool
     {
-        return isset($this->config['options']['tableSettings']['tableSearch']) && $this->config['options']['tableSettings']['tableSearch'] === true;
+        return $this->config['options']['tableSettings']['tableSearch'] ?? false;
     }
 
     protected function hasTableFilter(): bool
     {
-        return isset($this->config['options']['tableSettings']['tableFilter']) && $this->config['options']['tableSettings']['tableFilter'] === true;
+        return $this->config['options']['tableSettings']['tableFilter'] ?? false;
     }
     
     protected function hasTableExport(): bool
     {
-        return isset($this->config['options']['tableSettings']['tableExport']) && $this->config['options']['tableSettings']['tableExport'] === true;
+        return $this->config['options']['tableSettings']['tableExport'] ?? false;
     }
 
     /* ======================== Getters ======================== */
@@ -219,10 +211,10 @@ trait GeneratorHelpers
             "view-list-{$this->modelNameKebab}" => "View {$modelTitle} List"
         ];
         if ($this->hasTableExport()) $permissions["export-list-{$this->modelNameSnake}"] = "Export {$modelTitle} List";
-        if ($this->hasProfileRoute()) $permissions["view-profile-{$this->modelNameSnake}"] = "View {$modelTitle} Profile";
-        if ($this->hasCreateRoute()) $permissions["create-{$this->modelNameSnake}"] = "Create {$modelTitle}";
-        if ($this->hasUpdateRoute()) $permissions["edit-{$this->modelNameSnake}"] = "Edit {$modelTitle}";
-        if ($this->hasDeleteRoute()) $permissions["delete-{$this->modelNameSnake}"] = "Delete {$modelTitle}";
+        if ($this->checkApiRoute('show')) $permissions["view-profile-{$this->modelNameSnake}"] = "View {$modelTitle} Profile";
+        if ($this->checkApiRoute('create')) $permissions["create-{$this->modelNameSnake}"] = "Create {$modelTitle}";
+        if ($this->checkApiRoute('edit')) $permissions["edit-{$this->modelNameSnake}"] = "Edit {$modelTitle}";
+        if ($this->checkApiRoute('delete')) $permissions["delete-{$this->modelNameSnake}"] = "Delete {$modelTitle}";
         if ($this->hasSoftDeletes()) {
             $permissions["force-delete-{$this->modelNameSnake}"] = "Delete Forever {$modelTitle}";
             $permissions["restore-{$this->modelNameSnake}"] = "Restore {$modelTitle}";

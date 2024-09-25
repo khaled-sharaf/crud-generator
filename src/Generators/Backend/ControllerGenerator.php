@@ -75,19 +75,19 @@ class ControllerGenerator extends Generator
             'use ' . $this->getServiceNamespace() . '\\' . $this->getServiceName() . ';',
             'use ' . $this->getResourceNamespace() . '\\' . $this->getResourceName() . ';',
         ];
-        if ($this->hasDeleteRoute() || $this->getActivationRouteOption()) $useClasses[] = $useCrudHelper;
-        if ($this->hasUpdateRoute() || $this->hasDeleteRoute() || $this->getActivationRouteOption()) $useClasses[] = $useModel;
-        if ($this->hasCreateRoute() || $this->hasUpdateRoute()) $useClasses[] = $useRequest;
+        if ($this->checkApiRoute('delete') || $this->getActivationRouteOption()) $useClasses[] = $useCrudHelper;
+        if ($this->checkApiRoute('edit') || $this->checkApiRoute('delete') || $this->getActivationRouteOption()) $useClasses[] = $useModel;
+        if ($this->checkApiRoute('create') || $this->checkApiRoute('edit')) $useClasses[] = $useRequest;
         return collect($useClasses)->implode("\n");
     }
 
     protected function getMethods(): string
     {
         $methods = $this->getIndexMethod();
-        if ($this->hasCreateRoute()) $methods .= $this->getStoreMethod();
-        if ($this->hasProfileRoute()) $methods .= $this->getShowMethod();
-        if ($this->hasUpdateRoute()) $methods .= $this->getUpdateMethod();
-        if ($this->hasDeleteRoute()) $methods .= $this->getDestroyMethod();
+        if ($this->checkApiRoute('create')) $methods .= $this->getStoreMethod();
+        if ($this->checkApiRoute('show')) $methods .= $this->getShowMethod();
+        if ($this->checkApiRoute('edit')) $methods .= $this->getUpdateMethod();
+        if ($this->checkApiRoute('delete')) $methods .= $this->getDestroyMethod();
         if ($this->getActivationRouteOption()) $methods .= $this->getActivationMethod();
         foreach ($this->getBooleanRouteFields() as $field) {
             $methods .= $this->getBooleanMethod($field);
@@ -163,9 +163,9 @@ class ControllerGenerator extends Generator
     {
         if (!$this->hasPermissions()) return '';
         $permissions = '$this->middleware(\'can:view-list-' . $this->modelNameKebab . '\')->only(\'index\');';
-        if ($this->hasProfileRoute()) $permissions .= "\n\t\t" . '$this->middleware(\'can:view-profile-' . $this->modelNameKebab . '\')->only(\'show\');';
-        if ($this->hasCreateRoute()) $permissions .= "\n\t\t" . '$this->middleware(\'can:create-' . $this->modelNameKebab . '\')->only(\'store\');';
-        if ($this->hasUpdateRoute()) $permissions .= "\n\t\t" . '$this->middleware(\'can:edit-' . $this->modelNameKebab . '\')->only(\'update\');';
+        if ($this->checkApiRoute('show')) $permissions .= "\n\t\t" . '$this->middleware(\'can:view-profile-' . $this->modelNameKebab . '\')->only(\'show\');';
+        if ($this->checkApiRoute('create')) $permissions .= "\n\t\t" . '$this->middleware(\'can:create-' . $this->modelNameKebab . '\')->only(\'store\');';
+        if ($this->checkApiRoute('edit')) $permissions .= "\n\t\t" . '$this->middleware(\'can:edit-' . $this->modelNameKebab . '\')->only(\'update\');';
         return $permissions . "\n\t\t";
     }
 

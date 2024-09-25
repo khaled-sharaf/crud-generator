@@ -13,7 +13,7 @@ class RequestGenerator extends Generator
  
     public function generate(): void
     {
-        if (!$this->hasCreateRoute() && !$this->hasUpdateRoute()) return;
+        if (!$this->checkApiRoute('create') && !$this->checkApiRoute('edit')) return;
         $this->ensureStubExists();
         $this->ensureDirectoryExists();
         $this->generateRequest();

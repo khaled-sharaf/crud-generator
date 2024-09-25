@@ -4,6 +4,7 @@ namespace W88\CrudSystem\Generators;
 
 use W88\CrudSystem\Contracts\GeneratorInterface;
 use Illuminate\Support\Str;
+use W88\CrudSystem\Facades\Crud;
 
 abstract class Generator implements GeneratorInterface
 {
@@ -20,6 +21,8 @@ abstract class Generator implements GeneratorInterface
     protected string $moduleNameSnake;
     protected string $moduleNameKebab;
     protected string $modulePath;
+
+    protected string $clientDirectory;
 
     protected string $modelName;
     protected string $modelNamespace;
@@ -42,6 +45,8 @@ abstract class Generator implements GeneratorInterface
         $this->moduleNameSnake = strtolower(Str::snake($this->moduleName));
         $this->moduleNameKebab = strtolower(Str::kebab($this->moduleName));
         $this->modulePath = module_path($this->moduleName);
+
+        $this->clientDirectory = Str::studly(Crud::config('generator.client_directory'));
         
         $this->modelName = Str::studly($configData['config']['name']);
         $this->modelNamespace = $this->moduleNamespace . '\\app\\Models';

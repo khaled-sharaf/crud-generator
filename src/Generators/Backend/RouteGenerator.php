@@ -5,25 +5,37 @@ namespace W88\CrudSystem\Generators\Backend;
 use W88\CrudSystem\Generators\Generator;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
+use W88\CrudSystem\Facades\Crud;
 
 class RouteGenerator extends Generator
 {
 
-    const METHODS = ['index', 'show', 'store', 'update', 'destroy'];
+    protected $routeApiType = 'dashboard';
 
     public function generate(): void
     {
+        if ($this->routeApiType === 'client' && !$this->hasClientApi()) return;
         $this->generateRoutes();
+    }
+    
+    protected function getRouteFileName(): string
+    {
+        return $this->routeApiType === 'dashboard' ? 'admin.php' : 'api.php';
     }
 
     protected function getRoutesPath(): string
     {
-        return $this->modulePath . '/routes/' . $this->version . '/admin.php';
+        return "{$this->modulePath}/routes/{$this->version}/{$this->getRouteFileName()}";
+    }
+
+    protected function getControllerInRouteNamespace(): string
+    {
+        return $this->getControllerNamespace() . ($this->routeApiType === 'client' ? "\\{$this->clientDirectory}" : '');
     }
 
     protected function getUseController(): string
     {
-        return "\nuse {$this->getControllerNamespace()}\\{$this->getControllerName()};";
+        return "\nuse {$this->getControllerInRouteNamespace()}\\{$this->getControllerName()};";
     }
 
     protected function getContentFile(): string
@@ -31,21 +43,28 @@ class RouteGenerator extends Generator
         return File::get($this->getRoutesPath());
     }
 
+    protected function getRouteMethods(): array
+    {
+        $methods = [];
+        if ($this->checkApiRoute('list', $this->routeApiType . 'Api') || $this->routeApiType === 'dashboard') $methods[] = 'index';
+        if ($this->checkApiRoute('create', $this->routeApiType . 'Api')) $methods[] = 'store';
+        if ($this->checkApiRoute('edit', $this->routeApiType . 'Api')) $methods[] = 'update';
+        if ($this->checkApiRoute('show', $this->routeApiType . 'Api')) $methods[] = 'show';
+        if ($this->checkApiRoute('delete', $this->routeApiType . 'Api')) $methods[] = 'destroy';
+        return $methods;
+    }
+
     protected function getExcludedOrOnlyMethods(): string
     {
-        $methods = ['index'];
-        if ($this->hasCreateRoute()) $methods[] = 'store';
-        if ($this->hasUpdateRoute()) $methods[] = 'update';
-        if ($this->hasProfileRoute()) $methods[] = 'show';
-        if ($this->hasDeleteRoute()) $methods[] = 'destroy';
-        if (count($methods) === count(self::METHODS)) return '';
-        $diffMethods = array_diff(self::METHODS, $methods);
+        $methods = $this->getRouteMethods();
+        if (count($methods) === count(Crud::config('generator.route_methods'))) return '';
+        $diffMethods = array_diff(Crud::config('generator.route_methods'), $methods);
         $type = count($methods) > count($diffMethods) ? 'except' : 'only';
         $methods = $type === 'except' ? $diffMethods : $methods;
         $methods = collect($methods)->map(function($method) {
             return "'{$method}'";
         })->implode(', ');
-        return "->{$type}({$methods})";
+        return $methods ? "->{$type}({$methods})" : '';
     }
 
     protected function generateRoutes(): void
@@ -87,10 +106,13 @@ class RouteGenerator extends Generator
     protected function getRoutes(): array
     {
         $routes = [];
-        foreach ($this->getBooleanRouteFields() as $field) {
-            $routes[] = $this->getRouteBooleanTemplate($field);
+        if ($this->routeApiType === 'dashboard') {
+            foreach ($this->getBooleanRouteFields() as $field) {
+                $routes[] = $this->getRouteBooleanTemplate($field);
+            }
+            $routes[] = $this->getRouteActivationTemplate();
         }
-        return array_merge($routes, [$this->getRouteActivationTemplate(), $this->getRouteResourceTemplate()]);
+        return array_merge($routes, [$this->getRouteResourceTemplate()]);
     }
 
     protected function getRouteResourceTemplate(): string
@@ -119,6 +141,7 @@ class RouteGenerator extends Generator
 
     protected function getSearchPatterns(): array
     {
+        if ($this->routeApiType !== 'dashboard') return [];
         return [
             [
                 "pattern" => "Route::middleware('dashboard')->group(function() {",
