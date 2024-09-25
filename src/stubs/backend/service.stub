@@ -4,8 +4,6 @@ namespace {{ CLASS_NAMESPACE }};
 
 {{ USE_CLASSES}}
 class {{ CLASS_NAME }}
-{
-
-    {{ METHODS }}
+{{{ METHODS }}
 
 }

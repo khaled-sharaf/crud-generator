@@ -288,7 +288,7 @@ class ModelGenerator extends Generator
         $tableNameConvention = $this->getBelongsToManyMigrationFileName(Str::before($relation['model'], '::class'));
         $tableName = $relation['table'] ?? $tableNameConvention;
         $fileName = $this->getRelationMigrationFileName($tableName, $this->belongsToManyMigrationName);
-        $replacers = $this->getBelongsToManyReplacers($tableName, $tableNameConvention);
+        $replacers = $this->getBelongsToManyReplacers($tableName, $tableNameConvention, $relation['pivot'] ?? []);
         $this->generateMigrationRelationFile($fileName, $replacers);
     }
 
@@ -329,13 +329,22 @@ class ModelGenerator extends Generator
         return implode('_', $segments);
     }
 
-    protected function getBelongsToManyReplacers($tableName, $tableNameConvention): array
+    protected function getBelongsToManyReplacers($tableName, $tableNameConvention, $pivots = []): array
     {
         [$key1, $key2] = explode('_', $tableNameConvention);
         $migrationFields = [
             "\$table->foreignId('{$key1}_id')->constrained()->cascadeOnDelete();",
             "\n\t\t\t\$table->foreignId('{$key2}_id')->constrained()->cascadeOnDelete();",
         ];
+        foreach ($pivots as $key => $pivot) {
+            $field = "\n\t\t\t\$table->{$pivot['type']}('{$key}')";
+            if (isset($pivot['nullable']) && $pivot['nullable'] === true) $field .= '->nullable()';
+            if (isset($pivot['default']) && $pivot['default'] !== null) {
+                $default = is_bool($pivot['default']) || is_numeric($pivot['default']) ? json_encode($pivot['default']) : "'{$pivot['default']}'";
+                $field .= "->default({$default})";
+            }
+            $migrationFields[] = $field . ';';
+        }
         return [
             'TABLE_NAME' => $tableName,
             'FIELDS' => implode("", $migrationFields),

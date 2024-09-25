@@ -57,6 +57,11 @@ trait GeneratorHelpers
         return $this->config['options']['tableSettings']['tableExport'] ?? false;
     }
 
+    protected function hasSeeder()
+    {
+        return $this->config['options']['seeder'] ?? false;
+    }
+
     /* ======================== Getters ======================== */
     protected function getModelNamespace(): string
     {
@@ -116,11 +121,6 @@ trait GeneratorHelpers
     protected function getSeederName(): string
     {
         return $this->modelName . 'Seeder';
-    }
-    
-    protected function getSeederOption()
-    {
-        return $this->config['options']['seeder'] ?? false;
     }
 
     protected function getActivationRouteOption()

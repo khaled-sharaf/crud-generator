@@ -111,7 +111,7 @@ class ControllerGenerator extends Generator
 
     protected function getStoreMethod(): string
     {
-        return "\n\n\t" . "public function store(" . $this->getRequestName() . " \$request)\n\t{
+        return "\n\n\tpublic function store({$this->getRequestName()} \$request)\n\t{
         \$data = \$request->validated();
         \$this->{$this->getServiceNameCamel()}->create(\$data);
         return sendData(__('view.messages.created_success'));
@@ -137,7 +137,7 @@ class ControllerGenerator extends Generator
 
     protected function getDestroyMethod(): string
     {
-        $hasPermission = $this->hasPermissions() ? ', \'' . $this->modelNameKebab . '\'' : '';
+        $hasPermission = $this->hasPermissions() ? ", {$this->modelNameKebab}" : '';
         return "\n\n\tpublic function destroy(\$id)\n\t{
         return sendData(CrudHelper::deleteActions(\$id, new {$this->modelName} $hasPermission));
     }";
@@ -162,10 +162,10 @@ class ControllerGenerator extends Generator
     protected function getPermissions(): string
     {
         if (!$this->hasPermissions()) return '';
-        $permissions = '$this->middleware(\'can:view-list-' . $this->modelNameKebab . '\')->only(\'index\');';
-        if ($this->checkApiRoute('show')) $permissions .= "\n\t\t" . '$this->middleware(\'can:view-profile-' . $this->modelNameKebab . '\')->only(\'show\');';
-        if ($this->checkApiRoute('create')) $permissions .= "\n\t\t" . '$this->middleware(\'can:create-' . $this->modelNameKebab . '\')->only(\'store\');';
-        if ($this->checkApiRoute('edit')) $permissions .= "\n\t\t" . '$this->middleware(\'can:edit-' . $this->modelNameKebab . '\')->only(\'update\');';
+        $permissions = "\$this->middleware('can:view-list-{$this->modelNameKebab}')->only('index');";
+        if ($this->checkApiRoute('show')) $permissions .= "\n\t\t\$this->middleware('can:view-profile-{$this->modelNameKebab}')->only('show');";
+        if ($this->checkApiRoute('create')) $permissions .= "\n\t\t\$this->middleware('can:create-{$this->modelNameKebab}')->only('store');";
+        if ($this->checkApiRoute('edit')) $permissions .= "\n\t\t\$this->middleware('can:edit-{$this->modelNameKebab}')->only('update');";
         return $permissions . "\n\t\t";
     }
 

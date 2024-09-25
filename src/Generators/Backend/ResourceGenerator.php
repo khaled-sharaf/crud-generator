@@ -2,7 +2,6 @@
 
 namespace W88\CrudSystem\Generators\Backend;
 
-
 use W88\CrudSystem\Generators\Generator;
 use Illuminate\Support\Facades\File;
 use Touhidurabir\StubGenerator\Facades\StubGenerator;
@@ -35,6 +34,11 @@ class ResourceGenerator extends Generator
         return "{$this->modulePath}/app/Resources/{$this->versionNamespace}";
     }
 
+    protected function getLocalResourceNamespace(): string
+    {
+        return $this->getResourceNamespace();
+    }
+
     protected function ensureDirectoryExists(): void
     {
         $directory = $this->getGeneratorDirectory();
@@ -56,18 +60,22 @@ class ResourceGenerator extends Generator
     protected function getReplacers(): array
     {
         return [
-            'CLASS_NAMESPACE' => $this->getResourceNamespace(),
+            'CLASS_NAMESPACE' => $this->getLocalResourceNamespace(),
             'CLASS_NAME' => $this->getResourceName(),
             'FIELDS' => $this->getFieldsData(),
         ];
     }
 
+    protected function getTimestampsFields(): string
+    {
+        return ",\n\t\t\t'created_at' => formatDate(\$this->created_at),\n\t\t\t'updated_at' => formatDate(\$this->updated_at)";
+    }
+
     protected function getFieldsData(): string
     {
-        $timestamps = ",\n\t\t\t'created_at' => formatDate(\$this->created_at),\n\t\t\t'updated_at' => formatDate(\$this->updated_at)";
         return collect($this->getNotHiddenFields())->map(function ($field, $name) {
             return "'$name' => \$this->{$name}";
-        })->implode(",\n\t\t\t") . $timestamps;
+        })->implode(",\n\t\t\t") . $this->getTimestampsFields();
     }
 
 }

@@ -28,6 +28,11 @@ class ServiceGenerator extends Generator
         return "{$this->modulePath}/app/Services";
     }
 
+    protected function getLocalServiceNamespace(): string
+    {
+        return $this->getServiceNamespace();
+    }
+
     protected function ensureStubExists(): void
     {
         $stubPath = $this->getStubPath();
@@ -57,7 +62,7 @@ class ServiceGenerator extends Generator
     protected function getReplacers(): array
     {
         return [
-            'CLASS_NAMESPACE' => $this->getServiceNamespace(),
+            'CLASS_NAMESPACE' => $this->getLocalServiceNamespace(),
             'CLASS_NAME' => $this->getServiceName(),
             'USE_CLASSES' => $this->getUseClasses(),
             'METHODS' => $this->getMethods(),
@@ -68,7 +73,7 @@ class ServiceGenerator extends Generator
     {
         $useClasses = [
             'use App\Helpers\CrudHelpers\Facades\CrudHelper;',
-            'use ' . $this->getModelNamespace() . '\\' . $this->modelName . ';'
+            "use {$this->getModelNamespace()}\\{$this->modelName};"
         ];
         return collect($useClasses)->implode("\n") . "\n";
     }
@@ -85,8 +90,7 @@ class ServiceGenerator extends Generator
     protected function getIndexMethod(): string
     {
         $filters = $this->getFilters();
-        return "public function tableList()
-    {
+        return "\n\n\tpublic function tableList()\n\t{
         return CrudHelper::tableList(new {$this->modelName}, [
             \App\Filters\Sorting\SortBy::class{$filters}
         ]);
@@ -95,14 +99,13 @@ class ServiceGenerator extends Generator
 
     protected function getShowMethod(): string
     {
-    return "\n\n\tpublic function show(\$id)\n\t{\n\t\treturn {$this->modelName}::findOrFail(\$id);\n\t}";
+        return "\n\n\tpublic function show(\$id)\n\t{\n\t\treturn {$this->modelName}::findOrFail(\$id);\n\t}";
     }
 
     protected function getStoreMethod(): string
     {
         $handleFieldsWhenCreate = $this->handleFieldsWhenCreateAndUpdate();
-        return "\n\n\tpublic function create(\$data)
-    {{$handleFieldsWhenCreate}
+        return "\n\n\tpublic function create(\$data)\n\t{{$handleFieldsWhenCreate}
         \${$this->modelNameCamel} = {$this->modelName}::create(\$data);
         return \${$this->modelNameCamel};
     }";
@@ -111,8 +114,7 @@ class ServiceGenerator extends Generator
     protected function getUpdateMethod(): string
     {
         $handleFieldsWhenUpdate = $this->handleFieldsWhenCreateAndUpdate('update');
-        return "\n\n\tpublic function update(\${$this->modelNameCamel}, \$data)
-    {{$handleFieldsWhenUpdate}
+        return "\n\n\tpublic function update(\${$this->modelNameCamel}, \$data)\n\t{{$handleFieldsWhenUpdate}
         \${$this->modelNameCamel}->update(\$data);
         return \${$this->modelNameCamel};
     }";
@@ -125,7 +127,7 @@ class ServiceGenerator extends Generator
         $fileUploads = collect($fileFields)->map(function ($field, $name) use ($formType) {
             $hasAddQuality = !Str::contains($field['type'], 'video') ? '->quality(80)' : '';
             if (Str::contains($field['type'], 'multi_')) {
-                $oldValues = $formType == 'update' ? ", \${$this->modelNameCamel}->{$name}" : '';
+                $oldValues = $formType == 'update' ? ", \${$this->modelNameCamel}->{$name}Urls" : '';
                 return "\n\t\t\$data['{$name}'] = multi_uploader(request()->{$name}{$oldValues})->path((new {$this->modelName})->filePaths['multi']){$hasAddQuality}->upload();";
             }
             $addModel = $formType == 'update' ? "->model(\${$this->modelNameCamel})" : '';

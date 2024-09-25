@@ -13,15 +13,17 @@ class MakeCrud extends Command
 {
     protected $signature = 'fr:crud-make {name} {module} {--force}';
     protected $description = 'Generate a CRUD configuration file for a specified module and model';
+    protected $module;
+    protected $modelName;
 
     public function handle()
     {
-        $module = $this->argument('module');
+        $this->module = $this->argument('module');
         $crudName = strtolower($this->argument('name'));
         $force = $this->option('force');
-        $modelName = Str::studly($crudName);
+        $this->modelName = Str::studly($crudName);
         $crudStubPath = __DIR__ . '/../stubs/crud.stub';
-        $modulePath = base_path('Modules/' . $module . '/config/cruds');
+        $modulePath = base_path('Modules/' . $this->module . '/config/cruds');
         $isCreateCrud = false;
 
         if (!File::exists($crudStubPath)) {
@@ -29,12 +31,12 @@ class MakeCrud extends Command
             return;
         }
 
-        if (!Module::has($module)) {
-            $this->error("Module not found: {$module}");
+        if (!Module::has($this->module)) {
+            $this->error("Module not found: {$this->module}");
             return;
         }
 
-        $crud = Crud::whereName($crudName)->whereModule($module)->first();
+        $crud = Crud::whereName($crudName)->whereModule($this->module)->first();
         if ($crud && !$force) {
             $this->error("Config file already exists at path: {$modulePath}/" . $crudName . '.php');
             return;
@@ -49,7 +51,7 @@ class MakeCrud extends Command
                 }
                 $isCreateCrud = true;
             } else {
-                $this->info("Config file for {$crudName} in module {$module} not created.");
+                $this->info("Config file for {$crudName} in module {$this->module} not created.");
                 return;
             }
         } else {
@@ -57,24 +59,25 @@ class MakeCrud extends Command
         }
 
         if ($isCreateCrud) {
-            $this->info("Creating config file for {$crudName} in module {$module}.");
+            $this->info("Creating config file for {$crudName} in module {$this->module}.");
             StubGenerator::from($crudStubPath, true)
-                        ->withReplacers($this->getReplacers($modelName))
+                        ->withReplacers($this->getReplacers())
                         ->to($modulePath, true, true)
                         ->as($crudName)
                         ->replace($force)
                         ->save();
             if (!$crud) {
-                Crud::newCrud($module, $crudName);
+                Crud::newCrud($this->module, $crudName);
             }
-            $this->info("Config file for {$crudName} in module {$module} created successfully.");
+            $this->info("Config file for {$crudName} in module {$this->module} created successfully.");
         }
     }
 
-    protected function getReplacers(string $modelName): array
+    protected function getReplacers(): array
     {
         return [
-            'MODEL_NAME' => $modelName
+            'MODEL_NAME' => $this->modelName,
+            'MODULE_NAME' => strtolower($this->module),
         ];
     }
 

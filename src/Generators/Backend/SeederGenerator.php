@@ -2,7 +2,6 @@
 
 namespace W88\CrudSystem\Generators\Backend;
 
-use Illuminate\Support\Facades\Artisan;
 use W88\CrudSystem\Generators\Generator;
 use Illuminate\Support\Facades\File;
 use Touhidurabir\StubGenerator\StubGenerator;
@@ -11,13 +10,11 @@ use W88\CrudSystem\Facades\Field;
 class SeederGenerator extends Generator
 {
 
-    protected $seederOption;
     protected $moduleSeederFileName;
 
     public function generate(): void
     {
-        $this->seederOption = $this->getSeederOption();
-        if (!$this->seederOption) return;
+        if (!$this->hasSeeder()) return;
         $this->moduleSeederFileName = "{$this->moduleName}DatabaseSeeder";
         $this->ensureStubExists();
         $this->ensureDirectoryExists();
@@ -106,7 +103,7 @@ class SeederGenerator extends Generator
             'MODEL_NAME' => $this->modelName,
             'MODEL_NAMESPACE' => $this->modelNamespace,
             'FIELDS' => $this->getFieldsTemplate(),
-            'COUNT' => $this->seederOption['count'] ?? 10,
+            'COUNT' => 10,
         ];
     }
 
@@ -121,7 +118,7 @@ class SeederGenerator extends Generator
 
     protected function addSeederToModuleSeeder(): void
     {
-        $filePath = $this->getGeneratorDirectory() . "/{$this->moduleSeederFileName}.php";
+        $filePath = "{$this->getGeneratorDirectory()}/{$this->moduleSeederFileName}.php";
         $content = File::get($filePath);
         $contentTemplate = "\n\t\t\$this->call({$this->getSeederName()}::class);";
         if (strpos($content, $contentTemplate) === false) {

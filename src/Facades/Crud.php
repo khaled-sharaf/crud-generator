@@ -8,6 +8,7 @@ use Illuminate\Support\Str;
 
 class Crud
 {
+    
     private static function getConfig($file)
     {
         $path = __DIR__ . "/../config/{$file}.php";

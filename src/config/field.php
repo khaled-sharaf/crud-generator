@@ -4,7 +4,7 @@ return [
     'types' => [
         'normal' => [
             'text' => ['migration' => 'string', 'seeder' => 'fake()->text(20)'],
-            'number' => ['migration' => 'string', 'seeder' => 'fake()->numberBetween(1, 100)'],
+            'number' => ['migration' => 'string', 'seeder' => 'fake()->numberBetween(1, 20)'],
             'password' => ['migration' => 'string', 'seeder' => "\Illuminate\Support\Facades\Hash::make('12345678')"],
             'textarea' => ['migration' => 'text', 'seeder' => 'fake()->text()'],
             'editor' => ['migration' => 'mediumText', 'seeder' => 'fake()->text()'],

@@ -2,6 +2,8 @@
 
 return [
     'name' => '{{ MODEL_NAME }}',
+    'frontendModule' => '{{ MODULE_NAME }}',
+    'lockAfterGenerate' => true,
 
     'dashboardApi' => [
         'create' => true,
@@ -9,7 +11,7 @@ return [
         'edit' => true,
         'delete' => true,
 
-        'activation' => true,
+        // 'activation' => true,
         // 'activation' => [ // route name
         //     'default' => true,
         //     'column' => 'is_active',
@@ -23,7 +25,7 @@ return [
         // ],
     ],
 
-    'clientApi' => false, // or remove it to disable api actions
+    'clientApi' => true, // or remove it to disable api actions
     // 'clientApi' => [
     //     'list' => true,
     //     'create' => true,
@@ -33,15 +35,12 @@ return [
     // ],
 
     'options' => [
-        'showPopup' => false, // show show in popup
-        'formPopup' => false, // show create/edit form in popup
-        'permissions' => true, // Add permissions to permission file with translation
-        'addLogs' => false, // Enable add logs
-        'softDeletes' => false, // Enable soft deletes
-        'seeder' => false, // Enable seeder with factory - will be add seeder file
-        // 'seeder' => [
-        //     'count' => 10,
-        // ],
+        // 'showPopup' => false, // show show in popup
+        // 'formPopup' => false, // show create/edit form in popup
+        // 'permissions' => true, // Add permissions to permission file with translation
+        // 'addLogs' => true, // Enable add logs
+        // 'softDeletes' => true, // Enable soft deletes
+        // 'seeder' => true, // Enable seeder with factory - will be add seeder file
         'tableSettings' => [
             'multiSelection' => true, // Enable multi selection for delete or any action in frontend list
             'tableSearch' => true, // Enable table search

@@ -5,6 +5,7 @@ namespace W88\CrudSystem\Services;
 use Illuminate\Support\Facades\File;
 use W88\CrudSystem\Facades\Crud;
 use Illuminate\Support\Str;
+use Nwidart\Modules\Facades\Module;
 
 class CrudGeneratorService
 {
@@ -41,6 +42,7 @@ class CrudGeneratorService
         $modules = File::directories(base_path('Modules'));
         foreach ($modules as $module) {
             $moduleName = basename($module);
+            if (!Module::isEnabled($moduleName)) continue;
             $crudPath = $module . '/config/cruds';
             if (!File::exists($crudPath)) continue;
             $cruds = File::files($crudPath);
