@@ -1,0 +1,9 @@
+    /* ========================= {{ ROUTE_COMMENT_NAME }} ========================= */
+    {
+        path: '{{ ROUTE_PATH }}',
+        name: '{{ ROUTE_NAME }}',
+        component: () => import('./pages/{{ COMPONENT_NAME }}/{{ COMPONENT_NAME }}.vue'),
+        meta: {
+            title: '{{ PAGE_TITLE }}',{{ ROUTE_PERMISSION }}
+        },
+    },

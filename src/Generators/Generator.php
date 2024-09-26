@@ -22,6 +22,7 @@ abstract class Generator implements GeneratorInterface
     protected string $moduleNameSnake;
     protected string $moduleNameKebab;
     protected string $modulePath;
+    protected string $frontendModuleName;
 
     protected string $clientDirectory;
 
@@ -46,10 +47,11 @@ abstract class Generator implements GeneratorInterface
         $this->moduleNameSnake = strtolower(Str::snake($this->moduleName));
         $this->moduleNameKebab = strtolower(Str::kebab($this->moduleName));
         $this->modulePath = module_path($this->moduleName);
+        $this->frontendModuleName = $this->config['frontendModule'];
 
         $this->clientDirectory = Str::studly(Crud::config('generator.client_directory'));
         
-        $this->modelName = Str::studly($configData['config']['name']);
+        $this->modelName = Str::studly($this->config['name']);
         $this->modelNamespace = $this->moduleNamespace . '\\app\\Models';
         $this->modelNameCamel = Str::camel($this->modelName);
         $this->modelNameSnake = strtolower(Str::snake($this->modelName));

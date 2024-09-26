@@ -11,6 +11,6 @@ return [
         // 'backend' => ['migration', 'model', 'route', 'controller', 'service', 'request', 'resource', 'seeder', 'constant', 'lookup', 'lang', 'permission'],
         // 'clientApi' => ['route', 'controller', 'service', 'request', 'resource'],
         // 'frontend' => ['list', 'form', 'create', 'edit', 'profile', 'lang', 'sidebar', 'route'],
-        'frontend' => ['route'],
+        'frontend' => ['lang', 'sidebar', 'route'],
     ],
 ];

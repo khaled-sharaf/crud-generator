@@ -20,6 +20,7 @@ class SeederGenerator extends Generator
         $this->moduleSeederFileName = "{$this->moduleName}DatabaseSeeder";
         $this->ensureStubExists();
         $this->ensureDirectoryExists();
+        $this->ensureSeederModuleFileExists();
         $this->generateSeeder();
         $this->addSeederToModuleSeeder();
     }
@@ -47,23 +48,6 @@ class SeederGenerator extends Generator
     protected function getSeederNamespace(): string
     {
         return "{$this->moduleNamespace}\database\seeders";
-    }
-
-    protected function ensureStubExists(): void
-    {
-        $stubPath = $this->getStubPath();
-        if (!File::exists($stubPath)) {
-            throw new \Exception("Stub file not found at path: {$stubPath}");
-        }
-    }
-
-    protected function ensureDirectoryExists(): void
-    {
-        $directory = $this->getGeneratorDirectory();
-        if (!File::exists($directory)) {
-            File::makeDirectory($directory, 0755, true);
-        }
-        $this->ensureSeederModuleFileExists();
     }
 
     protected function ensureSeederModuleFileExists(): void

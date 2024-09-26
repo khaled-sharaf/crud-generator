@@ -28,14 +28,6 @@ class MigrationGenerator extends Generator
         return __DIR__ . '/../../stubs/backend/migration.stub';
     }
 
-    protected function ensureStubExists(): void
-    {
-        $stubPath = $this->getStubPath();
-        if (!File::exists($stubPath)) {
-            throw new \Exception("Stub file not found at path: {$stubPath}");
-        }
-    }
-
     protected function generateMigrationName(): string
     {
         return 'create_' . $this->modelNameSnakePlural . '_table';
@@ -50,14 +42,6 @@ class MigrationGenerator extends Generator
     public function getGeneratorDirectory(): string
     {
         return $this->modulePath . '/database/migrations';
-    }
-
-    public function ensureDirectoryExists(): void
-    {
-        $directory = $this->getGeneratorDirectory();
-        if (!File::exists($directory)) {
-            File::makeDirectory($directory, 0755, true);
-        }
     }
 
     public function deleteOldMigration(string $name, string &$oldMigrationFileName = null): void

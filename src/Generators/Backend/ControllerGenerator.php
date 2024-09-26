@@ -3,7 +3,6 @@
 namespace W88\CrudSystem\Generators\Backend;
 
 use W88\CrudSystem\Generators\Generator;
-use Illuminate\Support\Facades\File;
 use Touhidurabir\StubGenerator\Facades\StubGenerator;
 use Illuminate\Support\Str;
 use W88\CrudSystem\Traits\BackendHelpersTrait;
@@ -32,22 +31,6 @@ class ControllerGenerator extends Generator
     protected function getLocalControllerNamespace(): string
     {
         return $this->getControllerNamespace();
-    }
-
-    protected function ensureStubExists(): void
-    {
-        $stubPath = $this->getStubPath();
-        if (!File::exists($stubPath)) {
-            throw new \Exception("Stub file not found at path: {$stubPath}");
-        }
-    }
-
-    protected function ensureDirectoryExists(): void
-    {
-        $directory = $this->getGeneratorDirectory();
-        if (!File::exists($directory)) {
-            File::makeDirectory($directory, 0755, true);
-        }
     }
 
     protected function generateController(): void
@@ -165,7 +148,7 @@ class ControllerGenerator extends Generator
     {
         if (!$this->hasPermissions()) return '';
         $permissions = "\$this->middleware('can:view-list-{$this->modelNameKebab}')->only('index');";
-        if ($this->checkApiRoute('show')) $permissions .= "\n\t\t\$this->middleware('can:view-profile-{$this->modelNameKebab}')->only('show');";
+        if ($this->checkApiRoute('show')) $permissions .= "\n\t\t\$this->middleware('can:view-{$this->modelNameKebab}')->only('show');";
         if ($this->checkApiRoute('create')) $permissions .= "\n\t\t\$this->middleware('can:create-{$this->modelNameKebab}')->only('store');";
         if ($this->checkApiRoute('edit')) $permissions .= "\n\t\t\$this->middleware('can:edit-{$this->modelNameKebab}')->only('update');";
         return $permissions . "\n\t\t";

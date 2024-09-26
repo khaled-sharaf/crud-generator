@@ -135,17 +135,17 @@ trait BackendHelpersTrait
         $permissions = [
             "view-list-{$this->modelNameKebab}" => "View {$modelTitle} List"
         ];
-        if ($this->hasTableExport()) $permissions["export-list-{$this->modelNameSnake}"] = "Export {$modelTitle} List";
-        if ($this->checkApiRoute('show')) $permissions["view-profile-{$this->modelNameSnake}"] = "View {$modelTitle} Profile";
-        if ($this->checkApiRoute('create')) $permissions["create-{$this->modelNameSnake}"] = "Create {$modelTitle}";
-        if ($this->checkApiRoute('edit')) $permissions["edit-{$this->modelNameSnake}"] = "Edit {$modelTitle}";
-        if ($this->checkApiRoute('delete')) $permissions["delete-{$this->modelNameSnake}"] = "Delete {$modelTitle}";
+        if ($this->hasTableExport()) $permissions["export-list-{$this->modelNameKebab}"] = "Export {$modelTitle} List";
+        if ($this->checkApiRoute('show')) $permissions["view-{$this->modelNameKebab}"] = "View {$modelTitle}";
+        if ($this->checkApiRoute('create')) $permissions["create-{$this->modelNameKebab}"] = "Create {$modelTitle}";
+        if ($this->checkApiRoute('edit')) $permissions["edit-{$this->modelNameKebab}"] = "Edit {$modelTitle}";
+        if ($this->checkApiRoute('delete')) $permissions["delete-{$this->modelNameKebab}"] = "Delete {$modelTitle}";
         if ($this->hasSoftDeletes()) {
-            $permissions["force-delete-{$this->modelNameSnake}"] = "Delete Forever {$modelTitle}";
-            $permissions["restore-{$this->modelNameSnake}"] = "Restore {$modelTitle}";
-            $permissions["view-trashed-{$this->modelNameSnake}-list"] = "View Trashed {$modelTitle} List";
+            $permissions["force-delete-{$this->modelNameKebab}"] = "Delete Forever {$modelTitle}";
+            $permissions["restore-{$this->modelNameKebab}"] = "Restore {$modelTitle}";
+            $permissions["view-trashed-{$this->modelNameKebab}-list"] = "View Trashed {$modelTitle} List";
         }
-        if ($this->getActivationRouteOption()) $permissions["activation-{$this->modelNameSnake}"] = "Activation {$modelTitle}";
+        if ($this->getActivationRouteOption()) $permissions["activation-{$this->modelNameKebab}"] = "Activation {$modelTitle}";
         return $permissions;
     }
 

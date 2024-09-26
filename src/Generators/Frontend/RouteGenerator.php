@@ -4,8 +4,7 @@ namespace W88\CrudSystem\Generators\Frontend;
 
 use W88\CrudSystem\Generators\Generator;
 use Illuminate\Support\Facades\File;
-use Illuminate\Support\Str;
-use W88\CrudSystem\Facades\Crud;
+use Touhidurabir\StubGenerator\StubGenerator;
 use W88\CrudSystem\Traits\FrontendHelpersTrait;
 
 class RouteGenerator extends Generator
@@ -16,69 +15,95 @@ class RouteGenerator extends Generator
     {
         $this->ensureStubExists();
         $this->ensureDirectoryExists();
-        $this->generateResource();
+        $this->generateRoute();
     }
 
     protected function getStubPath(): string
     {
-        return __DIR__ . '/../../stubs/backend/resource.stub';
-    }
-
-    protected function ensureStubExists(): void
-    {
-        $stubPath = $this->getStubPath();
-        if (!File::exists($stubPath)) {
-            throw new \Exception("Stub file not found at path: {$stubPath}");
-        }
+        return __DIR__ . '/../../stubs/frontend/routeItem.stub';
     }
 
     protected function getGeneratorDirectory(): string
     {
-        return "{$this->modulePath}/app/Resources/{$this->versionNamespace}";
+        return $this->getFrontendCrudPath();
     }
 
-    protected function getLocalResourceNamespace(): string
+    protected function generateRoute(): void
     {
-        return $this->getResourceNamespace();
+        $routes = [$this->getListRoute()];
+        if ($this->checkApiRoute('create') && !$this->hasFormPopup()) $routes[] = $this->getCreateRoute();
+        if ($this->checkApiRoute('edit') && !$this->hasFormPopup()) $routes[] = $this->getEditRoute();
+        if ($this->checkApiRoute('show') && !$this->hasShowPopup()) $routes[] = $this->getShowRoute();
+        $this->generateRouteFile($routes);
     }
 
-    protected function ensureDirectoryExists(): void
+    protected function generateRouteFile(array $routes): void
     {
-        $directory = $this->getGeneratorDirectory();
-        if (!File::exists($directory)) {
-            File::makeDirectory($directory, 0755, true);
-        }
+        $content = "export default [\n" . implode("\n\n", $routes) . "\n];";
+        File::put($this->getGeneratorDirectory() . '/routes.js', $content);
     }
 
-    protected function generateResource(): void
+    protected function getRouteItem(array $replacers): string
     {
-        StubGenerator::from($this->getStubPath(), true)
-            ->to($this->getGeneratorDirectory())
-            ->withReplacers($this->getReplacers())
-            ->replace(true)
-            ->as($this->getResourceName())
-            ->save();
+        return (new StubGenerator)->from($this->getStubPath(), true)->to($this->getGeneratorDirectory())->withReplacers($replacers)->toString();
     }
 
-    protected function getReplacers(): array
+    protected function getListRoute(): string
     {
-        return [
-            'CLASS_NAMESPACE' => $this->getLocalResourceNamespace(),
-            'CLASS_NAME' => $this->getResourceName(),
-            'FIELDS' => $this->getFieldsData(),
-        ];
+        return $this->getRouteItem([
+            'ROUTE_COMMENT_NAME' => "{$this->modelName} List",
+            'ROUTE_PATH' => "{$this->modelNameKebab}-list",
+            'ROUTE_NAME' => $this->getListRouteName(),
+            'COMPONENT_NAME' => $this->getListFileName(),
+            'PAGE_TITLE' => $this->getPageTitle('label'),
+            'ROUTE_PERMISSION' => $this->getPermission('view-list'),
+        ]);
     }
 
-    protected function getTimestampsFields(): string
+    protected function getCreateRoute(): string
     {
-        return ",\n\t\t\t'created_at' => formatDate(\$this->created_at),\n\t\t\t'updated_at' => formatDate(\$this->updated_at)";
+        return $this->getRouteItem([
+            'ROUTE_COMMENT_NAME' => "Create {$this->modelName}",
+            'ROUTE_PATH' => "{$this->modelNameKebab}-create",
+            'ROUTE_NAME' => $this->getCreateRouteName(),
+            'COMPONENT_NAME' => $this->getCreateFileName(),
+            'PAGE_TITLE' => $this->getPageTitle("create_{$this->modelNameSnake}"),
+            'ROUTE_PERMISSION' => $this->getPermission('create'),
+        ]);
     }
 
-    protected function getFieldsData(): string
+    protected function getEditRoute(): string
     {
-        return collect($this->getNotHiddenFields())->map(function ($field, $name) {
-            return "'$name' => \$this->{$name}";
-        })->implode(",\n\t\t\t") . $this->getTimestampsFields();
+        return $this->getRouteItem([
+            'ROUTE_COMMENT_NAME' => "Edit {$this->modelName}",
+            'ROUTE_PATH' => "{$this->modelNameKebab}-edit/:id",
+            'ROUTE_NAME' => $this->getEditRouteName(),
+            'COMPONENT_NAME' => $this->getEditFileName(),
+            'PAGE_TITLE' => $this->getPageTitle("edit_{$this->modelNameSnake}"),
+            'ROUTE_PERMISSION' => $this->getPermission('edit'),
+        ]);
+    }
+
+    protected function getShowRoute(): string
+    {
+        return $this->getRouteItem([
+            'ROUTE_COMMENT_NAME' => "View {$this->modelName}",
+            'ROUTE_PATH' => "{$this->modelNameKebab}-view/:id",
+            'ROUTE_NAME' => $this->getShowRouteName(),
+            'COMPONENT_NAME' => $this->getShowFileName(),
+            'PAGE_TITLE' => $this->getPageTitle("view_{$this->modelNameSnake}"),
+            'ROUTE_PERMISSION' => $this->getPermission('view'),
+        ]);
+    }
+
+    protected function getPageTitle(string $title): string
+    {
+        return "{$this->frontendModuleName}.{$this->modelNameSnake}_crud.{$title}";
+    }
+
+    protected function getPermission(string $permission): string
+    {
+        return $this->hasPermissions() ? "\n\t\t\tpermission: '{$permission}-{$this->modelNameKebab}'" : '';
     }
     
 }

@@ -4,9 +4,28 @@ namespace W88\CrudSystem\Traits;
 
 use Illuminate\Support\Str;
 use W88\CrudSystem\Facades\Field;
+use Illuminate\Support\Facades\File;
 
 trait GeneralHelpersTrait
 {
+    /* ======================== Generals ======================== */
+    
+    protected function ensureStubExists(): void
+    {
+        $stubPath = $this->getStubPath();
+        if (!File::exists($stubPath)) {
+            throw new \Exception("Stub file not found at path: {$stubPath}");
+        }
+    }
+
+    protected function ensureDirectoryExists(): void
+    {
+        $directory = $this->getGeneratorDirectory();
+        if (!File::exists($directory)) {
+            File::makeDirectory($directory, 0755, true);
+        }
+    }
+
     /* ======================== Checks ======================== */
     protected function checkApiRoute($route, $type = 'dashboardApi'): bool|array
     {
@@ -53,7 +72,9 @@ trait GeneralHelpersTrait
     
     protected function getFields(): array
     {
-        return collect(array_merge($this->config['fields'] ?? [], $this->appendActivationField()))->map(function ($field, $name) {
+        return collect(array_merge($this->config['fields'] ?? [], $this->appendActivationField()))
+        ->mapWithKeys(fn ($field, $name) => [strtolower(Str::snake($name)) => $field])
+        ->map(function ($field, $name) {
             $field['name'] = $name;
             return $field;
         })->toArray();
