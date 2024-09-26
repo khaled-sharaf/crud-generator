@@ -1,15 +1,16 @@
 <?php
 
-namespace W88\CrudSystem\Generators\Backend;
+namespace W88\CrudSystem\Generators\Frontend;
 
 use W88\CrudSystem\Generators\Generator;
 use Illuminate\Support\Facades\File;
-use Touhidurabir\StubGenerator\Facades\StubGenerator;
-use W88\CrudSystem\Traits\BackendHelpersTrait;
+use Illuminate\Support\Str;
+use W88\CrudSystem\Facades\Crud;
+use W88\CrudSystem\Traits\FrontendHelpersTrait;
 
-class ResourceGenerator extends Generator
+class RouteGenerator extends Generator
 {
-    use BackendHelpersTrait;
+    use FrontendHelpersTrait;
 
     public function generate(): void
     {
@@ -79,5 +80,5 @@ class ResourceGenerator extends Generator
             return "'$name' => \$this->{$name}";
         })->implode(",\n\t\t\t") . $this->getTimestampsFields();
     }
-
+    
 }

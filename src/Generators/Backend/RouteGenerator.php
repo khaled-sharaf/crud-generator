@@ -6,10 +6,12 @@ use W88\CrudSystem\Generators\Generator;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
 use W88\CrudSystem\Facades\Crud;
+use W88\CrudSystem\Traits\BackendHelpersTrait;
 
 class RouteGenerator extends Generator
 {
-
+    use BackendHelpersTrait;
+    
     protected $routeApiType = 'dashboard';
 
     public function generate(): void

@@ -1,16 +1,16 @@
 <?php
 
-namespace W88\CrudSystem\Generators\Backend;
+namespace W88\CrudSystem\Generators\Frontend;
 
 use W88\CrudSystem\Generators\Generator;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
 use W88\CrudSystem\Facades\Field;
-use W88\CrudSystem\Traits\BackendHelpersTrait;
+use W88\CrudSystem\Traits\FrontendHelpersTrait;
 
 class LangGenerator extends Generator
 {
-    use BackendHelpersTrait;
+    use FrontendHelpersTrait;
 
     public function generate(): void
     {

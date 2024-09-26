@@ -7,10 +7,12 @@ use Illuminate\Support\Facades\File;
 use Touhidurabir\StubGenerator\Facades\StubGenerator;
 use W88\CrudSystem\Facades\Field;
 use Illuminate\Support\Str;
+use W88\CrudSystem\Traits\BackendHelpersTrait;
 
 class MigrationGenerator extends Generator
 {
-
+    use BackendHelpersTrait;
+    
     protected $migrationName;
 
     public function generate(): void

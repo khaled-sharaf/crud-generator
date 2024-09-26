@@ -5,9 +5,11 @@ namespace W88\CrudSystem\Generators\Backend;
 use W88\CrudSystem\Generators\Generator;
 use Illuminate\Support\Facades\File;
 use Touhidurabir\StubGenerator\Facades\StubGenerator;
+use W88\CrudSystem\Traits\BackendHelpersTrait;
 
 class PermissionGenerator extends Generator
 {
+    use BackendHelpersTrait;
 
     public function generate(): void
     {

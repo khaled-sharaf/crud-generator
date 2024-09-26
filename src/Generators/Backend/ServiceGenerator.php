@@ -7,10 +7,12 @@ use Illuminate\Support\Facades\File;
 use Touhidurabir\StubGenerator\Facades\StubGenerator;
 use Illuminate\Support\Str;
 use W88\CrudSystem\Facades\Field;
+use W88\CrudSystem\Traits\BackendHelpersTrait;
 
 class ServiceGenerator extends Generator
 {
-
+    use BackendHelpersTrait;
+    
     public function generate(): void
     {
         $this->ensureStubExists();

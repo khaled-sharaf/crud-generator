@@ -6,10 +6,12 @@ use W88\CrudSystem\Generators\Generator;
 use Illuminate\Support\Facades\File;
 use Touhidurabir\StubGenerator\StubGenerator;
 use Illuminate\Support\Str;
+use W88\CrudSystem\Traits\BackendHelpersTrait;
 
 class ModelGenerator extends Generator
 {
-
+    use BackendHelpersTrait;
+    
     protected MigrationGenerator $migrationGenerator;
     protected $belongsToManyMigrationName;
     protected $morphToManyMigrationName;

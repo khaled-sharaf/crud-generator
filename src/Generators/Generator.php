@@ -5,10 +5,11 @@ namespace W88\CrudSystem\Generators;
 use W88\CrudSystem\Contracts\GeneratorInterface;
 use Illuminate\Support\Str;
 use W88\CrudSystem\Facades\Crud;
+use W88\CrudSystem\Traits\GeneralHelpersTrait;
 
 abstract class Generator implements GeneratorInterface
 {
-    use GeneratorHelpers;
+    use GeneralHelpersTrait;
 
     protected array $configData;
     protected array $config;

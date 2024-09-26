@@ -6,10 +6,12 @@ use W88\CrudSystem\Generators\Generator;
 use Illuminate\Support\Facades\File;
 use Touhidurabir\StubGenerator\StubGenerator;
 use W88\CrudSystem\Facades\Field;
+use W88\CrudSystem\Traits\BackendHelpersTrait;
 
 class SeederGenerator extends Generator
 {
-
+    use BackendHelpersTrait;
+    
     protected $moduleSeederFileName;
 
     public function generate(): void
