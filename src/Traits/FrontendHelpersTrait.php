@@ -5,9 +5,18 @@ namespace W88\CrudSystem\Traits;
 use Illuminate\Support\Str;
 use W88\CrudSystem\Facades\Crud;
 use W88\CrudSystem\Facades\Field;
+use Illuminate\Support\Facades\File;
 
 trait FrontendHelpersTrait
 {
+
+    protected function ensureVueStubExists($type = 'vue'): void
+    {
+        $stubPath = $type === 'vue' ? $this->getVueStubPath() : $this->getJsStubPath();
+        if (!File::exists($stubPath)) {
+            throw new \Exception("Stub file not found at path: {$stubPath}");
+        }
+    }
     
     protected function getFrontendModulePath(): string
     {
@@ -30,6 +39,11 @@ trait FrontendHelpersTrait
         return $this->config['options']['formPopup'] ?? false;
     }
 
+    protected function getApiRouteName(): string
+    {
+        return "{$this->moduleNameKebab}/{$this->modelNameKebabPlural}";
+    }
+
     protected function getListFileName(): string
     {
         return "{$this->modelName}List";
@@ -48,6 +62,11 @@ trait FrontendHelpersTrait
     protected function getShowFileName(): string
     {
         return "View{$this->modelName}";
+    }
+    
+    protected function getFormFileName(): string
+    {
+        return "{$this->modelName}Form";
     }
 
     protected function getListRouteName(): string

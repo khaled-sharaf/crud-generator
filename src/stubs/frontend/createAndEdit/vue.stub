@@ -1,0 +1,10 @@
+<template>
+    <div class="{{ CLASS_PAGE }}">
+        <PageTitle />
+        <div class="inner-page">
+            <{{ COMPONENT_FORM }} {{ COMPONENT_FORM_PROPS }}/>{{ LOADING_COMPONENT }}
+        </div>
+    </div>
+</template>
+
+<script src="./{{ JS_FILE_NAME }}.js"></script>

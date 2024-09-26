@@ -1,0 +1,8 @@
+
+import {{ COMPONENT_FORM }} from '../../components/{{ COMPONENT_FORM }}/{{ COMPONENT_FORM }}.vue'
+
+export default {
+    components: {
+        {{ COMPONENT_FORM }}
+    },{{ DATA_FUNCTION }}{{ METHODS_FUNCTION }}{{ CREATED_FUNCTION }}
+}
