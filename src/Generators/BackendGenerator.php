@@ -1,12 +1,13 @@
 <?php
 
-namespace W88\CrudSystem\Traits;
+namespace W88\CrudSystem\Generators;
 
 use Illuminate\Support\Str;
 use W88\CrudSystem\Facades\Field;
 
-trait BackendHelpersTrait
+abstract class BackendGenerator extends Generator
 {
+    
     /* ======================== Checks ======================== */
     protected function hasClientApi(): bool
     {
@@ -210,4 +211,5 @@ trait BackendHelpersTrait
         if (preg_match('/([aeiou])([bcdfghjklmnpqrstvwxyz])$/i', $name)) $name = $name . substr($name, -1);
         return $name . 'able';
     }
+    
 }

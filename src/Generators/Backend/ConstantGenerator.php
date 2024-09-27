@@ -2,15 +2,13 @@
 
 namespace W88\CrudSystem\Generators\Backend;
 
-use W88\CrudSystem\Generators\Generator;
+use W88\CrudSystem\Generators\BackendGenerator;
 use Touhidurabir\StubGenerator\StubGenerator;
 use Illuminate\Support\Str;
 use W88\CrudSystem\Facades\Field;
-use W88\CrudSystem\Traits\BackendHelpersTrait;
 
-class ConstantGenerator extends Generator
+class ConstantGenerator extends BackendGenerator
 {
-    use BackendHelpersTrait;
 
     public function generate(): void
     {

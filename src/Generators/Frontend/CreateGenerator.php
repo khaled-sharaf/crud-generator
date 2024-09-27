@@ -2,14 +2,12 @@
 
 namespace W88\CrudSystem\Generators\Frontend;
 
-use W88\CrudSystem\Generators\Generator;
+use W88\CrudSystem\Generators\FrontendGenerator;
 use Touhidurabir\StubGenerator\StubGenerator;
-use W88\CrudSystem\Traits\FrontendHelpersTrait;
 use Illuminate\Support\Str;
 
-class CreateGenerator extends Generator
+class CreateGenerator extends FrontendGenerator
 {
-    use FrontendHelpersTrait;
 
     public function generate(): void
     {

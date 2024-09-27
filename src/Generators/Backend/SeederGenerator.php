@@ -2,15 +2,13 @@
 
 namespace W88\CrudSystem\Generators\Backend;
 
-use W88\CrudSystem\Generators\Generator;
+use W88\CrudSystem\Generators\BackendGenerator;
 use Illuminate\Support\Facades\File;
 use Touhidurabir\StubGenerator\StubGenerator;
 use W88\CrudSystem\Facades\Field;
-use W88\CrudSystem\Traits\BackendHelpersTrait;
 
-class SeederGenerator extends Generator
+class SeederGenerator extends BackendGenerator
 {
-    use BackendHelpersTrait;
     
     protected $moduleSeederFileName;
 

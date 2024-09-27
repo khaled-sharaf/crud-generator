@@ -2,14 +2,12 @@
 
 namespace W88\CrudSystem\Generators\Backend;
 
-use W88\CrudSystem\Generators\Generator;
+use W88\CrudSystem\Generators\BackendGenerator;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
-use W88\CrudSystem\Traits\BackendHelpersTrait;
 
-class LookupGenerator extends Generator
+class LookupGenerator extends BackendGenerator
 {
-    use BackendHelpersTrait;
 
     public function generate(): void
     {

@@ -2,14 +2,12 @@
 
 namespace W88\CrudSystem\Generators\Frontend;
 
-use W88\CrudSystem\Generators\Generator;
+use W88\CrudSystem\Generators\FrontendGenerator;
 use Illuminate\Support\Facades\File;
 use Touhidurabir\StubGenerator\Facades\StubGenerator;
-use W88\CrudSystem\Traits\FrontendHelpersTrait;
 
-class SidebarGenerator extends Generator
+class SidebarGenerator extends FrontendGenerator
 {
-    use FrontendHelpersTrait;
 
     public function generate(): void
     {

@@ -2,16 +2,14 @@
 
 namespace W88\CrudSystem\Generators\Backend;
 
-use W88\CrudSystem\Generators\Generator;
+use W88\CrudSystem\Generators\BackendGenerator;
 use Illuminate\Support\Facades\File;
 use Touhidurabir\StubGenerator\Facades\StubGenerator;
 use W88\CrudSystem\Facades\Field;
 use Illuminate\Support\Str;
-use W88\CrudSystem\Traits\BackendHelpersTrait;
 
-class MigrationGenerator extends Generator
+class MigrationGenerator extends BackendGenerator
 {
-    use BackendHelpersTrait;
     
     protected $migrationName;
 

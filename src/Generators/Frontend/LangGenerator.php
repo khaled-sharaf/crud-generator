@@ -2,15 +2,13 @@
 
 namespace W88\CrudSystem\Generators\Frontend;
 
-use W88\CrudSystem\Generators\Generator;
+use W88\CrudSystem\Generators\FrontendGenerator;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
 use W88\CrudSystem\Facades\Field;
-use W88\CrudSystem\Traits\FrontendHelpersTrait;
 
-class LangGenerator extends Generator
+class LangGenerator extends FrontendGenerator
 {
-    use FrontendHelpersTrait;
 
     public function generate(): void
     {

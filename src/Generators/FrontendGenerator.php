@@ -1,15 +1,13 @@
 <?php
 
-namespace W88\CrudSystem\Traits;
+namespace W88\CrudSystem\Generators;
 
-use Illuminate\Support\Str;
 use W88\CrudSystem\Facades\Crud;
-use W88\CrudSystem\Facades\Field;
 use Illuminate\Support\Facades\File;
 
-trait FrontendHelpersTrait
+abstract class FrontendGenerator extends Generator
 {
-
+    
     protected function ensureVueStubExists($type = 'vue'): void
     {
         $stubPath = $type === 'vue' ? $this->getVueStubPath() : $this->getJsStubPath();
@@ -88,6 +86,5 @@ trait FrontendHelpersTrait
     {
         return "{$this->modelNameKebab}-view";
     }
-
-
+    
 }
