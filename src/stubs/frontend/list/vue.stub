@@ -1,0 +1,14 @@
+<template>
+    <div class="{{ CLASS_PAGE }}">
+        <TableList v-bind="tableData">
+            {{ ACTIONS }}
+            {{ BODY_CELLS }}
+            <!-- =========================== Custom filters =========================== -->
+            <template v-slot:filters="filters">
+                {{ FILTERS }}
+            </template>
+        </TableList>
+    </div>
+</template>
+
+<script src="./{{ JS_FILE_NAME }}.js"></script>

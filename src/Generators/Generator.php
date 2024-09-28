@@ -104,17 +104,17 @@ abstract class Generator implements GeneratorInterface
 
     protected function hasTableSearch(): bool
     {
-        return $this->config['options']['tableSettings']['tableSearch'] ?? false;
+        return $this->config['options']['tableSettings']['tableSearch'] ?? true;
     }
 
     protected function hasTableFilter(): bool
     {
-        return $this->config['options']['tableSettings']['tableFilter'] ?? false;
+        return $this->config['options']['tableSettings']['tableFilter'] ?? true;
     }
 
     protected function hasTableExport(): bool
     {
-        return $this->config['options']['tableSettings']['tableExport'] ?? false;
+        return $this->config['options']['tableSettings']['tableExport'] ?? true;
     }
 
     /* ======================== Getters ======================== */

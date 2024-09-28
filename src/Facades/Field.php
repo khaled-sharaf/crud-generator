@@ -80,15 +80,54 @@ class Field
     {
         return isset($field['hidden']) && (
             $field['hidden'] === true ||
-            ($field['hidden']['list'] ?? false === true && $field['hidden']['create'] ?? false === true && $field['hidden']['update'] ?? false === true)
+            (($field['hidden']['list'] ?? false) === true && ($field['hidden']['create'] ?? false) === true && ($field['hidden']['edit'] ?? false) === true)
         );
+    }
+
+    public static function isVisibleList(array $field): bool
+    {
+        return $field['frontend']['visibleList'] ?? false;
+    }
+
+    public static function isSortable(array $field): bool
+    {
+        return $field['frontend']['sortable'] ?? false;
+    }
+
+    public static function isExportable(array $field): bool
+    {
+        return $field['frontend']['exportable'] ?? false;
+    }
+
+    public static function isSearchable(array $field): bool
+    {
+        return $field['frontend']['searchable'] ?? false;
+    }
+
+    public static function isAdvancedSearchable(array $field): bool
+    {
+        return $field['frontend']['advancedSearchable'] ?? false;
+    }
+
+    public static function isHiddenList(array $field): bool
+    {
+        return isset($field['hidden']) && ($field['hidden'] === true || ($field['hidden']['list'] ?? false) === true);
+    }
+
+    public static function isHiddenCreate(array $field): bool
+    {
+        return isset($field['hidden']) && ($field['hidden'] === true || ($field['hidden']['create'] ?? false) === true);
+    }
+
+    public static function isHiddenEdit(array $field): bool
+    {
+        return isset($field['hidden']) && ($field['hidden'] === true || ($field['hidden']['edit'] ?? false) === true);
     }
 
     public static function hasBoolean(array $field): bool
     {
         return $field['type'] === 'boolean' && isset($field['filter']) && $field['filter'] === true;
     }
-    
 
     public static function hasBooleanFilter(array $field): bool
     {

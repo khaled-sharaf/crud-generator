@@ -1,0 +1,31 @@
+export default {
+    data() {
+        return {
+            tableData: {
+                tableId: '{{ TABLE_ID }}',
+                url: '{{ URL }}',{{ TABLE_OPTIONS }}
+
+                /* =============== Filters =============== */
+                settings: {
+                    filters: {
+                        options: {{{ VARS_OF_FILTERS }}
+                        }
+                    },
+                },
+
+                /* =============== Columns =============== */
+                columns: [{{ COLUMNS }}
+                ],
+            },
+
+            userRoleSelectOptions: [
+                {
+                    label: this.$t('employees.employee_crud.user_roles.admin'),
+                    value: 1,
+                },
+            ],
+            
+        }
+    },
+
+}

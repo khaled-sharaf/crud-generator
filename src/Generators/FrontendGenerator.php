@@ -4,6 +4,7 @@ namespace W88\CrudSystem\Generators;
 
 use W88\CrudSystem\Facades\Crud;
 use Illuminate\Support\Facades\File;
+use W88\CrudSystem\Facades\Field;
 
 abstract class FrontendGenerator extends Generator
 {
@@ -35,6 +36,11 @@ abstract class FrontendGenerator extends Generator
     protected function hasFormPopup(): bool
     {
         return $this->config['options']['formPopup'] ?? false;
+    }
+
+    protected function hasMultiSelection(): bool
+    {
+        return $this->config['options']['tableSettings']['multiSelection'] ?? true;
     }
 
     protected function getApiRouteName(): string
@@ -85,6 +91,16 @@ abstract class FrontendGenerator extends Generator
     protected function getShowRouteName(): string
     {
         return "{$this->modelNameKebab}-view";
+    }
+
+    protected function getLangPath(string $key = null): string
+    {
+        return "{$this->frontendModuleName}.{$this->modelNameSnake}_crud" . ($key ? ".{$key}" : '');
+    }
+
+    protected function getFieldsVisibleInList(): array
+    {
+        return collect($this->getFields())->filter(fn ($field) => !Field::isHiddenList($field))->toArray();
     }
     
 }
