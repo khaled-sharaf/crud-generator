@@ -131,7 +131,9 @@ class RouteGenerator extends BackendGenerator
     protected function getRouteBooleanTemplate(array $field): string
     {
         $method = Str::camel($field['route']);
-        return "Route::patch('{$this->modelNameKebabPlural}/{id}/{$field['route']}', [{$this->getControllerName()}::class, '{$method}']);\n";
+        $routePath = strtolower(Str::kebab($field['route']));
+        $middleware = $this->hasPermissions() ? "->middleware('can:{$routePath}-{$this->modelNameKebab}')" : '';
+        return "Route::patch('{$this->modelNameKebabPlural}/{id}/{$routePath}', [{$this->getControllerName()}::class, '{$method}']){$middleware};\n";
     }
 
     protected function putToFile($content, $method = 'put'): void

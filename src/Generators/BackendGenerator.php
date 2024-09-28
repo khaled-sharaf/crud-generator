@@ -147,6 +147,11 @@ abstract class BackendGenerator extends Generator
             $permissions["view-trashed-{$this->modelNameKebab}-list"] = "View Trashed {$modelTitle} List";
         }
         if ($this->getActivationRouteOption()) $permissions["activation-{$this->modelNameKebab}"] = "Activation {$modelTitle}";
+        foreach ($this->getBooleanRouteFields() as $field) {
+            $permissionName = strtolower(Str::kebab($field['route']));
+            $permissionTitle = Str::title(Str::replace('-', ' ', $permissionName));
+            $permissions["{$permissionName}-{$this->modelNameKebab}"] = "{$permissionTitle} {$modelTitle}";
+        }
         return $permissions;
     }
 
