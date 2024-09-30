@@ -84,7 +84,7 @@ class ShowGenerator extends FrontendGenerator
     {
         if (!$this->checkApiRoute('edit') || $this->hasFormPopup()) return '';
         $hasPermission = $this->hasPermissions() ? " v-if=\"\$can('edit-{$this->modelNameKebab}')\"" : '';
-        return "<BtnEdit{$hasPermission} :to=\"{ name: 'edit-{$this->modelNameKebab}', params: { id: modelId } }\" />";
+        return "<BtnEdit{$hasPermission} :to=\"{ name: '{$this->getEditRouteName()}', params: { id: modelId } }\" />";
     }
 
     protected function getShowContent(): string
@@ -100,7 +100,7 @@ class ShowGenerator extends FrontendGenerator
     protected function getScript(): string
     {
         $jsFileName = Str::camel($this->getShowFileName());
-        return "<script src=\"{$jsFileName}.js\"></script>";
+        return "<script src=\"./{$jsFileName}.js\"></script>";
     }
 
     protected function getJsReplacers(): array

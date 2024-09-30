@@ -74,7 +74,7 @@ abstract class BackendGenerator extends Generator
 
     protected function getResourceNamespace(): string
     {
-        return "{$this->moduleNamespace}\app\Http\Resources\\{$this->versionNamespace}";
+        return "{$this->moduleNamespace}\app\Resources\\{$this->versionNamespace}";
     }
 
     protected function getConstantNamespace(): string

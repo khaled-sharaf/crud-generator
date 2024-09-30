@@ -199,6 +199,11 @@ class Field
         return self::isBoolean($field) && isset($field['route']) && is_string($field['route']);
     }
 
+    public static function hasValidation(array $field): bool
+    {
+        return isset($field['validation']);
+    }
+
     public static function getOptions(array $field): array
     {
         return collect($field['options'])->filter(function ($value, $key) {

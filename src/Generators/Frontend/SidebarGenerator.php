@@ -57,7 +57,7 @@ class SidebarGenerator extends FrontendGenerator
             ]" : '';
         
         return "{{$permissionList}
-            label: app => app.\$t('{$this->getPageTitle('label')}}'),
+            label: app => app.\$t('{$this->getPageTitle('label')}'),
             icon: 'list',
             to: {name: '{$this->getListRouteName()}'}{$createRoute}
         }";

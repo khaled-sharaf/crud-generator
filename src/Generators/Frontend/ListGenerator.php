@@ -191,16 +191,18 @@ class ListGenerator extends FrontendGenerator
         $lookupName = Field::hasLookupFrontend($field) ? $lookupName : Str::camel($lookupName);
         $label = $this->getLangPath("table.{$name}");
         return "\n\t\t\t\t<!-- ================= Filter By {$name} ================= -->
-                <q-select
-                    v-model=\"filters.options.{$name}\"
-                    :label=\"\$t('{$label}')\"
-                    :options=\"{$lookupName}\"
-                    outlined
-                    dense
-                    emit-value
-                    map-options
-                    clearable
-                />";
+                <div class=\"mt-4\">
+                    <q-select
+                        v-model=\"filters.options.{$name}\"
+                        :label=\"\$t('{$label}')\"
+                        :options=\"{$lookupName}\"
+                        outlined
+                        dense
+                        emit-value
+                        map-options
+                        clearable
+                    />
+                </div>";
     }
 
     protected function handleFilterMultiConstantField(array $field): string

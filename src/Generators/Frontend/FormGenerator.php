@@ -69,8 +69,8 @@ class FormGenerator extends FrontendGenerator
 
     protected function getScript(): string
     {
-        $jsFileName = Str::camel($this->getShowFileName());
-        return "<script src=\"{$jsFileName}.js\"></script>";
+        $jsFileName = Str::camel($this->getFormFileName());
+        return "<script src=\"./{$jsFileName}.js\"></script>";
     }
 
     protected function getJsReplacers(): array
@@ -119,7 +119,7 @@ class FormGenerator extends FrontendGenerator
     {
         return collect($this->getFieldsVisibleInForm())->map(function ($field) {
             $default = Field::hasDefault($field) ? json_encode($field['default']) : 'null';
-            $value = Field::isFrontArray($field) ? '[]' : $default;
+            $value = Field::isTranslatable($field) ? '{}' : (Field::isFrontArray($field) ? '[]' : $default);
             return "\n\t\t\t\t{$field['name']}: {$value}";
         })->implode(',');
     }
@@ -132,7 +132,7 @@ class FormGenerator extends FrontendGenerator
     protected function getJsFormFieldsValidation(): string
     {
         return collect($this->getFieldsVisibleInForm())->map(function ($field) {
-            if (Field::isNullable($field)) return '';
+            if (Field::isNullable($field) || !Field::hasValidation($field)) return '';
             return "\n\t\t\t\t{$field['name']}: 'required'";
         })->filter(fn ($rule) => !empty($rule))->implode(',');
     }

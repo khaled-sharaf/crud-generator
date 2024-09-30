@@ -120,7 +120,7 @@ class ControllerGenerator extends BackendGenerator
 
     protected function getDestroyMethod(): string
     {
-        $hasPermission = $this->hasPermissions() ? ", {$this->modelNameKebab}" : '';
+        $hasPermission = $this->hasPermissions() ? ", '{$this->modelNameKebab}'" : '';
         return "\n\n\tpublic function destroy(\$id)\n\t{
         return sendData(CrudHelper::deleteActions(\$id, new {$this->modelName} $hasPermission));
     }";

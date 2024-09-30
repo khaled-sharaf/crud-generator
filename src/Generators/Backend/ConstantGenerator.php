@@ -31,11 +31,13 @@ class ConstantGenerator extends BackendGenerator
     {
         foreach ($this->getConstantFields() as $name => $field) {
             $field['name'] = Str::studly($name);
+            $fileName = Str::studly("{$this->modelName}{$field['name']}");
+            $field['fileName'] = $fileName;
             (new StubGenerator)->from($this->getStubPath(), true)
                 ->to($this->getGeneratorDirectory())
                 ->withReplacers($this->getReplacers($field))
                 ->replace(true)
-                ->as($field['name'])
+                ->as($fileName)
                 ->save();
         }
     }
@@ -45,7 +47,7 @@ class ConstantGenerator extends BackendGenerator
         $options = $this->formatOptions($field['name'], Field::getOptions($field));
         return [
             'CLASS_NAMESPACE' => $this->getConstantNamespace(),
-            'CLASS_NAME' => $field['name'],
+            'CLASS_NAME' => $field['fileName'],
             'CONSTANTS' => $this->getConstantsTemplate($options),
             'CONSTANTS_LIST' => $this->getConstantsListTemplate($options),
         ];
