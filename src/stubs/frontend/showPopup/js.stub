@@ -1,0 +1,30 @@
+export default {
+    data() {
+        return {
+            model: null,
+            modelId: null,
+        }
+    },
+    
+    methods: {
+        getModel() {
+            this.$request('get').url(`{{ API_ROUTE_NAME }}/${this.modelId}`).send().then(res => {
+                this.model = res.data
+            }).catch(err => {
+                if (err.statusCode == 404) {
+                    this.$store.modals.hideModal('{{ DIALOG_NAME }}')
+                }
+            })
+        }
+    },
+
+    watch: {
+        '$store.modals.list.{{ DIALOG_NAME }}': function(newVal) {
+            if (newVal) {
+                this.model = null
+                this.modelId = this.$store.modals.getData('{{ DIALOG_NAME }}').id
+                this.getModel()
+            }
+        }
+    },
+}

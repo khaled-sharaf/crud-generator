@@ -3,7 +3,6 @@
 namespace W88\CrudSystem\Generators\Frontend;
 
 use W88\CrudSystem\Generators\FrontendGenerator;
-use Illuminate\Support\Facades\File;
 use Touhidurabir\StubGenerator\Facades\StubGenerator;
 
 class SidebarGenerator extends FrontendGenerator

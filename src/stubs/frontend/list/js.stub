@@ -1,4 +1,4 @@
-export default {
+{{ IMPORT_COMPONENTS }}export default {{{ DECLARED_COMPONENTS }}
     data() {
         return {
             tableData: {
@@ -16,16 +16,10 @@ export default {
                 /* =============== Columns =============== */
                 columns: [{{ COLUMNS }}
                 ],
-            },
-
-            userRoleSelectOptions: [
-                {
-                    label: this.$t('employees.employee_crud.user_roles.admin'),
-                    value: 1,
-                },
-            ],
-            
+            },{{ DECLARED_LOOKUPS }}
         }
     },
 
+    async created() {{{ GET_LOOKUPS }}
+    }
 }

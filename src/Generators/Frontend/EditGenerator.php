@@ -11,25 +11,32 @@ class EditGenerator extends FrontendGenerator
 
     public function generate(): void
     {
+        if (!$this->checkApiRoute('edit')) return;
         $this->ensureVueStubExists('vue');
         $this->ensureVueStubExists('js');
         $this->ensureDirectoryExists();
         $this->generateFiles();
     }
 
+    protected function getDirectoryStubName(): string
+    {
+        return $this->hasFormPopup() ? 'editPopup' : 'edit';
+    }
+
     protected function getVueStubPath(): string
     {
-        return __DIR__ . '/../../stubs/frontend/createAndEdit/vue.stub';
+        return __DIR__ . "/../../stubs/frontend/{$this->getDirectoryStubName()}/vue.stub";
     }
 
     protected function getJsStubPath(): string
     {
-        return __DIR__ . '/../../stubs/frontend/createAndEdit/js.stub';
+        return __DIR__ . "/../../stubs/frontend/{$this->getDirectoryStubName()}/js.stub";
     }
 
     protected function getGeneratorDirectory(): string
     {
-        return $this->getFrontendCrudPath() . "/pages/{$this->getEditFileName()}";
+        $dir = $this->hasFormPopup() ? 'components' : 'pages';
+        return $this->getFrontendCrudPath() . "/{$dir}/{$this->getEditFileName()}";
     }
 
     protected function generateFiles(): void
@@ -54,59 +61,38 @@ class EditGenerator extends FrontendGenerator
     protected function getVueReplacers(): array
     {
         return [
-            'CLASS_PAGE' => "edit-{$this->modelNameKebab}-page",
+            'ACTIONS' => $this->getActions(),
+            'TABLE_ID' => $this->getTableId(),
+            'MODEL_NAME_KEBAB' => $this->modelNameKebab,
             'COMPONENT_FORM' => $this->getFormFileName(),
-            'JS_FILE_NAME' => Str::camel($this->getEditFileName()),
-            'COMPONENT_FORM_PROPS' => "v-if=\"model\" :modelEdit=\"model\" formType=\"edit\" ",
-            'LOADING_COMPONENT' => "\n\t\t\t<q-card v-else>
-                <q-card-section style=\"min-height: 400px\">
-                    <q-inner-loading  showing color=\"primary\" />
-                </q-card-section>
-            </q-card>",
+            'LIST_ROUTE_NAME' => $this->getListRouteName(),
+            'DIALOG_NAME' => Str::camel($this->getEditFileName()),
+            'DIALOG_TITLE' => $this->getLangPath("edit_{$this->modelNameSnake}"),
+            'SCRIPT' => $this->getScript(),
         ];
+    }
+
+    protected function getActions(): string
+    {
+        if (!$this->checkApiRoute('show') || $this->hasShowPopup()) return '';
+        $hasPermission = $this->hasPermissions() ? " v-if=\"\$can('view-{$this->modelNameKebab}')\"" : '';
+        return "<BtnViewTop{$hasPermission} :to=\"{ name: 'view-{$this->modelNameKebab}', params: { id: modelId } }\" />";
+    }
+
+    protected function getScript(): string
+    {
+        $jsFileName = Str::camel($this->getEditFileName());
+        return "<script src=\"{$jsFileName}.js\"></script>";
     }
 
     protected function getJsReplacers(): array
     {
         return [
             'COMPONENT_FORM' => $this->getFormFileName(),
-            'DATA_FUNCTION' => $this->getJsDataFunction(),
-            'METHODS_FUNCTION' => $this->getJsMethodsFunction(),
-            'CREATED_FUNCTION' => $this->getJsCreatedFunction(),
+            'API_ROUTE_NAME' => $this->getApiRouteName(),
+            'LIST_ROUTE_NAME' => $this->getListRouteName(),
+            'DIALOG_NAME' => Str::camel($this->getEditFileName()),
         ];
-    }
-
-    protected function getJsDataFunction(): string
-    {
-        return "\n\tdata() {
-        return {
-            model: null,
-            modelId: null,
-        }
-    },";
-    }
-
-    protected function getJsMethodsFunction(): string
-    {
-        return "\n\tmethods: {
-        getModel() {
-            this.modelId = this.\$route.params.id
-            this.\$request('get').url(`{$this->getApiRouteName()}/\${this.modelId}`).send().then(res => {
-                this.model = res.data
-            }).catch(err => {
-                if (err.statusCode == 404) {
-                    this.\$router.push({name: '{$this->getListRouteName()}'})
-                }
-            })
-        }
-    },";
-    }
-
-    protected function getJsCreatedFunction(): string
-    {
-        return "\n\tcreated() {
-        this.getModel()
-    },";
     }
 
 }

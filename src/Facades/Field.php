@@ -12,7 +12,7 @@ class Field
         $fileFields = static::fileFields();
         $typeAfterRemovingMulti = str_replace('multi_', '', $field['type']);
         if (isset($field['migrationType'])) return $field['migrationType'];
-        if (static::hasTranslatable($field)) return static::translatableFields()[$field['type']];
+        if (static::isTranslatable($field)) return static::translatableFields()[$field['type']];
         if (in_array($field['type'], $fileFields)) return 'string';
         if (in_array($typeAfterRemovingMulti, $fileFields)) return 'json';
         if (isset($field['relation'])) {
@@ -34,9 +34,29 @@ class Field
         return $method ?? (isset(static::types()[$field['type']]['seeder']) ? static::types()[$field['type']]['seeder'] : 'fake()->text(20)');
     }
 
+    public static function getStubViewFile(array $field): string
+    {
+        return isset(static::types()[$field['type']]['stub_view']) ? static::types()[$field['type']]['stub_view'] : 'text';
+    }
+
+    public static function getStubFormFile(array $field): string
+    {
+        return isset(static::types()[$field['type']]['stub_form']) ? static::types()[$field['type']]['stub_form'] : 'text';
+    }
+
     public static function isNullable(array $field): bool
     {
         return isset($field['nullable']) && $field['nullable'] === true;
+    }
+
+    public static function isUnique(array $field): bool
+    {
+        return isset($field['unique']) && $field['unique'] === true;
+    }
+
+    public static function hasDefault(array $field): bool
+    {
+        return isset($field['default']) && $field['default'] !== null;
     }
 
     public static function isBoolean(array $field): bool
@@ -49,9 +69,19 @@ class Field
         return isset($field['relation']) && ($field['relation'] === true || (isset($field['relation']['constrained']) && $field['relation']['constrained'] === true));
     }
 
-    public static function hasTranslatable(array $field): bool
+    public static function isTranslatable(array $field): bool
     {
         return isset($field['translatable']) && $field['translatable'] === true && isset(static::translatableFields()[$field['type']]);
+    }
+
+    public static function isJson(array $field): bool
+    {
+        return isset($field['type']) && array_key_exists($field['type'], static::jsonFields());
+    }
+
+    public static function isFrontArray(array $field): bool
+    {
+        return self::isTranslatable($field) || self::isJson($field);
     }
 
     public static function hasFile(array $field): bool
@@ -71,6 +101,11 @@ class Field
         return self::hasConstant($field) && isset($field['lookup']) && $field['lookup'] === true;
     }
 
+    public static function hasLookupFrontend(array $field): bool
+    {
+        return self::hasConstant($field) && isset($field['lookupFrontend']) && $field['lookupFrontend'] === true;
+    }
+
     public static function isFilterable(array $field): bool
     {
         return isset($field['filter']) && ($field['filter'] === true || in_array($field['filter'], ['single', 'multi']));
@@ -80,7 +115,7 @@ class Field
     {
         return isset($field['hidden']) && (
             $field['hidden'] === true ||
-            (($field['hidden']['list'] ?? false) === true && ($field['hidden']['create'] ?? false) === true && ($field['hidden']['edit'] ?? false) === true)
+            (($field['hidden']['list'] ?? false) === true && ($field['hidden']['create'] ?? false) === true && ($field['hidden']['edit'] ?? false) === true && ($field['hidden']['show'] ?? false) === true)
         );
     }
 
@@ -124,6 +159,11 @@ class Field
         return isset($field['hidden']) && ($field['hidden'] === true || ($field['hidden']['edit'] ?? false) === true);
     }
 
+    public static function isHiddenShow(array $field): bool
+    {
+        return isset($field['hidden']) && ($field['hidden'] === true || ($field['hidden']['show'] ?? false) === true);
+    }
+
     public static function hasBoolean(array $field): bool
     {
         return $field['type'] === 'boolean' && isset($field['filter']) && $field['filter'] === true;
@@ -134,19 +174,19 @@ class Field
         return $field['type'] === 'boolean' && isset($field['filter']) && $field['filter'] === true;
     }
     
-    public static function hasFieldSingleConstant(array $field): bool
+    public static function isSingleConstant(array $field): bool
     {
         return in_array($field['type'], static::filterFields());
     }
     
-    public static function hasFieldMultiConstant(array $field): bool
+    public static function isMultiConstant(array $field): bool
     {
         return in_array(str_replace('multi_', '', $field['type']), static::filterFields());
     }
 
     public static function hasFieldAllowedFilter(array $field): bool
     {
-        return self::hasFieldSingleConstant($field) || self::hasFieldMultiConstant($field);
+        return self::isSingleConstant($field) || self::isMultiConstant($field);
     }
 
     public static function hasConstantFilter(array $field): bool

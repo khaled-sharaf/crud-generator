@@ -11,25 +11,32 @@ class CreateGenerator extends FrontendGenerator
 
     public function generate(): void
     {
+        if (!$this->checkApiRoute('create')) return;
         $this->ensureVueStubExists('vue');
         $this->ensureVueStubExists('js');
         $this->ensureDirectoryExists();
         $this->generateFiles();
     }
 
+    protected function getDirectoryStubName(): string
+    {
+        return $this->hasFormPopup() ? 'createPopup' : 'create';
+    }
+
     protected function getVueStubPath(): string
     {
-        return __DIR__ . '/../../stubs/frontend/createAndEdit/vue.stub';
+        return __DIR__ . "/../../stubs/frontend/{$this->getDirectoryStubName()}/vue.stub";
     }
 
     protected function getJsStubPath(): string
     {
-        return __DIR__ . '/../../stubs/frontend/createAndEdit/js.stub';
+        return __DIR__ . "/../../stubs/frontend/{$this->getDirectoryStubName()}/js.stub";
     }
 
     protected function getGeneratorDirectory(): string
     {
-        return $this->getFrontendCrudPath() . "/pages/{$this->getCreateFileName()}";
+        $dir = $this->hasFormPopup() ? 'components' : 'pages';
+        return $this->getFrontendCrudPath() . "/{$dir}/{$this->getCreateFileName()}";
     }
 
     protected function generateFiles(): void
@@ -41,24 +48,18 @@ class CreateGenerator extends FrontendGenerator
             ->as($this->getCreateFileName())
             ->ext('vue')
             ->save();
-
-        (new StubGenerator())->from($this->getJsStubPath(), true)
-            ->to($this->getGeneratorDirectory())
-            ->withReplacers($this->getJsReplacers())
-            ->replace(true)
-            ->as(Str::camel($this->getCreateFileName()))
-            ->ext('js')
-            ->save();
     }
 
     protected function getVueReplacers(): array
     {
         return [
-            'CLASS_PAGE' => "create-{$this->modelNameKebab}-page",
+            'MODEL_NAME_KEBAB' => $this->modelNameKebab,
+            'TABLE_ID' => $this->getTableId(),
             'COMPONENT_FORM' => $this->getFormFileName(),
-            'JS_FILE_NAME' => Str::camel($this->getCreateFileName()),
-            'COMPONENT_FORM_PROPS' => '',
-            'LOADING_COMPONENT' => '',
+            'LIST_ROUTE_NAME' => $this->getListRouteName(),
+            'DIALOG_NAME' => Str::camel($this->getCreateFileName()),
+            'DIALOG_TITLE' => $this->getLangPath("create_{$this->modelNameSnake}"),
+            'SCRIPT' => $this->getScript(),
         ];
     }
 
@@ -66,10 +67,14 @@ class CreateGenerator extends FrontendGenerator
     {
         return [
             'COMPONENT_FORM' => $this->getFormFileName(),
-            'DATA_FUNCTION' => '',
-            'METHODS_FUNCTION' => '',
-            'CREATED_FUNCTION' => '',
         ];
+    }
+
+    protected function getScript(): string
+    {
+        return "<script>\n" . (new StubGenerator())->from($this->getJsStubPath(), true)
+            ->withReplacers($this->getJsReplacers())
+            ->toString() . "\n</script>";
     }
 
 }

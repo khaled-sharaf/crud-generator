@@ -1,0 +1,18 @@
+                
+                <q-card-section v-if="model">
+                    <div class="view-model-items">
+                        <!-- group -->
+                        <div class="group">
+                            <!-- <div class="group-label" v-text="$t('put_here_group_title')"></div> -->
+                            <div class="group-content">
+                                <div class="row">
+                                    {{ FIELDS }}
+                                </div>
+                            </div>
+                        </div>
+                        <!-- ./group -->
+                    </div>
+                </q-card-section>
+                <q-card-section style="min-height: 400px" v-else>
+                    <q-inner-loading showing color="primary" />
+                </q-card-section>

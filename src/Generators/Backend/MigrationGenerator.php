@@ -82,8 +82,9 @@ class MigrationGenerator extends BackendGenerator
     {
         $type = Field::getMigrationType($field);
         $definition = "\$table->{$type}('{$name}')";
-        if (isset($field['nullable']) && $field['nullable'] === true) $definition .= '->nullable()';
-        if (isset($field['default']) && $field['default'] !== null) {
+        if (Field::isNullable($field)) $definition .= '->nullable()';
+        if (Field::isUnique($field)) $definition .= '->unique()';
+        if (Field::hasDefault($field)) {
             $default = is_bool($field['default']) || is_numeric($field['default']) ? json_encode($field['default']) : "'{$field['default']}'";
             $definition .= "->default({$default})";
         }

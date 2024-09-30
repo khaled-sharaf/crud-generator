@@ -5,7 +5,7 @@ namespace W88\CrudSystem\Generators;
 use W88\CrudSystem\Facades\Crud;
 use Illuminate\Support\Facades\File;
 use W88\CrudSystem\Facades\Field;
-
+use Illuminate\Support\Str;
 abstract class FrontendGenerator extends Generator
 {
     
@@ -46,6 +46,11 @@ abstract class FrontendGenerator extends Generator
     protected function getApiRouteName(): string
     {
         return "{$this->moduleNameKebab}/{$this->modelNameKebabPlural}";
+    }
+
+    protected function getTableId(): string
+    {
+        return $this->modelNameCamelPlural;
     }
 
     protected function getListFileName(): string
@@ -98,9 +103,39 @@ abstract class FrontendGenerator extends Generator
         return "{$this->frontendModuleName}.{$this->modelNameSnake}_crud" . ($key ? ".{$key}" : '');
     }
 
+    protected function getLookupFile(string $name = null): string
+    {
+        return $this->modelName . Str::studly($name);
+    }
+
+    protected function getLookupApiRouteName(string $name = null): string
+    {
+        return $this->modelNameKebab . '-' . Str::kebab($name);
+    }
+
+    protected function getLookupName(string $name = null): string
+    {
+        return "{$this->getLookupFile($name)}Lookup";
+    }
+
     protected function getFieldsVisibleInList(): array
     {
         return collect($this->getFields())->filter(fn ($field) => !Field::isHiddenList($field))->toArray();
+    }
+
+    protected function getFieldsVisibleInView(): array
+    {
+        return collect($this->getFields())->filter(fn ($field) => !Field::isHiddenShow($field))->toArray();
+    }
+
+    protected function getFieldsHasLookupFrontend(): array
+    {
+        return collect($this->getNotHiddenFields())->filter(fn ($field) => Field::hasLookupFrontend($field))->toArray();
+    }
+
+    protected function getFieldsHasBackendLookupOnly(): array
+    {
+        return collect($this->getConstantFilterFields())->filter(fn ($field) => !Field::hasLookupFrontend($field) && Field::hasLookup($field))->toArray();
     }
     
 }

@@ -1,0 +1,13 @@
+<template>
+    <q-dialog
+        v-model="$store.modals.list.{{ DIALOG_NAME }}"
+        persistent
+    >
+        <q-card style="width: 800px; max-width: 80vw;">
+            <DialogTitle :title="$t('{{ DIALOG_TITLE }}')" />
+            {{ SHOW_CONTENT }}
+        </q-card>
+    </q-dialog>
+</template>
+
+{{ SCRIPT }}

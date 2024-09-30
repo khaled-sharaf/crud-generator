@@ -1,0 +1,16 @@
+<template>
+    <q-dialog
+        v-model="$store.modals.list.{{ DIALOG_NAME }}"
+        persistent
+    >
+        <q-card style="width: 800px; max-width: 80vw;">
+            <DialogTitle :title="$t('{{ DIALOG_TITLE }}')" />
+            <{{ COMPONENT_FORM }} v-if="model" :modelEdit="model" formType="edit" @submited="() => {$store.modals.hideModal('{{ DIALOG_NAME }}'); $store.tableList.tables.{{ TABLE_ID }}.refresh(); }" />
+            <q-card-section v-else style="min-height: 400px">
+                <q-inner-loading  showing color="primary" />
+            </q-card-section>
+        </q-card>
+    </q-dialog>
+</template>
+
+{{ SCRIPT }}

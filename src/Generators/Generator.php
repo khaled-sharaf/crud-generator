@@ -150,6 +150,21 @@ abstract class Generator implements GeneratorInterface
         return $fields;
     }
 
+    protected function getFileFields(): array
+    {
+        return collect($this->getFields())->filter(fn ($field) => Field::hasFile($field))->toArray();
+    }
+
+    protected function getBooleanFields(): array
+    {
+        return collect($this->getFields())->filter(fn ($field) => Field::isBoolean($field))->toArray();
+    }
+
+    protected function getConstantFields(): array
+    {
+        return collect($this->getFields())->filter(fn ($field) => Field::hasConstant($field))->toArray();
+    }
+    
     protected function getNotHiddenFields(): array
     {
         return collect($this->getFields())->filter(fn ($field) => !Field::isHidden($field))->toArray();
@@ -169,4 +184,25 @@ abstract class Generator implements GeneratorInterface
     {
         return collect($this->getFields())->filter(fn ($field) => Field::hasConstantFilter($field))->toArray();
     }
+
+    protected function getFieldsVisibleInForm(): array
+    {
+        return collect($this->getFields())->filter(fn ($field) => !Field::isHiddenEdit($field) || !Field::isHiddenCreate($field))->toArray();
+    }
+
+    /* ======================== Helpers ======================== */
+
+    protected function removeLeadingTab($text, $countTabs = 1) {
+        // Split the text into lines
+        $lines = explode("\n", $text);
+        $pattern = '/^' . str_repeat('\t', $countTabs) . '/';
+        // Remove leading tab from each line
+        $cleanedLines = array_map(function($line) use ($pattern) {
+            return preg_replace($pattern, '', $line);
+        }, $lines);
+        
+        // Join the lines back together
+        return implode("\n", $cleanedLines);
+    }
+    
 }

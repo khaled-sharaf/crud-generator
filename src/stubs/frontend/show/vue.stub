@@ -1,0 +1,17 @@
+<template>
+    <div>
+        <PageTitle>
+            <template #actions>
+                {{ ACTIONS }}
+            </template>
+        </PageTitle>
+
+        <div class="inner-page">
+            <q-card>
+                {{ SHOW_CONTENT }}
+            </q-card>
+        </div>
+    </div>
+</template>
+
+{{ SCRIPT }}

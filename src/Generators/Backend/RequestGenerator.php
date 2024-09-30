@@ -5,6 +5,7 @@ namespace W88\CrudSystem\Generators\Backend;
 use W88\CrudSystem\Generators\BackendGenerator;
 use Touhidurabir\StubGenerator\Facades\StubGenerator;
 use Illuminate\Support\Str;
+use W88\CrudSystem\Facades\Field;
 
 class RequestGenerator extends BackendGenerator
 {
@@ -69,7 +70,7 @@ class RequestGenerator extends BackendGenerator
 
     protected function getRules(): string
     {
-        return collect($this->getNotHiddenFields())->map(fn($field, $name) => $this->getFieldValidationRule($name, $field))->implode(',');
+        return collect($this->getFieldsVisibleInForm())->map(fn($field, $name) => $this->getFieldValidationRule($name, $field))->implode(',');
     }
 
     protected function getFieldValidationRule(string $name, array $field): string
@@ -80,6 +81,9 @@ class RequestGenerator extends BackendGenerator
             return "\n\t\t\t'{$key}' => $rule";
         });
         $defaultValidation = "\n\t\t\t'$name' => 'nullable'";
+        if (Field::isUnique($field)) {
+            $defaultValidation = "\n\t\t\t'$name' => 'nullable|unique:{$this->modelNameSnakePlural}'";
+        }
         return count($validations) ? $validations->implode(',') : $defaultValidation;
     }
 

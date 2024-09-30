@@ -87,34 +87,14 @@ abstract class BackendGenerator extends Generator
         return $this->modelName . 'Seeder';
     }
 
-    protected function getActivationRouteOption()
-    {
-        return $this->config['dashboardApi']['activation'] ?? false;
-    }
-
     protected function getLookupRouteOption()
     {
         return $this->config['dashboardApi']['lookup'] ?? false;
     }
-    
-    protected function getBooleanFields(): array
-    {
-        return collect($this->getFields())->filter(fn ($field) => Field::isBoolean($field))->toArray();
-    }
-
-    protected function getFileFields(): array
-    {
-        return collect($this->getFields())->filter(fn ($field) => Field::hasFile($field))->toArray();
-    }
 
     protected function getTranslatableFields(): array
     {
-        return collect($this->getFields())->filter(fn ($field) => Field::hasTranslatable($field))->toArray();
-    }
-
-    protected function getConstantFields(): array
-    {
-        return collect($this->getFields())->filter(fn ($field) => Field::hasConstant($field))->toArray();
+        return collect($this->getFields())->filter(fn ($field) => Field::isTranslatable($field))->toArray();
     }
 
     protected function getLookupFields(): array

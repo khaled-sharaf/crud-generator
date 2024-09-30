@@ -1,0 +1,12 @@
+<template>
+    <div>
+        <PageTitle />
+        <div class="inner-page">
+            <q-card>
+                <{{ COMPONENT_FORM }} @submited="() => $router.push({name: '{{ LIST_ROUTE_NAME }}'})" />
+            </q-card>
+        </div>
+    </div>
+</template>
+
+{{ SCRIPT }}

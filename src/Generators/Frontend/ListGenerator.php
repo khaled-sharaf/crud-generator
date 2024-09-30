@@ -62,6 +62,7 @@ class ListGenerator extends FrontendGenerator
             'ACTIONS' => $this->getVueActions(),
             'BODY_CELLS' => $this->getVueBodyCells(),
             'FILTERS' => $this->getVueFilters(),
+            'USE_COMPONENTS' => $this->getVueUseComponents(),
         ];
     }
 
@@ -70,71 +71,221 @@ class ListGenerator extends FrontendGenerator
         if (!($this->checkApiRoute('edit') || $this->checkApiRoute('show'))) return '';
         $viewBtnPermission = $this->hasPermissions() ? "\n\t\t\t\t\tv-if=\"\$can('view-{$this->modelNameKebab}')\"" : '';
         $editBtnPermission = $this->hasPermissions() ? "\n\t\t\t\t\tv-if=\"\$can('edit-{$this->modelNameKebab}')\"" : '';
-        $viewBtn = $this->checkApiRoute('show') ? "\n\t\t\t\t<BtnViewTable{$viewBtnPermission}
-                    :to=\"{name: '{$this->getShowRouteName()}', params: {id: props.row.id} }\"
-                />" : '';
-        $editBtn = $this->checkApiRoute('edit') ? "\n\t\t\t\t<BtnEdit{$editBtnPermission}
-                    :to=\"{name: '{$this->getEditRouteName()}', params: {id: props.row.id} }\"
-                />" : '';
+        $viewAction = $this->hasShowPopup() ? "@click=\"() => \$store.modals.showModal('view{$this->modelName}', {id: props.row.id})\"" : ":to=\"{name: '{$this->getShowRouteName()}', params: {id: props.row.id} }\"";
+        $editAction = $this->hasFormPopup() ? "@click=\"() => \$store.modals.showModal('edit{$this->modelName}', {id: props.row.id})\"" : ":to=\"{name: '{$this->getEditRouteName()}', params: {id: props.row.id} }\"";
+        $viewBtn = $this->checkApiRoute('show') ? "\n\t\t\t\t<BtnViewTable{$viewBtnPermission}\n\t\t\t\t\t{$viewAction}\n\t\t\t\t/>" : '';
+        $editBtn = $this->checkApiRoute('edit') ? "\n\t\t\t\t<BtnEdit{$editBtnPermission}\n\t\t\t\t\t{$editAction}\n\t\t\t\t/>" : '';
         return"<!-- =========================== Actions =========================== -->
             <template v-slot:table-actions=\"props\">{$viewBtn}{$editBtn}\n\t\t\t</template>";
     }
 
     protected function getVueBodyCells(): string
     {
-        // <!-- =========================== Body nameActive =========================== -->
-        // <template v-slot:body-cell-nameActive="props">
-        //     <q-td :props="props">
-        //         <div>
-        //             <q-toggle
-        //                 :model-value="props.row.nameActive"
-        //                 @update:model-value="$store.tableList.toggleBooleanInTables('posts', props.row, 'nameActive', `url/${props.row.id}/activation`, true)"
-        //                 color="green-7"
-        //                 size="32px"
-        //                 :disable="!$can('activation-post')"
-        //             />
-        //         </div>
-        //     </q-td>
-        // </template>
-        return '';
+        $cells = [];
+        $booleanFields = $this->getBooleanFields();
+        $activationRouteOption = $this->getActivationRouteOption();
+        if ($activationRouteOption) {
+            $name = $activationRouteOption['column'] ?? 'is_active';
+            $booleanFields[$name] = [
+                'name' => $name,
+                'type' => 'boolean',
+                'route' => 'activation',
+                'filter' => true,
+            ];
+        }
+        foreach ($booleanFields as $field) {
+            $cells[] = $this->handleBodyCellBooleanField($field);
+        }
+        foreach ($this->getConstantFields() as $field) {
+            $cells[] = $this->handleBodyCellConstantField($field);
+        }
+        return count($cells) ? collect($cells)->implode("\n") . "\n" : '';
     }
 
     protected function getVueFilters(): string
     {
-        // FILTERS
-        // <FilterToggleBoolean
-        //     filterName="nameActive"
-        //     :label="$t('activation')"
-        //     nullable
-        //     :trueTitle="$t('activated')"
-        //     :falseTitle="$t('deactivated')"
-        //     :filters="filters.options"
-        // />
-        // <div>
-        //     <div class="filter-section-label" v-text="$t('employees.employee_crud.table.user_role')"></div>
-        //     <q-option-group
-        //         v-model="filters.options.user_role"
-        //         :options="userRoleSelectOptions"
-        //         inline
-        //         type="checkbox"
-        //         dense
-        //         class="px-2"
-        //     />
-        // </div>
-        return '';
+        $filters = [];
+        $booleanFields = $this->getBooleanFilterFields();
+        $activationRouteOption = $this->getActivationRouteOption();
+        if ($activationRouteOption) {
+            $name = $activationRouteOption['column'] ?? 'is_active';
+            $booleanFields[$name] = [
+                'name' => $name,
+                'nullable' => true,
+                'customLabel' => 'activation',
+                'trueTitle' => 'activated',
+                'falseTitle' => 'deactivated',
+            ];
+        }
+        foreach ($booleanFields as $field) {
+            $filters[] = $this->handleFilterBooleanField($field);
+        }
+        foreach ($this->getConstantFilterFields() as $field) {
+            $filters[] = $this->handleFilterConstantField($field);
+        }
+        return count($filters) ? collect($filters)->filter(fn ($filter) => !empty($filter))->implode("\n") . "\n" : '';
     }
-    
+
+    protected function handleBodyCellBooleanField(array $field): string
+    {
+        $hasFilter = Field::isFilterable($field) ? ', true' : '';
+        $route = Field::hasBooleanRouteFilter($field) ? "\n\t\t\t\t\t\t@update:model-value=\"\$store.tableList.toggleBooleanInTables('{$this->modelNameCamelPlural}', props.row, '{$field['name']}', `{$this->getApiRouteName()}/\${props.row.id}/{$field['route']}`{$hasFilter})\"" : '';
+        $disable = $this->hasPermissions() ? "\n\t\t\t\t\t\t:disable=\"!\$can('{$field['route']}-{$this->modelNameKebab}')\"" : '';
+        return "\n\t\t\t<!-- =========================== Body {$field['name']} =========================== -->
+            <template v-slot:body-cell-{$field['name']}=\"props\">
+                <q-td :props=\"props\">
+                    <q-toggle
+                        :model-value=\"props.row.{$field['name']}\"
+                        color=\"green-7\"
+                        size=\"32px\"{$route}{$disable}
+                    />
+                </q-td>
+            </template>";
+    }
+
+    protected function handleBodyCellConstantField(array $field): string
+    {
+        $lookupName = $this->getLookupName($field['name']);
+        $hasLookupFrontend = Field::hasLookupFrontend($field);
+        $singleValue = $hasLookupFrontend ? "{$lookupName}.getByValue(props.row.{$field['name']})" : "props.row.{$field['name']}";
+        $multiValue = $hasLookupFrontend ? "{$lookupName}.getByValue(item)" : 'item';
+        $addLabel = Field::isSingleConstant($field) ? ":label=\"{$singleValue}\"" :
+        "v-for=\"(item, index) in props.row.{$field['name']}\"\n\t\t\t\t\t\t:key=\"index\"\n\t\t\t\t\t\t:label=\"{$multiValue}\"";
+        return "\n\t\t\t<!-- =========================== Body {$field['name']} =========================== -->
+            <template v-slot:body-cell-{$field['name']}=\"props\">
+                <q-td :props=\"props\">
+                    <q-badge
+                        {$addLabel}
+                        class=\"px-2 py-1 bg-primary\"
+                        rounded
+                    />
+                </q-td>
+            </template>";
+    }
+
+    protected function handleFilterBooleanField(array $field): string
+    {
+        $name = $field['name'];
+        $label = $field['customLabel'] ?? $this->getLangPath("table.{$name}");
+        $trueTitle = isset($field['trueTitle']) ? "\n\t\t\t\t\t:trueTitle=\"\$t('{$field['trueTitle']}')\"" : '';
+        $falseTitle = isset($field['falseTitle']) ? "\n\t\t\t\t\t:falseTitle=\"\$t('{$field['falseTitle']}')\"" : '';
+        $nullable = Field::isNullable($field) ? "\n\t\t\t\t\tnullable" : '';
+        return "\n\t\t\t\t<!-- ================= Filter By {$name} ================= -->
+                <FilterToggleBoolean
+                    :filters=\"filters.options\"
+                    filterName=\"{$name}\"
+                    :label=\"\$t('{$label}')\"{$trueTitle}{$falseTitle}{$nullable}
+                />";
+    }
+
+    protected function handleFilterConstantField(array $field): string
+    {
+        if (!Field::hasLookupFrontend($field) && !Field::hasLookup($field)) return '';
+        return Field::getFilter($field) === 'single' ? $this->handleFilterSingleConstantField($field) : $this->handleFilterMultiConstantField($field);
+    }
+
+    protected function handleFilterSingleConstantField(array $field): string
+    {
+        $name = $field['name'];
+        $lookupName = $this->getLookupName($name);
+        $lookupName = Field::hasLookupFrontend($field) ? $lookupName : Str::camel($lookupName);
+        $label = $this->getLangPath("table.{$name}");
+        return "\n\t\t\t\t<!-- ================= Filter By {$name} ================= -->
+                <q-select
+                    v-model=\"filters.options.{$name}\"
+                    :label=\"\$t('{$label}')\"
+                    :options=\"{$lookupName}\"
+                    outlined
+                    dense
+                    emit-value
+                    map-options
+                    clearable
+                />";
+    }
+
+    protected function handleFilterMultiConstantField(array $field): string
+    {
+        $name = $field['name'];
+        $lookupName = $this->getLookupName($name);
+        $lookupName = Field::hasLookupFrontend($field) ? $lookupName : Str::camel($lookupName);
+        $label = $this->getLangPath("table.{$name}");
+        return "\n\t\t\t\t<!-- ================= Filter By {$name} ================= -->
+                <div>
+                    <div class=\"filter-section-label\" v-text=\"\$t('{$label}')\"></div>
+                    <q-option-group
+                        v-model=\"filters.options.{$name}\"
+                        :options=\"{$lookupName}\"
+                        dense
+                        inline
+                        type=\"checkbox\"
+                        class=\"px-2\"
+                    />
+                </div>";
+    }
+
+    protected function getModalComponents(): array
+    {
+        $components = [];
+        if ($this->checkApiRoute('create') && $this->hasFormPopup()) $components[] = $this->getCreateFileName();
+        if ($this->checkApiRoute('edit') && $this->hasFormPopup()) $components[] = $this->getEditFileName();
+        if ($this->checkApiRoute('show') && $this->hasShowPopup()) $components[] = $this->getShowFileName();
+        return $components;
+    }
+
+    protected function getVueUseComponents(): string
+    {
+        $components = $this->getModalComponents();
+        return count($components) ? collect($components)->map(fn ($component) => "\n\t\t<{$component} />")->implode('') . "\n" : '';
+    }
+
     /* ================================ Js Replacers ================================ */
 
     protected function getJsReplacers(): array
     {
         return [
-            'TABLE_ID' => $this->modelNameKebabPlural,
+            'IMPORT_COMPONENTS' => $this->getJsImportComponents(),
+            'DECLARED_COMPONENTS' => $this->getJsDeclaredComponents(),
+            'TABLE_ID' => $this->getTableId(),
             'URL' => $this->getApiRouteName(),
             'TABLE_OPTIONS' => $this->getJsTableOptions(),
             'VARS_OF_FILTERS' => $this->getJsVarsOfFilters(),
             'COLUMNS' => $this->getJsColumns(),
+            'DECLARED_LOOKUPS' => $this->getJsDeclaredLookups(),
+            'GET_LOOKUPS' => $this->getJsGetLookups(),
         ];
+    }
+
+    protected function getJsDeclaredLookups(): string
+    {
+        return collect($this->getFieldsHasBackendLookupOnly())->map(function ($field) {
+            $lookupName = Str::camel($this->getLookupName($field['name']));
+            return "\n\t\t\t{$lookupName}: []";
+        })->implode(",\n");
+    }
+
+    protected function getJsGetLookups(): string
+    {
+        return collect($this->getFieldsHasBackendLookupOnly())->map(function ($field) {
+            $lookupName = Str::camel($this->getLookupName($field['name']));
+            return "\n\t\tthis.{$lookupName} = await this.\$getLookup('{$this->getLookupApiRouteName($field['name'])}')";
+        })->implode(",\n");
+    }
+
+    protected function getJsImportComponents(): string
+    {
+        $components = $this->getModalComponents();
+        return count($components) ? collect($components)->map(fn ($component) => $this->handleImportComponentLine($component))->implode("\n") . "\n\n" : '';
+    }
+
+    protected function handleImportComponentLine(string $component): string
+    {
+        return "import {$component} from '../../components/{$component}/{$component}.vue'";
+    }
+
+    protected function getJsDeclaredComponents(): string
+    {
+        $components = $this->getModalComponents();
+        return count($components) ? "\n\tcomponents: {" . collect($components)->map(fn ($component) => "\n\t\t{$component}")->implode(',') . "\n\t}," : '';
     }
 
     protected function getJsTableOptions(): string
@@ -163,8 +314,9 @@ class ListGenerator extends FrontendGenerator
         }
         if ($this->checkApiRoute('create')) {
             $createPermission = $hasPermissions ? "\n\t\t\t\t\tshowIf: () => this.\$can('create-{$this->modelNameKebab}')," : '';
+            $createAction = $this->hasFormPopup() ? "click: () => this.\$store.modals.showModal('create{$this->modelName}')" : "to: {name: '{$this->getCreateRouteName()}'}";
             $options[] = "btnCreate: {{$createPermission}
-                    to: {name: '{$this->getCreateRouteName()}'},
+                    {$createAction},
                     label: '{$this->getLangPath("create_{$this->modelNameSnake}")}',
                 },";
         }
@@ -180,12 +332,12 @@ class ListGenerator extends FrontendGenerator
         $activationValue = isset($activationRouteOption['default']) ? json_encode($activationRouteOption['default']) : 'true';
         $filters[] = $activationRouteOption ? "{$activationColumn}: {$activationValue}," : '';
         foreach ($this->getBooleanFilterFields() as $field) {
-            $default = isset($field['default']) ? json_encode($field['default']) : 'null';
+            $default = Field::hasDefault($field) ? json_encode($field['default']) : 'null';
             $filters[] = "{$field['name']}: {$default},";
         }
         foreach ($this->getConstantFilterFields() as $field) {
             $filterType = $field['filter'] ?? 'single';
-            $default = isset($field['default']) ? json_encode($field['default']) : null;
+            $default = Field::hasDefault($field) ? json_encode($field['default']) : null;
             $default = $filterType === 'single' ? ($default ?? 'null') : ($default ? "[{$default}]" : '[]');
             $filters[] = "{$field['name']}: {$default},";
         }

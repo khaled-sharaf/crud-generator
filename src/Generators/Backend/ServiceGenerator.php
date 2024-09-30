@@ -150,7 +150,7 @@ class ServiceGenerator extends BackendGenerator
         $filters = [];
         foreach ($this->getConstantFilterFields() as $name => $field) {
             $filterType = Field::getFilter($field);
-            $databaseType = Field::hasFieldSingleConstant($field) ? 'single' : 'multi';
+            $databaseType = Field::isSingleConstant($field) ? 'single' : 'multi';
             if ($databaseType === 'single' && $filterType === 'single') {
                 $filters[] = "new \App\Filters\General\EqualFilter('{$name}')";
             } else if ($databaseType === 'single' && $filterType === 'multi') {

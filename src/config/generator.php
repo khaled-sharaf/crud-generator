@@ -10,7 +10,7 @@ return [
     'generators' => [
         'backend' => ['migration', 'model', 'route', 'controller', 'service', 'request', 'resource', 'seeder', 'constant', 'lookup', 'lang', 'permission'],
         'clientApi' => ['route', 'controller', 'service', 'request', 'resource'],
-        // 'frontend' => ['list', 'form', 'create', 'edit', 'profile', 'lang', 'sidebar', 'route'],
-        'frontend' => ['list', 'create', 'edit', 'lang', 'sidebar', 'route'],
+        'frontend' => ['list', 'form', 'create', 'edit', 'show', 'lookup', 'lang', 'sidebar', 'route'],
+        // 'frontend' => ['list', 'show', 'form', 'create', 'edit', 'lang', 'sidebar', 'route'],
     ],
 ];

@@ -1,0 +1,7 @@
+import {{ COMPONENT_FORM }} from '../components/{{ COMPONENT_FORM }}/{{ COMPONENT_FORM }}.vue'
+
+export default {
+    components: {
+        {{ COMPONENT_FORM }}
+    }
+}

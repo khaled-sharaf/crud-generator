@@ -1,0 +1,52 @@
+export default {
+    props: {
+        formType: {
+            type: String,
+            default: 'create'
+        },
+        modelEdit: {
+            type: Object,
+            default: null
+        }
+    },
+
+    data() {
+        return {
+            modelId: null,
+            form: {{{ FIELDS }}
+            },
+            {{ DECLARED_LOOKUPS }}
+        }
+    },
+
+    methods: {
+        createOrUpdate(validate, resetForm) {
+            validate().then(({valid, errors}) => {
+                if (valid) {
+                    const method = this.formType == 'edit' ? 'put{{ FORMDATA_TYPE }}' : 'post{{ FORMDATA_TYPE }}'
+                    const url = `{{API_ROUTE_NAME}}${this.formType == 'edit' ? `/${this.form.id}` : ''}`
+                    this.$request(method).url(url).body(this.form).loadingPage().send().then(res => {
+                        resetForm()
+                        this.$emit('submited', res)
+                    })
+                }
+            })
+        },
+    },
+
+    computed: {
+        validationSchema() {
+            return this.$vt.object({{{ FIELDS_VALIDATION }}
+            })
+        },
+    },
+
+    created() {
+        this.$store.general.setSsrErrors(false)
+        if (this.formType && this.formType == 'edit') {
+            this.modelId = this.modelEdit.id
+            this.form = {...this.modelEdit}
+        }
+    }
+
+}

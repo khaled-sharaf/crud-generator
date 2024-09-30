@@ -59,6 +59,7 @@ class LangGenerator extends FrontendGenerator
         $content .= $this->checkApiRoute('edit') ? "\n\t\tedit_{$this->modelNameSnake}: 'Edit {$modelTitle}'," : '';
         $content .= $this->checkApiRoute('show') ? "\n\t\tview_{$this->modelNameSnake}: 'View {$modelTitle}'," : '';
         $content .= $this->getFormTemplate();
+        $content .= $this->getLookupTemplate();
         return $content . "\n\t},\n";
     }
 
@@ -68,7 +69,25 @@ class LangGenerator extends FrontendGenerator
         $validation .= collect($this->getNotHiddenFields())->map(function ($field, $name) {
             return "\n\t\t\t{$name}: '{$field['label']}'";
         })->join(',');
-        return $validation . "\n\t\t}";
+        return $validation . "\n\t\t},";
+    }
+
+    protected function getLookupTemplate(): string
+    {
+        $constantFields = $this->getFieldsHasLookupFrontend();
+        if (empty($constantFields)) return '';
+        $constants = "\n\t\tlookups: {";
+        foreach ($constantFields as $fieldName => $field) {
+            $fieldName = strtolower(Str::snake($fieldName));
+            $constants .= "\n\t\t\t{$fieldName}: {";
+            foreach (Field::getOptions($field) as $key => $value) {
+                $key = strtolower(Str::snake($key));
+                $value = $value['label'] ?? $value;
+                $constants .= "\n\t\t\t\t{$key}: '{$value}',";
+            }
+            $constants .= "\n\t\t\t},";
+        }
+        return $constants . "\n\t\t},";
     }
 
 }

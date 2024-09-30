@@ -1,0 +1,21 @@
+<template>
+    <v-form ref="myFormRef" v-slot="{ validate, resetForm }" :validation-schema="validationSchema" :initial-values="form" as="span">
+        <div class="px-4 pb-3 flex justify-end">
+            <TranslateSelect form="{{ FORM_NAME }}" />
+        </div>
+        <q-card-section>
+            <!-- begin::row -->
+            <div class="row">
+                {{ FIELDS }}
+            </div>
+            <!-- end::row -->
+            <SsrError />
+        </q-card-section>
+
+        <q-card-section align="right">
+            <q-btn :color="formType == 'edit' ? 'teal' : 'primary'" :label="$t(formType == 'edit' ? 'update' : 'create')" @click="createOrUpdate(validate, resetForm)" />
+        </q-card-section>
+    </v-form>
+</template>
+
+{{ SCRIPT }}
