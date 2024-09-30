@@ -190,6 +190,11 @@ abstract class Generator implements GeneratorInterface
         return collect($this->getFields())->filter(fn ($field) => !Field::isHiddenEdit($field) || !Field::isHiddenCreate($field))->toArray();
     }
 
+    protected function getTranslatableFields(): array
+    {
+        return collect($this->getFields())->filter(fn ($field) => Field::isTranslatable($field))->toArray();
+    }
+
     /* ======================== Helpers ======================== */
 
     protected function removeLeadingTab($text, $countTabs = 1) {

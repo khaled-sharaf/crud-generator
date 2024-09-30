@@ -92,11 +92,6 @@ abstract class BackendGenerator extends Generator
         return $this->config['dashboardApi']['lookup'] ?? false;
     }
 
-    protected function getTranslatableFields(): array
-    {
-        return collect($this->getFields())->filter(fn ($field) => Field::isTranslatable($field))->toArray();
-    }
-
     protected function getLookupFields(): array
     {
         return collect($this->getFields())->filter(fn ($field) => Field::hasLookup($field))->toArray();

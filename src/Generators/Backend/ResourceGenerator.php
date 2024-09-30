@@ -4,6 +4,7 @@ namespace W88\CrudSystem\Generators\Backend;
 
 use W88\CrudSystem\Generators\BackendGenerator;
 use Touhidurabir\StubGenerator\Facades\StubGenerator;
+use W88\CrudSystem\Facades\Field;
 
 class ResourceGenerator extends BackendGenerator
 {
@@ -57,7 +58,9 @@ class ResourceGenerator extends BackendGenerator
     protected function getFieldsData(): string
     {
         return collect($this->getNotHiddenFields())->map(function ($field, $name) {
-            return "'$name' => \$this->{$name}";
+            $isTranslatable = Field::isTranslatable($field);
+            $keyTrans = $isTranslatable ? ",\n\t\t\t'{$name}_trans' => \$this->getTranslations('{$name}')" : '';
+            return "'$name' => \$this->{$name}{$keyTrans}";
         })->implode(",\n\t\t\t") . $this->getTimestampsFields();
     }
 

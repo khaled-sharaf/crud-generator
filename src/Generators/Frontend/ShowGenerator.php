@@ -84,7 +84,7 @@ class ShowGenerator extends FrontendGenerator
     {
         if (!$this->checkApiRoute('edit') || $this->hasFormPopup()) return '';
         $hasPermission = $this->hasPermissions() ? " v-if=\"\$can('edit-{$this->modelNameKebab}')\"" : '';
-        return "<BtnEdit{$hasPermission} :to=\"{ name: '{$this->getEditRouteName()}', params: { id: modelId } }\" />";
+        return "<BtnEditTop{$hasPermission} :to=\"{ name: '{$this->getEditRouteName()}', params: { id: modelId } }\" />";
     }
 
     protected function getShowContent(): string

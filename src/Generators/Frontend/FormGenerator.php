@@ -80,7 +80,8 @@ class FormGenerator extends FrontendGenerator
             'DECLARED_LOOKUPS' => $this->getDeclaredLookups(),
             'FORMDATA_TYPE' => count($this->getFileFields()) ? 'Form' : '',
             'API_ROUTE_NAME' => $this->getApiRouteName(),
-            'FIELDS_VALIDATION' => $this->getJsFormFieldsValidation(),
+            'VALIDATION_FIELDS' => $this->getJsFormFieldsValidation(),
+            'TRANSLATION_FIELDS' => $this->getJsFormFieldsTranslation(),
         ];
     }
 
@@ -135,6 +136,13 @@ class FormGenerator extends FrontendGenerator
             if (Field::isNullable($field) || !Field::hasValidation($field)) return '';
             return "\n\t\t\t\t{$field['name']}: 'required'";
         })->filter(fn ($rule) => !empty($rule))->implode(',');
+    }
+
+    protected function getJsFormFieldsTranslation(): string
+    {
+        return collect($this->getTranslatableFields())->map(function ($field) {
+            return "\n\t\t\tthis.modelEdit.{$field['name']} = this.modelEdit.{$field['name']}_trans";
+        })->implode('');
     }
 
 }

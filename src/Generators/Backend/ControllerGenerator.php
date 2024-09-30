@@ -106,7 +106,7 @@ class ControllerGenerator extends BackendGenerator
         return "\n\n\tpublic function update(\$id, {$this->getRequestName()} \$request)\n\t{
         \${$this->modelNameCamel} = {$this->modelName}::findOrFail(\$id);
         \$data = \$request->validated();
-        \$this->{$this->getServiceNameCamel()}->update(\$id, \$data);
+        \$this->{$this->getServiceNameCamel()}->update(\${$this->modelNameCamel}, \$data);
         return sendData(__('view.messages.updated_success'));
     }";
     }

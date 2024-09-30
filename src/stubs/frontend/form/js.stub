@@ -36,7 +36,7 @@ export default {
 
     computed: {
         validationSchema() {
-            return this.$vt.object({{{ FIELDS_VALIDATION }}
+            return this.$vt.object({{{ VALIDATION_FIELDS }}
             })
         },
     },
@@ -44,7 +44,7 @@ export default {
     created() {
         this.$store.general.setSsrErrors(false)
         if (this.formType && this.formType == 'edit') {
-            this.modelId = this.modelEdit.id
+            this.modelId = this.modelEdit.id{{ TRANSLATION_FIELDS }}
             this.form = {...this.modelEdit}
         }
     }
