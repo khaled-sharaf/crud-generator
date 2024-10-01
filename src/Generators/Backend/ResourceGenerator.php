@@ -69,6 +69,10 @@ class ResourceGenerator extends BackendGenerator
                 } else {
                     $singleLookup = ",\n\t\t\t'{$name}_view' => {$lookup}::get(\$this->{$name})";
                 }
+            } else if (Field::isMultiFile($field)) {
+                $value .= "Urls";
+            } else if (Field::hasFile($field) && !Field::isMultiFile($field)) {
+                $value .= "Url";
             }
             return "'$name' => {$value}{$keyTrans}{$singleLookup}";
         })->implode(",\n\t\t\t") . $this->getTimestampsFields();
