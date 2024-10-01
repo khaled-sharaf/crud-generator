@@ -11,7 +11,6 @@ class Field
     {
         if (isset($field['migrationType'])) return $field['migrationType'];
         if (static::isTranslatable($field)) return static::translatableFields()[$field['type']];
-        if (!self::isMultiFile($field)) return 'string';
         if (self::isMultiFile($field)) return 'json';
         if (isset($field['relation'])) {
             return static::isRelationConstrained($field) ? 'foreignId' : 'unsignedBigInteger';

@@ -12,6 +12,7 @@ export default {
 
     data() {
         return {
+            ready: false,
             modelId: null,
             form: {{{ FIELDS }}
             },{{ DECLARED_LOOKUPS }}
@@ -45,8 +46,8 @@ export default {
         if (this.formType && this.formType == 'edit') {
             this.modelId = this.modelEdit.id{{ TRANSLATION_FIELDS_IN_EDIT }}
             this.form = {...this.modelEdit}
-        } else {{{ TRANSLATION_FIELDS_IN_CREATE }}
-        }
+        }{{ TRANSLATION_FIELDS_IN_CREATE }}
+        this.ready = true
     }
 
 }

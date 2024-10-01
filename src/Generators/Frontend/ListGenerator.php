@@ -212,7 +212,7 @@ class ListGenerator extends FrontendGenerator
         $lookupName = Field::hasLookupFrontend($field) ? $lookupName : Str::camel($lookupName);
         $label = $this->getLangPath("table.{$name}");
         $isCheckbox = str_replace('multi_', '', $field['type']) === 'checkbox';
-        $checkboxFilter = "<div>
+        $checkboxFilter = "<div class=\"mt-4\">
                     <div class=\"filter-section-label\" v-text=\"\$t('{$label}')\"></div>
                     <q-option-group
                         v-model=\"filters.options.{$name}\"
@@ -220,7 +220,7 @@ class ListGenerator extends FrontendGenerator
                         dense
                         inline
                         type=\"checkbox\"
-                        class=\"px-2\"
+                        class=\"px-1\"
                     />
                 </div>";
         $selectFilter = "<div class=\"mt-4\">

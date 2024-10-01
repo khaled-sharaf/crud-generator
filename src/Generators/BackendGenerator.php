@@ -105,7 +105,7 @@ abstract class BackendGenerator extends Generator
     protected function getCastFields(): array
     {
         return collect($this->getFields())->map(function ($field) {
-            $field['cast'] = array_key_exists($field['type'], Field::jsonFields()) ? 'array' : ($field['type'] === 'boolean' ? 'boolean' : null);
+            $field['cast'] = array_key_exists($field['type'], Field::jsonFields()) ? 'array' : (in_array($field['type'], ['boolean', 'checkbox']) ? 'boolean' : null);
             return $field;
         })->filter(fn ($field) => $field['cast'] !== null)->toArray();
     }

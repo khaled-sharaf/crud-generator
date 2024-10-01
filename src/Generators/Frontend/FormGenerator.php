@@ -219,7 +219,7 @@ class FormGenerator extends FrontendGenerator
     protected function getJsFormFieldsTranslationInCreate(): string
     {
         return collect($this->getTranslatableFields())->filter(fn ($field) => $field['type'] == 'editor')->map(function ($field) {
-            return "\n\t\t\tthis.form.{$field['name']} = this.languages.reduce((acc, code) => {acc[code] = ''; return acc;}, {})";
+            return "\n\t\tthis.languages.forEach(code => {\n\t\t\tthis.form.{$field['name']}[code] = this.form.{$field['name']}[code] ?? '';\n\t\t})";
         })->implode('');
     }
 

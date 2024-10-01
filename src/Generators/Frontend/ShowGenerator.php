@@ -124,6 +124,8 @@ class ShowGenerator extends FrontendGenerator
                 'TITLE_TRUE' => $this->getTitleTrue($field),
                 'TITLE_FALSE' => $this->getTitleFalse($field),
                 'PRINT_VALUE_IN_TEXT' => $this->getPrintValueInText($field),
+                'COL_SIZE' => $this->getColSize($field),
+                'VALUE_CLASS' => $this->getValueClass($field),
             ]);
             $fields[] = (new StubGenerator())->from($this->getFieldsStubPath(Field::getStubViewFile($field)), true)
                 ->withReplacers($fieldReplacers)->toString();
@@ -153,4 +155,13 @@ class ShowGenerator extends FrontendGenerator
         return Field::hasLookupFrontend($field) ? "{$lookupName}.getByValue($value)" : $value;
     }
 
+    protected function getColSize(array $field): string
+    {
+        return Field::isMultiFile($field) ? '' : ' col-sm-6 col-md-4 col-lg-3 col-xl-2';
+    }
+
+    protected function getValueClass(array $field): string
+    {
+        return Field::isMultiFile($field) ? ' class="value"' : '';
+    }
 }

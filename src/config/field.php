@@ -89,7 +89,7 @@ return [
                 'stub_form' => 'file',
             ],
             'checkbox' => [
-                'migration' => 'string',
+                'migration' => 'boolean',
                 'seeder' => 'null',
                 'stub_view' => 'boolean',
                 'stub_form' => 'checkbox',
