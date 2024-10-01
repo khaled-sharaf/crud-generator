@@ -137,5 +137,15 @@ abstract class FrontendGenerator extends Generator
     {
         return collect($this->getConstantFilterFields())->filter(fn ($field) => !Field::hasLookupFrontend($field) && Field::hasLookup($field))->toArray();
     }
+
+    protected function getTitleTrue(array $field): string
+    {
+        return $field['name'] == 'is_active' ? 'active' : 'enabled';
+    }
+    
+    protected function getTitleFalse(array $field): string
+    {
+        return $field['name'] == 'is_active' ? 'deactive' : 'disabled';
+    }
     
 }

@@ -118,10 +118,27 @@ class ShowGenerator extends FrontendGenerator
         foreach ($this->getFieldsVisibleInView() as $field) {
             $field['label'] = $this->getLangPath("table.{$field['name']}");
             $fieldReplacers = collect($field)->only('name', 'label')->mapWithKeys(fn ($value, $key) => [strtoupper($key) => $value])->toArray();
+            $fieldReplacers = array_merge($fieldReplacers, [
+                'NAME_OF_FILE_ATTR_IN_MEDIA_VIEWER' => $this->getFileNameOfFileAttrInMediaViewer($field),
+                'VALUE_OF_ITEM_IN_BADGE' => $this->getValueOfItemInBadge($field),
+                'TITLE_TRUE' => $this->getTitleTrue($field),
+                'TITLE_FALSE' => $this->getTitleFalse($field),
+            ]);
             $fields[] = (new StubGenerator())->from($this->getFieldsStubPath(Field::getStubViewFile($field)), true)
                 ->withReplacers($fieldReplacers)->toString();
         }
         return implode("\n", $fields);
+    }
+
+    protected function getFileNameOfFileAttrInMediaViewer(array $field): string
+    {
+        return Field::isMultiFile($field) ? 'files' : 'file-one';
+    }
+
+    protected function getValueOfItemInBadge(array $field): string
+    {
+        $lookupName = $this->getLookupName($field['name']);
+        return Field::hasLookupFrontend($field) ? "{$lookupName}.getByValue(item)" : 'item';
     }
 
 }

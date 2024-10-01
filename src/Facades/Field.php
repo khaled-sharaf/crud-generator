@@ -9,12 +9,10 @@ class Field
 
     public static function getMigrationType(array $field): string
     {
-        $fileFields = static::fileFields();
-        $typeAfterRemovingMulti = str_replace('multi_', '', $field['type']);
         if (isset($field['migrationType'])) return $field['migrationType'];
         if (static::isTranslatable($field)) return static::translatableFields()[$field['type']];
-        if (in_array($field['type'], $fileFields)) return 'string';
-        if (in_array($typeAfterRemovingMulti, $fileFields)) return 'json';
+        if (!self::isMultiFile($field)) return 'string';
+        if (self::isMultiFile($field)) return 'json';
         if (isset($field['relation'])) {
             return static::isRelationConstrained($field) ? 'foreignId' : 'unsignedBigInteger';
         }
@@ -89,6 +87,11 @@ class Field
         $fileFields = static::fileFields();
         $typeAfterRemovingMulti = str_replace('multi_', '', $field['type']);
         return in_array($field['type'], $fileFields) || in_array($typeAfterRemovingMulti, $fileFields);
+    }
+
+    public static function isMultiFile(array $field): bool
+    {
+        return in_array(str_replace('multi_', '', $field['type']), static::fileFields());
     }
 
     public static function hasFileImage(array $field): bool

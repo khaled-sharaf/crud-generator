@@ -137,16 +137,6 @@ class FormGenerator extends FrontendGenerator
     {
         return Field::isTranslatable($field) ? "{$tabs}translatable" : '';
     }
-    
-    protected function getTitleTrue(array $field): string
-    {
-        return $field['name'] == 'is_active' ? 'active' : 'enabled';
-    }
-    
-    protected function getTitleFalse(array $field): string
-    {
-        return $field['name'] == 'is_active' ? 'deactive' : 'disabled';
-    }
 
     protected function getFileType(array $field): string
     {

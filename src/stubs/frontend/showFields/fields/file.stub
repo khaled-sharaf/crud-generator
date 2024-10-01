@@ -1,0 +1,13 @@
+                                    
+                                    <!-- ================= {{ NAME }} ================= -->
+                                    <div class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2">
+                                        <div class="item">
+                                            <div class="label" v-text="$t('{{ LABEL }}')"></div>
+                                            <div class="value">
+                                                <MediaViewer
+                                                    :{{ NAME_OF_FILE_ATTR_IN_MEDIA_VIEWER }}="model.{{ NAME }}"
+                                                />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- ================= ./{{ NAME }} ================= -->
