@@ -4,7 +4,7 @@
                                         <div class="item">
                                             <div class="label" v-text="$t('{{ LABEL }}')"></div>
                                             <div class="value">
-                                                <q-badge v-for="item in model.{{ NAME }}" :key="item" class="px-2 py-1 bg-primary" rounded>
+                                                <q-badge v-for="item in model.{{ NAME }}" :key="item" class="px-2 py-1 mx-1 bg-primary" rounded>
                                                     {{ {{ VALUE_OF_ITEM_IN_BADGE }} }}
                                                 </q-badge>
                                             </div>

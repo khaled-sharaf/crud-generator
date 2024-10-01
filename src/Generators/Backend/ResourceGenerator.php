@@ -60,7 +60,17 @@ class ResourceGenerator extends BackendGenerator
         return collect($this->getNotHiddenFields())->map(function ($field, $name) {
             $isTranslatable = Field::isTranslatable($field);
             $keyTrans = $isTranslatable ? ",\n\t\t\t'{$name}_trans' => \$this->getTranslations('{$name}')" : '';
-            return "'$name' => \$this->{$name}{$keyTrans}";
+            $value = "\$this->{$name}";
+            $singleLookup = '';
+            if (!Field::hasLookupFrontend($field) && Field::hasLookup($field)) {
+                $lookup = "\\{$this->getConstantNamespace()}\\{$this->getConstantName($field)}";
+                if (Field::isJson($field)) {
+                    $value = "{$lookup}::getListForSelect(\$this->{$name})";
+                } else {
+                    $singleLookup = ",\n\t\t\t'{$name}_view' => {$lookup}::get(\$this->{$name})";
+                }
+            }
+            return "'$name' => {$value}{$keyTrans}{$singleLookup}";
         })->implode(",\n\t\t\t") . $this->getTimestampsFields();
     }
 

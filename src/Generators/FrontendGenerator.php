@@ -140,12 +140,12 @@ abstract class FrontendGenerator extends Generator
 
     protected function getTitleTrue(array $field): string
     {
-        return $field['name'] == 'is_active' ? 'active' : 'enabled';
+        return $field['name'] == 'is_active' ? 'active' : ($field['type'] == 'checkbox' ? 'checked' : 'enabled');
     }
     
     protected function getTitleFalse(array $field): string
     {
-        return $field['name'] == 'is_active' ? 'deactive' : 'disabled';
+        return $field['name'] == 'is_active' ? 'deactive' : ($field['type'] == 'checkbox' ? 'unchecked' : 'disabled');
     }
     
 }

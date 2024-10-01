@@ -91,7 +91,7 @@ return [
             'checkbox' => [
                 'migration' => 'string',
                 'seeder' => 'null',
-                'stub_view' => 'text',
+                'stub_view' => 'boolean',
                 'stub_form' => 'checkbox',
             ],
             'select' => [

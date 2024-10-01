@@ -97,6 +97,11 @@ abstract class BackendGenerator extends Generator
         return collect($this->getFields())->filter(fn ($field) => Field::hasLookup($field))->toArray();
     }
 
+    protected function getConstantName(array $field): string
+    {
+        return $this->modelName . Str::studly($field['name']);
+    }
+
     protected function getCastFields(): array
     {
         return collect($this->getFields())->map(function ($field) {

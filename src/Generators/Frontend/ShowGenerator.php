@@ -123,6 +123,7 @@ class ShowGenerator extends FrontendGenerator
                 'VALUE_OF_ITEM_IN_BADGE' => $this->getValueOfItemInBadge($field),
                 'TITLE_TRUE' => $this->getTitleTrue($field),
                 'TITLE_FALSE' => $this->getTitleFalse($field),
+                'PRINT_VALUE_IN_TEXT' => $this->getPrintValueInText($field),
             ]);
             $fields[] = (new StubGenerator())->from($this->getFieldsStubPath(Field::getStubViewFile($field)), true)
                 ->withReplacers($fieldReplacers)->toString();
@@ -138,7 +139,18 @@ class ShowGenerator extends FrontendGenerator
     protected function getValueOfItemInBadge(array $field): string
     {
         $lookupName = $this->getLookupName($field['name']);
-        return Field::hasLookupFrontend($field) ? "{$lookupName}.getByValue(item)" : 'item';
+        $value = 'item';
+        if (!Field::hasLookupFrontend($field) && Field::hasLookup($field) && Field::isJson($field)) $value = "item.label";
+        if (Field::hasLookupFrontend($field)) $value = "{$lookupName}.getByValue(item)";
+        return $value;
+    }
+
+    protected function getPrintValueInText(array $field): string
+    {
+        $name = $field['name'];
+        $lookupName = $this->getLookupName($name);
+        $value = !Field::hasLookupFrontend($field) && Field::hasLookup($field) && !Field::isJson($field) ? "model.{$name}_view" : "model.{$name}";
+        return Field::hasLookupFrontend($field) ? "{$lookupName}.getByValue($value)" : $value;
     }
 
 }

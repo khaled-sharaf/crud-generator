@@ -31,7 +31,7 @@ class ConstantGenerator extends BackendGenerator
     {
         foreach ($this->getConstantFields() as $name => $field) {
             $field['name'] = Str::studly($name);
-            $fileName = Str::studly("{$this->modelName}{$field['name']}");
+            $fileName = $this->getConstantName($field);
             $field['fileName'] = $fileName;
             (new StubGenerator)->from($this->getStubPath(), true)
                 ->to($this->getGeneratorDirectory())

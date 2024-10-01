@@ -3,7 +3,7 @@
                                     <div class="col-12">
                                         <div class="item">
                                             <div class="label" v-text="$t('{{ LABEL }}')"></div>
-                                            <div class="value" v-html="model.{{ NAME }}"></div>
+                                            <div class="value break-all" v-html="model.{{ NAME }}"></div>
                                         </div>
                                     </div>
                                     <!-- ================= ./{{ NAME }} ================= -->
