@@ -1,0 +1,12 @@
+
+                <!-- ================= {{ NAME }} ================= -->
+                <div class="col-12 col-md-6 col-padding pb-1">
+                    <MultiUploader
+                        croping
+                        size-icon="25px"
+                        :form-files="form.{{ NAME }}"{{ MULTI_FILE_TYPE }}
+                        :label="$t('{{ LABEL }}')"
+                        icon="{{ FILE_ICON }}"
+                    />
+                </div>
+                <!-- ================= ./{{ NAME }} ================= -->

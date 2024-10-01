@@ -1,0 +1,16 @@
+
+                <!-- ================= {{ NAME }} ================= -->
+                <div class="col-12 col-md-6 col-padding">
+                    <v-field name="{{ NAME }}" :label="$t('{{ LABEL }}').toLowerCase()" v-slot="{ field, errorMessage }">
+                        <div :class="{'toggle-error': Boolean(errorMessage)}">
+                            <q-checkbox
+                                v-model="form.{{ NAME }}"
+                                :label="$t('{{ LABEL }}')"
+                                toggle-indeterminate
+                                v-bind="field"
+                            />
+                        </div>
+                        <div class="custom-error-feedback" v-if="Boolean(errorMessage)" v-text="errorMessage"></div>
+                    </v-field>
+                </div>
+                <!-- ================= ./{{ NAME }} ================= -->

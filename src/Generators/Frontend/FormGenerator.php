@@ -88,32 +88,100 @@ class FormGenerator extends FrontendGenerator
     protected function getVueFormFields(): string
     {
         $fields = [];
-        $tabs = "\n\t\t\t\t\t\t";
         foreach ($this->getFieldsVisibleInForm() as $field) {
             $stubPath = $this->getFieldsStubPath(Field::getStubFormFile($field));
             $field['label'] = $this->getLangPath("table.{$field['name']}");
             $fieldReplacers = collect($field)->only('name', 'label')->mapWithKeys(fn ($value, $key) => [strtoupper($key) => $value])->toArray();
             $fieldReplacers = array_merge($fieldReplacers, [
-                'FORM_NAME_ATTR' => "{$tabs}formName=\"" . Str::camel($this->getFormFileName()) . '"',
-                'TYPE' => 'text',
-                'REQUIRED' => '',
-                'TRANSLATABLE' => '',
+                'FORM_NAME_ATTR' => $this->getFormNameAttr(),
+                'TYPE' => $this->getFormFieldType($field),
+                'REQUIRED' => $this->getRequiredAttr($field),
+                'REQUIRED_HTML' => $this->getRequiredHtml($field),
+                'TRANSLATABLE' => $this->getTranslatableAttr($field),
+                'TITLE_TRUE' => $this->getTitleTrue($field),
+                'TITLE_FALSE' => $this->getTitleFalse($field),
+                'FILE_TYPE' => $this->getFileType($field),
+                'MULTI_FILE_TYPE' => $this->getMultiFileType($field),
+                'FILE_ICON' => $this->getFileIcon($field),
+                'OPTIONS' => $this->getLookupNameForOptionGroup($field),
+                'OPTIONS_GROUP_TYPE' => $this->getOptionsGroupType($field),
+                'IS_MULTI_SELECT' => $this->getIsMultiSelect($field),
+                'IS_USE_CHIPS' => $this->getIsUseChips($field),
             ]);
-            if (Field::hasFile($field)) {
-                $fieldReplacers['TYPE'] = str_replace('multi_', '', $field['type']);
-            }
-            if ($field['type'] == 'textarea' || $field['type'] == 'number') {
-                $fieldReplacers['TYPE'] = $field['type'];
-            }
-            if (!Field::isNullable($field)) {
-                $fieldReplacers['REQUIRED'] = "{$tabs}star-required";
-            }
-            if (Field::isTranslatable($field)) {
-                $fieldReplacers['TRANSLATABLE'] = "{$tabs}translatable";
-            }
             $fields[] = (new StubGenerator())->from($stubPath, true)->withReplacers($fieldReplacers)->toString();
         }
         return implode("\n", $fields);
+    }
+
+    protected function getFormNameAttr($tabs = "\n\t\t\t\t\t\t"): string
+    {
+        return "{$tabs}formName=\"" . Str::camel($this->getFormFileName()) . '"';
+    }
+
+    protected function getFormFieldType(array $field): string
+    {
+        return $field['type'] == 'textarea' || $field['type'] == 'number' ? $field['type'] : 'text';
+    }
+
+    protected function getRequiredAttr(array $field, $tabs = "\n\t\t\t\t\t\t"): string
+    {
+        return !Field::isNullable($field) ? "{$tabs}star-required" : '';
+    }
+
+    protected function getRequiredHtml(array $field): string
+    {
+        return !Field::isNullable($field) ? '<span class="req-star"></span>' : '';
+    }
+    
+    protected function getTranslatableAttr(array $field, $tabs = "\n\t\t\t\t\t\t"): string
+    {
+        return Field::isTranslatable($field) ? "{$tabs}translatable" : '';
+    }
+    
+    protected function getTitleTrue(array $field): string
+    {
+        return $field['name'] == 'is_active' ? 'active' : 'enabled';
+    }
+    
+    protected function getTitleFalse(array $field): string
+    {
+        return $field['name'] == 'is_active' ? 'deactive' : 'disabled';
+    }
+
+    protected function getFileType(array $field): string
+    {
+        return Field::hasFileImage($field) ? 'image' : (Field::hasFileVideo($field) ? 'video' : 'any');
+    }
+    
+    protected function getMultiFileType(array $field, $tabs = "\n\t\t\t\t\t\t"): string
+    {
+        return Field::hasFileImage($field) ? "{$tabs}onlyImage" : (Field::hasFileVideo($field) ? "{$tabs}onlyVideo" : '');
+    }
+
+    protected function getFileIcon(array $field): string
+    {
+        return Field::hasFileImage($field) ? 'add_photo_alternate' : (Field::hasFileVideo($field) ? 'cloud_upload' : 'file_upload');
+    }
+
+    protected function getLookupNameForOptionGroup(array $field): string
+    {
+        $lookupName = $this->getLookupName($field['name']);
+        return Field::hasLookupFrontend($field) ? $lookupName : Str::camel($lookupName);
+    }
+
+    protected function getOptionsGroupType(array $field): string
+    {
+        return $field['type'] == 'multi_checkbox' ? 'checkbox' : 'radio';
+    }
+
+    protected function getIsMultiSelect(array $field, $tabs = "\n\t\t\t\t\t\t\t"): string
+    {
+        return $field['type'] == 'multi_select' ? "{$tabs}multiple" : '';
+    }
+
+    protected function getIsUseChips(array $field, $tabs = "\n\t\t\t\t\t\t\t"): string
+    {
+        return $field['type'] == 'multi_select' ? "{$tabs}use-chips" : '';
     }
 
     protected function getJsFormFields(): string

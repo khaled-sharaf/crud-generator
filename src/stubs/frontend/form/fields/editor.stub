@@ -1,0 +1,10 @@
+
+                <!-- ================= {{ NAME }} ================= -->
+                <div class="col-12 col-md-6 col-padding">
+                    <EditorInput
+                        :form="form"
+                        name="{{ NAME }}"
+                        :label="$t('{{ LABEL }}')"{{ REQUIRED }}{{ TRANSLATABLE }}{{ FORM_NAME_ATTR }}
+                    />
+                </div>
+                <!-- ================= ./{{ NAME }} ================= -->

@@ -91,6 +91,24 @@ class Field
         return in_array($field['type'], $fileFields) || in_array($typeAfterRemovingMulti, $fileFields);
     }
 
+    public static function hasFileImage(array $field): bool
+    {
+        $typeAfterRemovingMulti = str_replace('multi_', '', $field['type']);
+        return self::hasFile($field) && $typeAfterRemovingMulti == 'image';
+    }
+
+    public static function hasFileVideo(array $field): bool
+    {
+        $typeAfterRemovingMulti = str_replace('multi_', '', $field['type']);
+        return self::hasFile($field) && $typeAfterRemovingMulti == 'video';
+    }
+
+    public static function hasFileAnyType(array $field): bool
+    {
+        $typeAfterRemovingMulti = str_replace('multi_', '', $field['type']);
+        return self::hasFile($field) && $typeAfterRemovingMulti == 'file';
+    }
+
     public static function hasConstant(array $field): bool
     {
         return isset($field['options']);

@@ -1,19 +1,21 @@
 
                 <!-- ================= {{ NAME }} ================= -->
                 <div class="col-12 col-md-6 col-padding pb-1">
-                    <label class="text-subtitle2 bold label-form">
-                        {{ $t('{{ LABEL }}') }}
+                    <label class="label-form">
+                        {{ $t('{{ LABEL }}') }} {{ REQUIRED_HTML }}
                     </label>
                     <v-field name="{{ NAME }}" :label="$t('{{ LABEL }}').toLowerCase()" v-slot="{ field }">
                         <FileUploader
-                            :croping="true"
-                            file-type="{{ TYPE }}"
+                            croping
+                            file-type="{{ FILE_TYPE }}"
+                            icon="{{ FILE_ICON }}"
                             :initial-file="form.{{ NAME }}"
                             :max-size="2"
                             :form="form"
                             key-file-name="{{ NAME }}"
-                            save-key-name="{{ NAME }}"
                             :label="$t('{{ LABEL }}')"
+                            :error="Boolean(errorMessage)"
+                            :error-message="errorMessage"
                             v-bind="field"
                         />
                     </v-field>
