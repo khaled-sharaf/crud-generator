@@ -91,7 +91,7 @@ class Field
 
     public static function isMultiFile(array $field): bool
     {
-        return in_array(str_replace('multi_', '', $field['type']), static::fileFields());
+        return self::hasFile($field) && Str::startsWith($field['type'], 'multi_');
     }
 
     public static function hasFileImage(array $field): bool

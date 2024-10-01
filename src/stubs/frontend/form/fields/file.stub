@@ -1,6 +1,6 @@
 
                 <!-- ================= {{ NAME }} ================= -->
-                <div class="col-12 col-md-6 col-padding pb-1">
+                <div class="col-12 col-md-6 pb-5 col-padding">
                     <label class="label-form">
                         {{ $t('{{ LABEL }}') }} {{ REQUIRED_HTML }}
                     </label>
@@ -14,8 +14,6 @@
                             :form="form"
                             key-file-name="{{ NAME }}"
                             :label="$t('{{ LABEL }}')"
-                            :error="Boolean(errorMessage)"
-                            :error-message="errorMessage"
                             v-bind="field"
                         />
                     </v-field>

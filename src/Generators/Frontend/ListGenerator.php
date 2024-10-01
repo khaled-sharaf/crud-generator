@@ -211,8 +211,8 @@ class ListGenerator extends FrontendGenerator
         $lookupName = $this->getLookupName($name);
         $lookupName = Field::hasLookupFrontend($field) ? $lookupName : Str::camel($lookupName);
         $label = $this->getLangPath("table.{$name}");
-        return "\n\t\t\t\t<!-- ================= Filter By {$name} ================= -->
-                <div>
+        $isCheckbox = str_replace('multi_', '', $field['type']) === 'checkbox';
+        $checkboxFilter = "<div>
                     <div class=\"filter-section-label\" v-text=\"\$t('{$label}')\"></div>
                     <q-option-group
                         v-model=\"filters.options.{$name}\"
@@ -223,6 +223,22 @@ class ListGenerator extends FrontendGenerator
                         class=\"px-2\"
                     />
                 </div>";
+        $selectFilter = "<div class=\"mt-4\">
+                    <q-select
+                        v-model=\"filters.options.{$name}\"
+                        :label=\"\$t('{$label}')\"
+                        :options=\"{$lookupName}\"
+                        outlined
+                        dense
+                        emit-value
+                        map-options
+                        clearable
+                        multiple
+                    />
+                </div>";
+        $filter = $isCheckbox ? $checkboxFilter : $selectFilter;
+        return "\n\t\t\t\t<!-- ================= Filter By {$name} ================= -->
+                {$filter}";
     }
 
     protected function getModalComponents(): array
@@ -262,7 +278,7 @@ class ListGenerator extends FrontendGenerator
         return collect($this->getFieldsHasBackendLookupOnly())->map(function ($field) {
             $lookupName = Str::camel($this->getLookupName($field['name']));
             return "\n\t\t\t{$lookupName}: []";
-        })->implode(",\n");
+        })->implode(",");
     }
 
     protected function getJsGetLookups(): string
@@ -270,7 +286,7 @@ class ListGenerator extends FrontendGenerator
         return collect($this->getFieldsHasBackendLookupOnly())->map(function ($field) {
             $lookupName = Str::camel($this->getLookupName($field['name']));
             return "\n\t\tthis.{$lookupName} = await this.\$getLookup('{$this->getLookupApiRouteName($field['name'])}')";
-        })->implode(",\n");
+        })->implode(",");
     }
 
     protected function getJsImportComponents(): string

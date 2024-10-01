@@ -80,9 +80,10 @@ class FormGenerator extends FrontendGenerator
             'FORMDATA_TYPE' => count($this->getFileFields()) ? 'Form' : '',
             'API_ROUTE_NAME' => $this->getApiRouteName(),
             'VALIDATION_FIELDS' => $this->getJsFormFieldsValidation(),
-            'TRANSLATION_FIELDS' => $this->getJsFormFieldsTranslation(),
             'DECLARED_LOOKUPS' => $this->getJsDeclaredLookups(),
             'GET_LOOKUPS' => $this->getJsGetLookups(),
+            'TRANSLATION_FIELDS_IN_EDIT' => $this->getJsFormFieldsTranslationInEdit(),
+            'TRANSLATION_FIELDS_IN_CREATE' => $this->getJsFormFieldsTranslationInCreate(),
         ];
     }
 
@@ -91,7 +92,7 @@ class FormGenerator extends FrontendGenerator
         return collect($this->getFieldsHasBackendLookupOnly())->map(function ($field) {
             $lookupName = Str::camel($this->getLookupName($field['name']));
             return "\n\t\t\t{$lookupName}: []";
-        })->implode(",\n");
+        })->implode(",");
     }
 
     protected function getJsGetLookups(): string
@@ -99,7 +100,7 @@ class FormGenerator extends FrontendGenerator
         return collect($this->getFieldsHasBackendLookupOnly())->map(function ($field) {
             $lookupName = Str::camel($this->getLookupName($field['name']));
             return "\n\t\tthis.{$lookupName} = await this.\$getLookup('{$this->getLookupApiRouteName($field['name'])}')";
-        })->implode(",\n");
+        })->implode(",");
     }
 
     protected function getVueFormFields(): string
@@ -194,7 +195,7 @@ class FormGenerator extends FrontendGenerator
     protected function getJsFormFields(): string
     {
         return collect($this->getFieldsVisibleInForm())->map(function ($field) {
-            $default = Field::hasDefault($field) ? json_encode($field['default']) : 'null';
+            $default = Field::hasDefault($field) ? json_encode($field['default']) : ($field['type'] == 'editor' ? "''" : 'null');
             $value = Field::isTranslatable($field) ? '{}' : (Field::isFrontArray($field) ? '[]' : $default);
             return "\n\t\t\t\t{$field['name']}: {$value}";
         })->implode(',');
@@ -208,10 +209,17 @@ class FormGenerator extends FrontendGenerator
         })->filter(fn ($rule) => !empty($rule))->implode(',');
     }
 
-    protected function getJsFormFieldsTranslation(): string
+    protected function getJsFormFieldsTranslationInEdit(): string
     {
         return collect($this->getTranslatableFields())->map(function ($field) {
             return "\n\t\t\tthis.modelEdit.{$field['name']} = this.modelEdit.{$field['name']}_trans";
+        })->implode('');
+    }
+
+    protected function getJsFormFieldsTranslationInCreate(): string
+    {
+        return collect($this->getTranslatableFields())->filter(fn ($field) => $field['type'] == 'editor')->map(function ($field) {
+            return "\n\t\t\tthis.form.{$field['name']} = this.languages.reduce((acc, code) => {acc[code] = ''; return acc;}, {})";
         })->implode('');
     }
 

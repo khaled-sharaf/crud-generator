@@ -1,13 +1,12 @@
 
                 <!-- ================= {{ NAME }} ================= -->
-                <div class="col-12 col-md-6 col-padding">
+                <div class="col-12 col-md-6 pb-5 col-padding">
                     <label class="label-form">
                         {{ $t('{{ LABEL }}') }}
                     </label>
                     <q-toggle
                         v-model="form.{{ NAME }}"
                         :label="form.{{ NAME }} ? $t('{{ TITLE_TRUE }}') : $t('{{ TITLE_FALSE }}')"
-                        v-bind="field"
                     />
                 </div>
                 <!-- ================= ./{{ NAME }} ================= -->
