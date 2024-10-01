@@ -1,4 +1,4 @@
-import {{ COMPONENT_FORM }} from '../components/{{ COMPONENT_FORM }}/{{ COMPONENT_FORM }}.vue'
+import {{ COMPONENT_FORM }} from '../{{ COMPONENT_FORM }}/{{ COMPONENT_FORM }}.vue'
 
 export default {
     components: {
