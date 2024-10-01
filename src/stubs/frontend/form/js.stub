@@ -14,8 +14,7 @@ export default {
         return {
             modelId: null,
             form: {{{ FIELDS }}
-            },
-            {{ DECLARED_LOOKUPS }}
+            },{{ DECLARED_LOOKUPS }}
         }
     },
 
@@ -41,7 +40,7 @@ export default {
         },
     },
 
-    created() {
+    async created() {{{ GET_LOOKUPS }}
         this.$store.general.setSsrErrors(false)
         if (this.formType && this.formType == 'edit') {
             this.modelId = this.modelEdit.id{{ TRANSLATION_FIELDS }}

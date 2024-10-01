@@ -77,12 +77,29 @@ class FormGenerator extends FrontendGenerator
     {
         return [
             'FIELDS' => $this->getJsFormFields(),
-            'DECLARED_LOOKUPS' => $this->getDeclaredLookups(),
             'FORMDATA_TYPE' => count($this->getFileFields()) ? 'Form' : '',
             'API_ROUTE_NAME' => $this->getApiRouteName(),
             'VALIDATION_FIELDS' => $this->getJsFormFieldsValidation(),
             'TRANSLATION_FIELDS' => $this->getJsFormFieldsTranslation(),
+            'DECLARED_LOOKUPS' => $this->getJsDeclaredLookups(),
+            'GET_LOOKUPS' => $this->getJsGetLookups(),
         ];
+    }
+
+    protected function getJsDeclaredLookups(): string
+    {
+        return collect($this->getFieldsHasBackendLookupOnly())->map(function ($field) {
+            $lookupName = Str::camel($this->getLookupName($field['name']));
+            return "\n\t\t\t{$lookupName}: []";
+        })->implode(",\n");
+    }
+
+    protected function getJsGetLookups(): string
+    {
+        return collect($this->getFieldsHasBackendLookupOnly())->map(function ($field) {
+            $lookupName = Str::camel($this->getLookupName($field['name']));
+            return "\n\t\tthis.{$lookupName} = await this.\$getLookup('{$this->getLookupApiRouteName($field['name'])}')";
+        })->implode(",\n");
     }
 
     protected function getVueFormFields(): string
@@ -181,11 +198,6 @@ class FormGenerator extends FrontendGenerator
             $value = Field::isTranslatable($field) ? '{}' : (Field::isFrontArray($field) ? '[]' : $default);
             return "\n\t\t\t\t{$field['name']}: {$value}";
         })->implode(',');
-    }
-
-    protected function getDeclaredLookups(): string
-    {
-        return '';
     }
 
     protected function getJsFormFieldsValidation(): string
