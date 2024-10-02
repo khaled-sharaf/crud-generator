@@ -34,7 +34,7 @@ class MigrationGenerator extends BackendGenerator
     public function generateMigrationFileName(string $name, string $oldMigrationName = null, int $padding = 0): string
     {
         $time = intval(now()->format('His')) + $padding;
-        return ($oldMigrationName ?? $this->migrationName) ?? now()->format('Y_m_d_') . "{$time}_$name";
+        return ($oldMigrationName ?? $this->migrationName) ?? now()->format('Y_m_d_') . "{$time}_{$name}";
     }
 
     public function getGeneratorDirectory(): string

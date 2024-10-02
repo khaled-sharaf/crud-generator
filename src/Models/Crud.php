@@ -12,9 +12,12 @@ class Crud extends Model
      */
     protected $fillable = [
         'name',
+        'file_name',
         'module',
-        'config',
+        'old_config',
+        'current_config',
         'generated_at',
+        'locked',
     ];
 
     protected $dates = [
@@ -22,7 +25,9 @@ class Crud extends Model
     ];
 
     protected $casts = [
-        'config' => 'array',
+        'old_config' => 'array',
+        'current_config' => 'array',
+        'locked' => 'boolean',
     ];
 
 
@@ -34,15 +39,28 @@ class Crud extends Model
         return $query->whereNull('generated_at');
     }
 
+    public function scopeLocked($query, $value = true)
+    {
+        return $query->where('locked', $value);
+    }
+
     public function markAsGenerated($value = true)
     {
         $this->generated_at = $value ? now() : null;
         $this->save();
     }
 
-    public function generate($config)
+    public function markAsLocked()
     {
-        $this->config = $config;
+        $this->locked = true;
+        $this->save();
+    }
+
+    public function generate(array $config, bool $looked = false)
+    {
+        $this->old_config = $this->current_config;
+        $this->current_config = $config;
+        $this->looked = $looked;
         $this->generated_at = now();
         $this->save();
     }
@@ -52,10 +70,11 @@ class Crud extends Model
         return $this->generated_at !== null;
     }
 
-    public static function newCrud(string $module, string $name)
+    public static function newCrud(string $name, string $fileName, string $module)
     {
         return self::create([
             'name' => $name,
+            'file_name' => $fileName,
             'module' => $module,
         ]);
     }

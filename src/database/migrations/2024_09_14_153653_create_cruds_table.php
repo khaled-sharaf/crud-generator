@@ -14,9 +14,12 @@ return new class extends Migration
         Schema::create('cruds', function (Blueprint $table) {
             $table->id();
             $table->string('name');
+            $table->string('file_name');
             $table->string('module');
-            $table->longText('config')->nullable();
+            $table->json('old_config')->nullable();
+            $table->json('current_config')->nullable();
             $table->timestamp('generated_at')->nullable();
+            $table->boolean('locked')->default(false);
             $table->timestamps();
         });
     }
