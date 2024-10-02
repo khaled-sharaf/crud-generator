@@ -9,6 +9,11 @@ use Touhidurabir\StubGenerator\StubGenerator;
 class RouteGenerator extends FrontendGenerator
 {
 
+    public function checkBeforeGenerate(): bool
+    {
+        return true;
+    }
+    
     public function generate(): void
     {
         $this->ensureStubExists();

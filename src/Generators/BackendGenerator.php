@@ -12,7 +12,7 @@ abstract class BackendGenerator extends Generator
     protected function hasClientApi(): bool
     {
         $clientApi = $this->config['clientApi'] ?? false;
-        if (is_array($clientApi)) $clientApi = !collect($clientApi)->every(fn ($route) => $route === false);
+        if (is_array($clientApi)) $clientApi = count($clientApi) && !collect($clientApi)->every(fn ($route) => $route === false);
         return boolval($clientApi);
     }
 

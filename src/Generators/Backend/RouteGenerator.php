@@ -12,9 +12,13 @@ class RouteGenerator extends BackendGenerator
     
     protected $routeApiType = 'dashboard';
 
+    public function checkBeforeGenerate(): bool
+    {
+        return true;
+    }
+    
     public function generate(): void
     {
-        if ($this->routeApiType === 'client' && !$this->hasClientApi()) return;
         $this->generateRoutes();
     }
     

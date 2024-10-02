@@ -7,6 +7,11 @@ use W88\CrudSystem\Generators\Backend\ResourceGenerator as BackendResourceGenera
 class ResourceGenerator extends BackendResourceGenerator
 {
 
+    public function checkBeforeGenerate(): bool
+    {
+        return $this->checkApiRoute('list', 'clientApi') || $this->checkApiRoute('show', 'clientApi');
+    }
+    
     protected function getGeneratorDirectory(): string
     {
         return "{$this->modulePath}/app/Resources/{$this->versionNamespace}/{$this->clientDirectory}";

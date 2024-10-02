@@ -9,9 +9,13 @@ use Illuminate\Support\Str;
 class CreateGenerator extends FrontendGenerator
 {
 
+    public function checkBeforeGenerate(): bool
+    {
+        return $this->checkApiRoute('create');
+    }
+    
     public function generate(): void
     {
-        if (!$this->checkApiRoute('create')) return;
         $this->ensureVueStubExists('vue');
         $this->ensureVueStubExists('js');
         $this->ensureDirectoryExists();

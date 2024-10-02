@@ -10,6 +10,11 @@ use W88\CrudSystem\Facades\Field;
 class ServiceGenerator extends BackendGenerator
 {
     
+    public function checkBeforeGenerate(): bool
+    {
+        return true;
+    }
+    
     public function generate(): void
     {
         $this->ensureStubExists();

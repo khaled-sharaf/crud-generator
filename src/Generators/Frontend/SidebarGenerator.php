@@ -8,6 +8,11 @@ use Touhidurabir\StubGenerator\Facades\StubGenerator;
 class SidebarGenerator extends FrontendGenerator
 {
 
+    public function checkBeforeGenerate(): bool
+    {
+        return true;
+    }
+    
     public function generate(): void
     {
         $this->ensureStubExists();

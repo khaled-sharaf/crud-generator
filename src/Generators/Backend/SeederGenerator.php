@@ -12,9 +12,13 @@ class SeederGenerator extends BackendGenerator
     
     protected $moduleSeederFileName;
 
+    public function checkBeforeGenerate(): bool
+    {
+        return $this->hasSeeder();
+    }
+    
     public function generate(): void
     {
-        if (!$this->hasSeeder()) return;
         $this->moduleSeederFileName = "{$this->moduleName}DatabaseSeeder";
         $this->ensureStubExists();
         $this->ensureDirectoryExists();

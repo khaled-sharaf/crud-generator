@@ -10,9 +10,13 @@ use W88\CrudSystem\Facades\Field;
 class ShowGenerator extends FrontendGenerator
 {
 
+    public function checkBeforeGenerate(): bool
+    {
+        return $this->checkApiRoute('show');
+    }
+    
     public function generate(): void
     {
-        if (!$this->checkApiRoute('show')) return;
         $this->ensureVueStubExists('vue');
         $this->ensureVueStubExists('js');
         $this->ensureDirectoryExists();

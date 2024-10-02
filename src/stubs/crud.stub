@@ -57,13 +57,9 @@ return [
             // 'default' => 'string_test',
             // 'unique' => true,
             // 'migrationType' => 'string',
-            // add boolean and constant (with options) only to filter
-            // 'filter' => true, // true, 'single', 'multi' | add options for constant and assign it single or multi will be add to filter
-            // 'lookup' => true,
-            // 'lookupFrontend' => true,
-            // 'route' => 'toggle-display',
             // 'translatable' => true,
             // 'validation' => 'required', // or 'validation.*', 'validation.*.objectKey'
+            // 'route' => 'toggle-display',
             // 'options' => [
             //     'key_and_value' => 'Title', // 'key and value' => label
             // ],
@@ -73,6 +69,10 @@ return [
             //         'value' => 1,
             //     ],
             // ],
+            // add boolean and constant (with options) only to filter
+            // 'filter' => true, // true, 'single', 'multi' | add options for constant and assign it single or multi will be add to filter
+            // 'lookup' => true,
+            // 'lookupFrontend' => true,
             // 'relation' => true, // or array for more options
             // 'relation' => [
             //     'constrained' => true, // optional
@@ -86,10 +86,10 @@ return [
             'frontend' => [
                 'visibleList' => true,
                 'sortable' => true,
-                'exportable' => true,
-                'searchable' => true,
-                // 'searchableName' => 'name', // optional - name of field in database
+                'exportable' => true, // optional - add field to table export in csv file
+                'searchable' => true, // optional - add field to table search
                 // 'advancedSearchable' => true, // optional - add field to advanced search
+                // 'searchableName' => 'name', // optional - name of field in database
                 // 'advancedSearchName' => 'name', // optional - name of field in database
 
                 // 'hidden' => true, // Hide field in frontend

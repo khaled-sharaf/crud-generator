@@ -7,7 +7,7 @@ use W88\CrudSystem\Generators\Backend\RequestGenerator as BackendRequestGenerato
 class RequestGenerator extends BackendRequestGenerator
 {
  
-    protected function conditionForCreate(): bool
+    public function checkBeforeGenerate(): bool
     {
         return $this->checkApiRoute('create', 'clientApi') || $this->checkApiRoute('edit', 'clientApi');
     }

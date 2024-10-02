@@ -9,6 +9,11 @@ use W88\CrudSystem\Facades\Field;
 class ResourceGenerator extends BackendGenerator
 {
 
+    public function checkBeforeGenerate(): bool
+    {
+        return true;
+    }
+    
     public function generate(): void
     {
         $this->ensureStubExists();

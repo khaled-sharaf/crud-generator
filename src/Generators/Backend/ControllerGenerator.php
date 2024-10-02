@@ -9,6 +9,11 @@ use Illuminate\Support\Str;
 class ControllerGenerator extends BackendGenerator
 {
     
+    public function checkBeforeGenerate(): bool
+    {
+        return true;
+    }
+    
     public function generate(): void
     {
         $this->ensureStubExists();

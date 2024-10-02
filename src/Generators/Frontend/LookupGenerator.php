@@ -10,6 +10,11 @@ use W88\CrudSystem\Facades\Field;
 class LookupGenerator extends FrontendGenerator
 {
 
+    public function checkBeforeGenerate(): bool
+    {
+        return count($this->getFieldsHasLookupFrontend());
+    }
+    
     public function generate(): void
     {
         $this->ensureStubExists();

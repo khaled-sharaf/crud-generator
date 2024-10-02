@@ -7,6 +7,11 @@ use W88\CrudSystem\Generators\Backend\ServiceGenerator as BackendServiceGenerato
 class ServiceGenerator extends BackendServiceGenerator
 {
 
+    public function checkBeforeGenerate(): bool
+    {
+        return $this->hasClientApi();
+    }
+    
     protected function getGeneratorDirectory(): string
     {
         return "{$this->modulePath}/app/Services/{$this->clientDirectory}";

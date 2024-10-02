@@ -8,9 +8,13 @@ use Touhidurabir\StubGenerator\Facades\StubGenerator;
 class PermissionGenerator extends BackendGenerator
 {
 
+    public function checkBeforeGenerate(): bool
+    {
+        return $this->hasPermissions();
+    }
+    
     public function generate(): void
     {
-        if (!$this->hasPermissions()) return;
         $this->ensureStubExists();
         $this->ensureDirectoryExists();
         $this->generatePermission();

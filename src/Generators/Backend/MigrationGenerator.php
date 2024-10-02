@@ -13,6 +13,11 @@ class MigrationGenerator extends BackendGenerator
     
     protected $migrationName;
 
+    public function checkBeforeGenerate(): bool
+    {
+        return true;
+    }
+    
     public function generate(): void
     {
         $this->ensureStubExists();

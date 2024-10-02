@@ -7,6 +7,11 @@ use W88\CrudSystem\Generators\Backend\ControllerGenerator as BackendControllerGe
 class ControllerGenerator extends BackendControllerGenerator
 {
 
+    public function checkBeforeGenerate(): bool
+    {
+        return $this->hasClientApi();
+    }
+    
     protected function getGeneratorDirectory(): string
     {
         return "{$this->modulePath}/app/Http/Controllers/{$this->versionNamespace}/{$this->clientDirectory}";

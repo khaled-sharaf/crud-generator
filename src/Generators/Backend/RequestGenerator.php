@@ -10,17 +10,16 @@ use W88\CrudSystem\Facades\Field;
 class RequestGenerator extends BackendGenerator
 {
     
+    public function checkBeforeGenerate(): bool
+    {
+        return $this->checkApiRoute('create') || $this->checkApiRoute('edit');
+    }
+    
     public function generate(): void
     {
-        if (!$this->conditionForCreate()) return;
         $this->ensureStubExists();
         $this->ensureDirectoryExists();
         $this->generateRequest();
-    }
-
-    protected function conditionForCreate(): bool
-    {
-        return $this->checkApiRoute('create') || $this->checkApiRoute('edit');
     }
 
     protected function getStubPath(): string

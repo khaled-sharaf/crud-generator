@@ -9,6 +9,10 @@ use W88\CrudSystem\Facades\Field;
 
 class ConstantGenerator extends BackendGenerator
 {
+    public function checkBeforeGenerate(): bool
+    {
+        return count($this->getConstantFields());
+    }
 
     public function generate(): void
     {

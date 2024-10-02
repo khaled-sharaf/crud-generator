@@ -13,6 +13,11 @@ class ModelGenerator extends BackendGenerator
     protected $belongsToManyMigrationName;
     protected $morphToManyMigrationName;
 
+    public function checkBeforeGenerate(): bool
+    {
+        return true;
+    }
+    
     public function generate(): void
     {
         $this->ensureStubExists();

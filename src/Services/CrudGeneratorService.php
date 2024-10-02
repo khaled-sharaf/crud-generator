@@ -52,6 +52,7 @@ class CrudGeneratorService
                 ];
                 $generatorClass = $this->getGeneratorClass($fileName, $generatorType);
                 $generator = new $generatorClass($configData);
+                if (!$generator->checkBeforeGenerate()) continue;
                 $generator->generate();
             }
         }

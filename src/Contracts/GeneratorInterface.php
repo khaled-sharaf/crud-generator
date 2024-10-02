@@ -5,5 +5,7 @@ namespace W88\CrudSystem\Contracts;
 
 interface GeneratorInterface
 {
-    public function generate();
+    public function checkBeforeGenerate(): bool;
+    
+    public function generate(): void;
 }

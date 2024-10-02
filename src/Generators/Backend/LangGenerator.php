@@ -9,7 +9,12 @@ use W88\CrudSystem\Facades\Field;
 
 class LangGenerator extends BackendGenerator
 {
-
+    
+    public function checkBeforeGenerate(): bool
+    {
+        return true;
+    }
+    
     public function generate(): void
     {
         $this->ensureFileExists();

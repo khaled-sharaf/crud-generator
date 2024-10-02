@@ -10,9 +10,13 @@ use W88\CrudSystem\Facades\Field;
 class FormGenerator extends FrontendGenerator
 {
 
+    public function checkBeforeGenerate(): bool
+    {
+        return $this->checkApiRoute('create') || $this->checkApiRoute('edit');
+    }
+    
     public function generate(): void
     {
-        if (!$this->checkApiRoute('create') && !$this->checkApiRoute('edit')) return;
         $this->ensureVueStubExists('vue');
         $this->ensureVueStubExists('js');
         $this->ensureDirectoryExists();
