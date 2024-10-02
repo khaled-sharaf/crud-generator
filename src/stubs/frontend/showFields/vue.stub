@@ -1,5 +1,5 @@
                 
-                <q-card-section v-if="model">
+                <q-card-section class="px-0" v-if="model">
                     <div class="view-model-items">
                         <!-- group -->
                         <div class="group">
