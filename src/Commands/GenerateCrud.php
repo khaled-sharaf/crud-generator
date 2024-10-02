@@ -5,6 +5,7 @@ namespace W88\CrudSystem\Commands;
 
 use Illuminate\Console\Command;
 use W88\CrudSystem\Services\CrudGeneratorService;
+use Illuminate\Support\Str;
 
 class GenerateCrud extends Command
 {
@@ -23,7 +24,7 @@ class GenerateCrud extends Command
             }
         }
         $moduleName = $this->argument('module') ?? null;
-        $crudName = $this->argument('name') ? strtolower($this->argument('name')) : null;
+        $crudName = $this->argument('name') ? strtolower(Str::snake($this->argument('name'))) : null;
         $crudGeneratorService = new CrudGeneratorService();
         $generated = $crudGeneratorService->generate($moduleName, $crudName, $force);
         if ($generated == 'single') {
@@ -33,7 +34,6 @@ class GenerateCrud extends Command
         } else {
             $this->info("No CRUD generated.");
         }
-        
     }
 
     

@@ -19,11 +19,10 @@ class MakeCrud extends Command
     public function handle()
     {
         $this->module = $this->argument('module');
-        $crudName = strtolower($this->argument('name'));
+        $crudName = strtolower(Str::snake($this->argument('name')));
         $this->modelName = Str::studly($crudName);
         $crudStubPath = __DIR__ . '/../stubs/crud.stub';
         $modulePath = base_path('Modules/' . $this->module . '/config/cruds');
-        $isCreateCrud = false;
 
         if (!File::exists($crudStubPath)) {
             $this->error("Stub file not found at path: {$crudStubPath}");
@@ -55,7 +54,7 @@ class MakeCrud extends Command
     {
         return [
             'MODEL_NAME' => $this->modelName,
-            'MODULE_NAME' => strtolower($this->module),
+            'MODULE_NAME' => Str::camel($this->module),
         ];
     }
 
