@@ -189,7 +189,6 @@ return [
             'text' => 'json',
             'textarea' => 'json',
             'editor' => 'json',
-            'array' => 'json',
         ],
 
         /* ======================== File ======================== */
