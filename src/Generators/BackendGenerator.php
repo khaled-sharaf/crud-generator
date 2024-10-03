@@ -150,12 +150,12 @@ abstract class BackendGenerator extends Generator
     {
         $relations = [];
         foreach ($this->getFields() as $name => $field) {
-            if (isset($field['relation']['model'])) {
+            if (Field::hasRelation($field) && $relationModel = Field::getRelationModel($field)) {
                 $isEndById = Str::endsWith($name, '_id');
-                $relationName = $isEndById ? Str::beforeLast($name, '_id') : $name;
+                $relationName = Field::getRelationName($field);
                 $relations[$relationName] = [
-                    'type' => $field['relation']['type'] ?? 'belongsTo',
-                    'model' => $field['relation']['model'],
+                    'type' => Field::getRelationType($field),
+                    'model' => $relationModel,
                 ];
                 if (!$isEndById) $relations[$relationName]['foreignKey'] = $name;
             }

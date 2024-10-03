@@ -66,6 +66,26 @@ class Field
         return isset($field['relation']) && ($field['relation'] === true || (isset($field['relation']['constrained']) && $field['relation']['constrained'] === true));
     }
 
+    public static function hasRelation(array $field): bool
+    {
+        return isset($field['relation']);
+    }
+
+    public static function getRelationName(array $field): string
+    {
+        return Str::camel(str_replace('_id', '', $field['name']));
+    }
+
+    public static function getRelationModel(array $field): string|null
+    {
+        return $field['relation']['model'] ?? null;
+    }
+
+    public static function getRelationType(array $field): string
+    {
+        return $field['relation']['type'] ?? 'belongsTo';
+    }
+
     public static function isTranslatable(array $field): bool
     {
         return isset($field['translatable']) && $field['translatable'] === true && isset(static::translatableFields()[$field['type']]);
@@ -125,7 +145,22 @@ class Field
     {
         return self::hasConstant($field) && isset($field['lookupFrontend']) && $field['lookupFrontend'] === true;
     }
+    
+    public static function hasFilterRelation(array $field): bool
+    {
+        return isset($field['filterRelationName']);
+    }
+    
+    public static function getFilterRelation(array $field): string
+    {
+        return $field['filterRelationName'] ?? null;
+    }
 
+    public static function getFilterRelationColumnName(array $field): string
+    {
+        return $field['filterRelationColumnName'] ?? 'id';
+    }
+    
     public static function hasLookupModel(array $field): bool
     {
         return isset($field['lookupModel']);
@@ -141,14 +176,34 @@ class Field
         return Str::camel(str_replace('_id', '', $field['name']) . 'Lookup');
     }
 
+    public static function getLookupModelValue(array $field): string
+    {
+        return $field['lookupModelValue'] ?? 'id';
+    }
+
+    public static function getLookupModelLabel(array $field): string
+    {
+        return $field['lookupModelLabel'] ?? 'name';
+    }
+
+    public static function hasKeyShowInFront(array $field): bool
+    {
+        return isset($field['keyShowInFront']);
+    }
+
+    public static function getKeyShowInFront(array $field): string
+    {
+        return $field['keyShowInFront'] ?? $field['name'];
+    }
+
     public static function isFilterable(array $field): bool
     {
         return isset($field['filter']) && ($field['filter'] === true || in_array($field['filter'], ['single', 'multi']));
     }
 
-    public static function isViewOnly(array $field): bool
+    public static function isNotDatabase(array $field): bool
     {
-        return isset($field['viewOnly']) && $field['viewOnly'] === true;
+        return isset($field['notDatabase']) && $field['notDatabase'] === true;
     }
 
     public static function isHidden(array $field): bool

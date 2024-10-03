@@ -69,7 +69,7 @@ class ServiceGenerator extends BackendGenerator
     protected function getMethods(): string
     {
         $methods = $this->getIndexMethod();
-        if ($this->checkApiRoute('show')) $methods .= $this->getShowMethod();
+        if ($this->checkApiRoute('show') || $this->checkApiRoute('edit')) $methods .= $this->getShowMethod();
         if ($this->checkApiRoute('create')) $methods .= $this->getStoreMethod();
         if ($this->checkApiRoute('edit')) $methods .= $this->getUpdateMethod();
         return $methods;
@@ -78,8 +78,10 @@ class ServiceGenerator extends BackendGenerator
     protected function getIndexMethod(): string
     {
         $filters = $this->getFilters();
+        $with = $this->getWith($this->getFieldsHasRelationForList(), 'before');
         return "\n\n\tpublic function tableList()\n\t{
-        return CrudHelper::tableList(new {$this->modelName}, [
+        \$query = {$this->modelName}::query(){$with};
+        return CrudHelper::tableList(\$query, [
             \App\Filters\Sorting\SortBy::class{$filters}
         ]);
     }";
@@ -87,7 +89,8 @@ class ServiceGenerator extends BackendGenerator
 
     protected function getShowMethod(): string
     {
-        return "\n\n\tpublic function show(\$id)\n\t{\n\t\treturn {$this->modelName}::findOrFail(\$id);\n\t}";
+        $with = $this->getWith($this->getFieldsHasRelationForShow(), 'after');
+        return "\n\n\tpublic function show(\$id)\n\t{\n\t\treturn {$this->modelName}::{$with}findOrFail(\$id);\n\t}";
     }
 
     protected function getStoreMethod(): string
@@ -102,7 +105,8 @@ class ServiceGenerator extends BackendGenerator
     protected function getUpdateMethod(): string
     {
         $handleFieldsWhenUpdate = $this->handleFieldsWhenCreateAndUpdate('update');
-        return "\n\n\tpublic function update(\${$this->modelNameCamel}, \$data)\n\t{{$handleFieldsWhenUpdate}
+        return "\n\n\tpublic function update(\$id, \$data)\n\t{
+        \${$this->modelNameCamel} = \$this->show(\$id);{$handleFieldsWhenUpdate}
         \${$this->modelNameCamel}->update(\$data);
         return \${$this->modelNameCamel};
     }";
@@ -154,17 +158,43 @@ class ServiceGenerator extends BackendGenerator
     {
         $filters = [];
         foreach ($this->getConstantFilterFields() as $name => $field) {
-            $filterType = Field::getFilter($field);
             $databaseType = Field::isSingleConstant($field) ? 'single' : 'multi';
-            if ($databaseType === 'single' && $filterType === 'single') {
+            if ($databaseType === 'single') {
                 $filters[] = "new \App\Filters\General\EqualFilter('{$name}')";
-            } else if ($databaseType === 'single' && $filterType === 'multi') {
-                $filters[] = "new \App\Filters\General\ArrayCheckSingleFilter('{$name}')";
             } else if ($databaseType === 'multi') { // && $filterType === 'multi' -- الفلتر فى الفرونت ملتى يبعت قيمة او اكتر عادى
                 $filters[] = "new \App\Filters\General\ArrayCheckMultiFilter('{$name}')";
             }
         }
+        foreach ($this->getModelLookupFilterFields() as $name => $field) {
+            if (Field::hasFilterRelation($field)) {
+                $relationName = Field::getFilterRelation($field);
+                $relationColumnName = Field::getFilterRelationColumnName($field);
+                $filters[] = "new \App\Filters\General\RelationFilter('{$name}', '{$relationName}', '{$relationColumnName}')";
+            } else {
+                $filters[] = "new \App\Filters\General\EqualFilter('{$name}')";
+            }
+        }
         return $filters;
+    }
+
+    protected function getFieldsHasRelationForList(): array
+    {
+        return collect($this->getFieldsVisibleInList())->filter(fn ($field) => Field::hasRelation($field))->toArray();
+    }
+
+    protected function getFieldsHasRelationForShow(): array
+    {
+        return collect($this->getFieldsVisibleInFormAndView())->filter(fn ($field) => Field::hasRelation($field))->toArray();
+    }
+
+    protected function getWith(array $fields = [], $arrow = 'before'): string
+    {
+        $with = [];
+        foreach ($fields as $field) {
+            $with[] = Field::getRelationName($field);
+        }
+        $with = count($with) ? 'with(' . collect($with)->map(fn($relation) => "'{$relation}'")->implode(', ') . ')' : '';
+        return $with ? ($arrow == 'before' ? "->{$with}" : "{$with}->") : '';
     }
 
 }

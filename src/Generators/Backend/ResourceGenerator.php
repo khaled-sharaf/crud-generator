@@ -63,23 +63,29 @@ class ResourceGenerator extends BackendGenerator
     protected function getFieldsData(): string
     {
         return collect($this->getNotHiddenFields())->map(function ($field, $name) {
-            $isTranslatable = Field::isTranslatable($field);
-            $keyTrans = $isTranslatable ? ",\n\t\t\t'{$name}_trans' => \$this->getTranslations('{$name}')" : '';
             $value = "\$this->{$name}";
-            $singleLookup = '';
-            if (!Field::hasLookupFrontend($field) && Field::hasLookup($field)) {
+            if (Field::isTranslatable($field)) {
+                $value .= ",\n\t\t\t'{$name}_trans' => \$this->getTranslations('{$name}')";
+            } else if (Field::hasRelation($field)) {
+                $relation = Field::getRelationName($field);
+                if ($relation === $field['name']) {
+                    $value = "\$this->whenLoaded('{$relation}')";
+                } else {
+                    $value .= ",\n\t\t\t'{$relation}' => \$this->whenLoaded('{$relation}')";
+                }
+            } else if (!Field::hasLookupFrontend($field) && Field::hasLookup($field)) {
                 $lookup = "\\{$this->getConstantNamespace()}\\{$this->getConstantName($field)}";
                 if (Field::isJson($field)) {
                     $value = "{$lookup}::getListForSelect(\$this->{$name})";
                 } else {
-                    $singleLookup = ",\n\t\t\t'{$name}_view' => {$lookup}::get(\$this->{$name})";
+                    $value .= ",\n\t\t\t'{$name}_view' => {$lookup}::get(\$this->{$name})";
                 }
             } else if (Field::isMultiFile($field)) {
                 $value .= "Urls";
             } else if (Field::hasFile($field) && !Field::isMultiFile($field)) {
                 $value .= "Url";
             }
-            return "'$name' => {$value}{$keyTrans}{$singleLookup}";
+            return "'$name' => {$value}";
         })->implode(",\n\t\t\t") . $this->getTimestampsFields();
     }
 

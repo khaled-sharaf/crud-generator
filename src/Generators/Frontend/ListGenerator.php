@@ -128,6 +128,9 @@ class ListGenerator extends FrontendGenerator
         foreach ($this->getConstantFilterFields() as $field) {
             $filters[] = $this->handleFilterConstantField($field);
         }
+        foreach ($this->getModelLookupFilterFields() as $field) {
+            $filters[] = $this->handleFilterModelLookupField($field);
+        }
         return count($filters) ? collect($filters)->filter(fn ($filter) => !empty($filter))->implode("\n") . "\n" : '';
     }
 
@@ -238,12 +241,34 @@ class ListGenerator extends FrontendGenerator
                         emit-value
                         map-options
                         clearable
+                        use-chips
                         multiple
                     />
                 </div>";
         $filter = $isCheckbox ? $checkboxFilter : $selectFilter;
         return "\n\t\t\t\t<!-- ================= Filter By {$name} ================= -->
                 {$filter}";
+    }
+
+    protected function handleFilterModelLookupField(array $field): string
+    {
+        $name = $field['name'];
+        $lookupName = Field::getLookupModelName($field);
+        $label = $this->getLangPath("table.{$name}");
+        $multiple = Field::getFilter($field) == 'multi' ? "\n\t\t\t\t\t\tmultiple\n\t\t\t\t\t\tuse-chips" : '';
+        return "\n\t\t\t\t<!-- ================= Filter By {$name} ================= -->
+                <div class=\"mt-4\">
+                    <q-select
+                        v-model=\"filters.options.{$name}\"
+                        :label=\"\$t('{$label}')\"
+                        :options=\"{$lookupName}\"
+                        outlined
+                        dense
+                        emit-value
+                        map-options
+                        clearable{$multiple}
+                    />
+                </div>";
     }
 
     protected function getModalComponents(): array
@@ -280,10 +305,11 @@ class ListGenerator extends FrontendGenerator
 
     protected function getJsDeclaredLookups(): string
     {
-        return collect($this->getFieldsHasBackendLookupOnly())
-        ->filter(fn ($field) => !Field::isHiddenList($field))
-        ->map(function ($field) {
+        return collect($this->getFieldsHasBackendLookupOnly())->map(function ($field) {
             $lookupName = Str::camel($this->getLookupName($field['name']));
+            return "\n\t\t\t{$lookupName}: []";
+        })->implode(",") . collect($this->getFieldsHasModelLookup())->map(function ($field) {
+            $lookupName = Field::getLookupModelName($field);
             return "\n\t\t\t{$lookupName}: []";
         })->implode(",");
     }
@@ -293,7 +319,11 @@ class ListGenerator extends FrontendGenerator
         return collect($this->getFieldsHasBackendLookupOnly())->map(function ($field) {
             $lookupName = Str::camel($this->getLookupName($field['name']));
             return "\n\t\tthis.{$lookupName} = await this.\$getLookup('{$this->getLookupApiRouteName($field['name'])}')";
-        })->implode(",");
+        })->implode("") . collect($this->getFieldsHasModelLookup())->map(function ($field) {
+            $routeName = Field::getLookupModelRouteName($field);
+            $lookupName = Field::getLookupModelName($field);
+            return "\n\t\tthis.{$lookupName} = await this.\$getLookup('{$routeName}')";
+        })->implode("");
     }
 
     protected function getJsImportComponents(): string
@@ -361,9 +391,14 @@ class ListGenerator extends FrontendGenerator
             $filters[] = "{$field['name']}: {$default},";
         }
         foreach ($this->getConstantFilterFields() as $field) {
-            $filterType = $field['filter'] ?? 'single';
+            $filterType = Field::getFilter($field);
             $default = Field::hasDefault($field) ? json_encode($field['default']) : null;
             $default = $filterType === 'single' ? ($default ?? 'null') : ($default ? "[{$default}]" : '[]');
+            $filters[] = "{$field['name']}: {$default},";
+        }
+        foreach ($this->getModelLookupFilterFields() as $field) {
+            $filterType = Field::getFilter($field);
+            $default = $filterType === 'single' ? 'null' : '[]';
             $filters[] = "{$field['name']}: {$default},";
         }
         $filters[] = '// add your filters here...';
@@ -449,11 +484,17 @@ class ListGenerator extends FrontendGenerator
             "align: 'left',",
             "// required: true"
         ];
+        $showKey = Field::getKeyShowInFront($field);
+        if (!Field::hasKeyShowInFront($field) && Field::hasRelation($field)) {
+            $relationName = Field::getRelationName($field);
+            $label = Field::getLookupModelLabel($field);
+            $showKey = "{$relationName}?.{$label}";
+        }
         $columnProperties = collect($columnProperties)->filter(fn ($property) => !empty($property))->implode("\n\t\t\t\t\t\t");
         return "{
                         name: '{$name}',
                         label: this.\$filters.title(this.\$t('{$label}')),
-                        field: row => row.{$name},
+                        field: row => row.{$showKey},
                         {$columnProperties}
                     },";
     }

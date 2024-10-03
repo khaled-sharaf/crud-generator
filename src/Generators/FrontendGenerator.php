@@ -118,16 +118,6 @@ abstract class FrontendGenerator extends Generator
         return "{$this->getLookupFile($name)}Lookup";
     }
 
-    protected function getFieldsVisibleInList(): array
-    {
-        return collect($this->getFields())->filter(fn ($field) => !Field::isHiddenList($field))->toArray();
-    }
-
-    protected function getFieldsVisibleInView(): array
-    {
-        return collect($this->getFields())->filter(fn ($field) => !Field::isHiddenShow($field))->toArray();
-    }
-
     protected function getFieldsHasLookupFrontend(): array
     {
         return collect($this->getNotHiddenFields())->filter(fn ($field) => Field::hasLookupFrontend($field))->toArray();

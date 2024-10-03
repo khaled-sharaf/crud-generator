@@ -185,9 +185,29 @@ abstract class Generator implements GeneratorInterface
         return collect($this->getFields())->filter(fn ($field) => Field::hasConstantFilter($field))->toArray();
     }
 
+    protected function getModelLookupFilterFields(): array
+    {
+        return collect($this->getFields())->filter(fn ($field) => Field::isFilterable($field) && Field::hasLookupModel($field))->toArray();
+    }
+
+    protected function getFieldsVisibleInList(): array
+    {
+        return collect($this->getFields())->filter(fn ($field) => !Field::isHiddenList($field))->toArray();
+    }
+
+    protected function getFieldsVisibleInView(): array
+    {
+        return collect($this->getFields())->filter(fn ($field) => !Field::isHiddenShow($field))->toArray();
+    }
+
     protected function getFieldsVisibleInForm(): array
     {
         return collect($this->getFields())->filter(fn ($field) => !Field::isHiddenEdit($field) || !Field::isHiddenCreate($field))->toArray();
+    }
+
+    protected function getFieldsVisibleInFormAndView(): array
+    {
+        return collect($this->getFields())->filter(fn ($field) => !Field::isHiddenEdit($field) || !Field::isHiddenCreate($field) || !Field::isHiddenShow($field))->toArray();
     }
 
     protected function getTranslatableFields(): array

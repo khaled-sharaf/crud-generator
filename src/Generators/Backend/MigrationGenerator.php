@@ -78,7 +78,7 @@ class MigrationGenerator extends BackendGenerator
     protected function getMigrationFields(): string
     {
         $migrationFields = ['$table->id();', ...collect($this->getFields())
-        ->filter(fn($field) => !Field::isViewOnly($field))
+        ->filter(fn($field) => !Field::isNotDatabase($field))
         ->map(fn($field, $name) => $this->generateFieldDefinition($name, $field))->toArray()];
         if ($this->hasSoftDeletes()) $migrationFields[] = '$table->softDeletes();';
         $migrationFields[] = '$table->timestamps();';

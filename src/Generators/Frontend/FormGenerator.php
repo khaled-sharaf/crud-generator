@@ -113,13 +113,13 @@ class FormGenerator extends FrontendGenerator
         ->map(function ($field) {
             $lookupName = Str::camel($this->getLookupName($field['name']));
             return "\n\t\tthis.{$lookupName} = await this.\$getLookup('{$this->getLookupApiRouteName($field['name'])}')";
-        })->implode(",") . collect($this->getFieldsHasModelLookup())
+        })->implode("") . collect($this->getFieldsHasModelLookup())
         ->filter(fn ($field) => !Field::isHiddenEdit($field) && !Field::isHiddenCreate($field))
         ->map(function ($field) {
             $routeName = Field::getLookupModelRouteName($field);
             $lookupName = Field::getLookupModelName($field);
             return "\n\t\tthis.{$lookupName} = await this.\$getLookup('{$routeName}')";
-        })->implode(",");
+        })->implode("");
     }
 
     protected function getVueFormFields(): string

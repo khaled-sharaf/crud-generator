@@ -3,6 +3,7 @@
 namespace W88\CrudSystem\Generators\ClientApi;
 
 use W88\CrudSystem\Generators\Backend\ServiceGenerator as BackendServiceGenerator;
+use W88\CrudSystem\Facades\Field;
 
 class ServiceGenerator extends BackendServiceGenerator
 {
@@ -33,7 +34,7 @@ class ServiceGenerator extends BackendServiceGenerator
     {
         $methods = '';
         if ($this->checkApiRoute('list', 'clientApi')) $methods .= $this->getIndexMethod();
-        if ($this->checkApiRoute('show', 'clientApi')) $methods .= $this->getShowMethod();
+        if ($this->checkApiRoute('show', 'clientApi') || $this->checkApiRoute('edit', 'clientApi') || $this->checkApiRoute('delete', 'clientApi')) $methods .= $this->getShowMethod();
         if ($this->checkApiRoute('create', 'clientApi')) $methods .= $this->getStoreMethod();
         if ($this->checkApiRoute('edit', 'clientApi')) $methods .= $this->getUpdateMethod();
         if ($this->checkApiRoute('delete', 'clientApi')) $methods .= $this->getDeleteMethod();
@@ -42,20 +43,31 @@ class ServiceGenerator extends BackendServiceGenerator
 
     protected function getIndexMethod(): string
     {
+        $with = $this->getWith($this->getFieldsHasRelationForList(), 'before');
         return "\n\n\tpublic function list()\n\t{
-        \${$this->modelNameCamelPlural} = {$this->modelName}::query();
+        \$query = {$this->modelName}::query(){$with};
         \$filters = [];
         \$paginated = true;
-        return CrudHelper::tableList(\${$this->modelNameCamelPlural}, \$filters, \$paginated);
+        return CrudHelper::tableList(\$query, \$filters, \$paginated);
     }";
     }
 
     protected function getDeleteMethod(): string
     {
         return "\n\n\tpublic function delete(\$id)\n\t{
-        \${$this->modelNameCamel} = {$this->modelName}::findOrFail(\$id);
+        \${$this->modelNameCamel} = \$this->show(\$id);
         \${$this->modelNameCamel}->delete();
     }";
+    }
+
+    protected function getFieldsHasRelationForList(): array
+    {
+        return collect($this->getFields())->filter(fn ($field) => Field::hasRelation($field))->toArray();
+    }
+
+    protected function getFieldsHasRelationForShow(): array
+    {
+        return collect($this->getFields())->filter(fn ($field) => Field::hasRelation($field))->toArray();
     }
 
 }

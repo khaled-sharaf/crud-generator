@@ -146,16 +146,27 @@ class ShowGenerator extends FrontendGenerator
     {
         $lookupName = $this->getLookupName($field['name']);
         $value = 'item';
+        $relationLabel = Field::getLookupModelLabel($field);
         if (!Field::hasLookupFrontend($field) && Field::hasLookup($field) && Field::isJson($field)) $value = "item.label";
         if (Field::hasLookupFrontend($field)) $value = "{$lookupName}.getByValue(item)";
+        if (Field::hasRelation($field)) $value = "item.{$relationLabel}";
         return $value;
     }
 
     protected function getPrintValueInText(array $field): string
     {
         $name = $field['name'];
-        $lookupName = $this->getLookupName($name);
-        $value = !Field::hasLookupFrontend($field) && Field::hasLookup($field) && !Field::isJson($field) ? "model.{$name}_view" : "model.{$name}";
+        $showKey = Field::getKeyShowInFront($field);
+        if (!Field::hasKeyShowInFront($field)) {
+            $lookupName = $this->getLookupName($name);
+            if (!Field::hasLookupFrontend($field) && Field::hasLookup($field) && !Field::isJson($field)) $showKey = "{$name}_view";
+            if (Field::hasRelation($field)) {
+                $relationName = Field::getRelationName($field);
+                $label = Field::getLookupModelLabel($field);
+                $showKey = "{$relationName}?.{$label}";
+            }
+        }
+        $value = "model.{$showKey}";
         return Field::hasLookupFrontend($field) ? "{$lookupName}.getByValue($value)" : $value;
     }
 

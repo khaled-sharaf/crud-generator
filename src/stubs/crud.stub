@@ -53,7 +53,7 @@ return [
         'title' => [
             'type' => 'text',
             'label' => 'Title',
-            // 'viewOnly' => true,
+            // 'notDatabase' => true, // not add migration
             // 'nullable' => true,
             // 'default' => 'string_test',
             // 'unique' => true,
@@ -70,12 +70,16 @@ return [
             //         'value' => 1,
             //     ],
             // ],
-            // add boolean and constant (with options) only to filter
-            // 'filter' => true, // true, 'single', 'multi' | add options for constant and assign it single or multi will be add to filter
             // 'lookup' => true,
             // 'lookupFrontend' => true,
             // 'lookupModel' => true,
             // 'lookupModel' => 'category-list', // looking for route name
+            // 'lookupModelLabel' => 'title', // optional - default is: name
+            // 'lookupModelValue' => 'id', // optional - default is: id
+            // add boolean and constant (with options) only to filter
+            // 'filter' => true, // true, 'single', 'multi' | add options for constant and assign it single or multi will be add to filter
+            // 'filterRelationName' => 'categories', // add it with lookupModel only
+            // 'filterRelationColumnName' => 'id', // optional - default is: id
             // 'relation' => true, // or array for more options
             // 'relation' => [
             //     'constrained' => true, // optional

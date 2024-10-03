@@ -104,7 +104,7 @@ class ModelGenerator extends BackendGenerator
     protected function getFillable(): string
     {
         return collect($this->getFields())
-        ->filter(fn($field) => !Field::isViewOnly($field))
+        ->filter(fn($field) => !Field::isNotDatabase($field))
         ->map(function ($field, $name) {
             return "\n\t\t'$name'";
         })->implode(",");
@@ -128,7 +128,9 @@ class ModelGenerator extends BackendGenerator
     
     protected function getCasts(): string
     {
-        $fields = collect($this->getCastFields())->map(fn ($field, $name) => "\n\t\t'{$name}' => '{$field['cast']}'")->implode(',');
+        $fields = collect($this->getCastFields())
+        ->filter(fn($field) => !Field::isNotDatabase($field))
+        ->map(fn ($field, $name) => "\n\t\t'{$name}' => '{$field['cast']}'")->implode(',');
         return "\n\tprotected \$casts = [{$fields}\n\t];";
     }
     
