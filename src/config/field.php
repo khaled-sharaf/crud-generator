@@ -205,5 +205,12 @@ return [
             'select',
             'radio',
         ],
+
+        /* ======================== Dates ======================== */
+        'dates' => [
+            'date',
+            'datetime',
+            'timestamp',
+        ],
     ],
 ];

@@ -3,7 +3,7 @@
                                     <div class="col-12{{ COL_SIZE }}">
                                         <div class="item">
                                             <div class="label" v-text="$t('{{ LABEL }}')"></div>
-                                            <div {{ VALUE_CLASS }}>
+                                            <div{{ VALUE_CLASS }}>
                                                 <MediaViewer
                                                     :{{ NAME_OF_FILE_ATTR_IN_MEDIA_VIEWER }}="model.{{ NAME }}"
                                                 />

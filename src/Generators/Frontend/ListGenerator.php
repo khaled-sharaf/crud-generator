@@ -280,7 +280,9 @@ class ListGenerator extends FrontendGenerator
 
     protected function getJsDeclaredLookups(): string
     {
-        return collect($this->getFieldsHasBackendLookupOnly())->map(function ($field) {
+        return collect($this->getFieldsHasBackendLookupOnly())
+        ->filter(fn ($field) => !Field::isHiddenList($field))
+        ->map(function ($field) {
             $lookupName = Str::camel($this->getLookupName($field['name']));
             return "\n\t\t\t{$lookupName}: []";
         })->implode(",");

@@ -97,7 +97,9 @@ class SeederGenerator extends BackendGenerator
 
     protected function getFieldsTemplate(): string
     {
-        return collect($this->getFields())->map(function ($field, $name) {
+        return collect($this->getFields())
+        ->filter(fn($field) => !Field::isViewOnly($field))
+        ->map(function ($field, $name) {
             $field['name'] = $name;
             $value = Field::getSeederType($field);
             return "\n\t\t\t\t'{$name}' => {$value},";

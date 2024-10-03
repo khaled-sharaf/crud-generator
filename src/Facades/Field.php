@@ -126,9 +126,29 @@ class Field
         return self::hasConstant($field) && isset($field['lookupFrontend']) && $field['lookupFrontend'] === true;
     }
 
+    public static function hasLookupModel(array $field): bool
+    {
+        return isset($field['lookupModel']);
+    }
+
+    public static function getLookupModelRouteName(array $field): string
+    {
+        return is_string($field['lookupModel']) ? $field['lookupModel'] : str_replace('_id', '', $field['name']) . '-list';
+    }
+
+    public static function getLookupModelName(array $field): string
+    {
+        return Str::camel(str_replace('_id', '', $field['name']) . 'Lookup');
+    }
+
     public static function isFilterable(array $field): bool
     {
         return isset($field['filter']) && ($field['filter'] === true || in_array($field['filter'], ['single', 'multi']));
+    }
+
+    public static function isViewOnly(array $field): bool
+    {
+        return isset($field['viewOnly']) && $field['viewOnly'] === true;
     }
 
     public static function isHidden(array $field): bool
@@ -237,6 +257,11 @@ class Field
         return $field['filter'] === true ? 'single' : $field['filter'];
     }
 
+    public static function isDate(array $field)
+    {
+        return in_array($field['type'], self::dateFields());
+    }
+
     public static function types(): array
     {
         return array_merge(static::normalFields(), static::jsonFields());
@@ -265,6 +290,11 @@ class Field
     public static function filterFields(): array
     {
         return Crud::config('field.types.filter');
+    }
+
+    public static function dateFields(): array
+    {
+        return Crud::config('field.types.dates');
     }
 
 }

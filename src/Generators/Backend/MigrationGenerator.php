@@ -77,7 +77,9 @@ class MigrationGenerator extends BackendGenerator
 
     protected function getMigrationFields(): string
     {
-        $migrationFields = ['$table->id();', ...collect($this->getFields())->map(fn($field, $name) => $this->generateFieldDefinition($name, $field))->toArray()];
+        $migrationFields = ['$table->id();', ...collect($this->getFields())
+        ->filter(fn($field) => !Field::isViewOnly($field))
+        ->map(fn($field, $name) => $this->generateFieldDefinition($name, $field))->toArray()];
         if ($this->hasSoftDeletes()) $migrationFields[] = '$table->softDeletes();';
         $migrationFields[] = '$table->timestamps();';
         return implode("\n\t\t\t", $migrationFields);
@@ -86,6 +88,8 @@ class MigrationGenerator extends BackendGenerator
     protected function generateFieldDefinition(string $name, array $field): string
     {
         $type = Field::getMigrationType($field);
+        // $params = Field::getMigrationParams($field);
+        // $appendParams = count($params) ? ', ' . collect($params)->map(fn($value, $key) => "$key: " . json_encode($value))->implode(', ') : '';
         $definition = "\$table->{$type}('{$name}')";
         if (Field::isNullable($field)) $definition .= '->nullable()';
         if (Field::isUnique($field)) $definition .= '->unique()';

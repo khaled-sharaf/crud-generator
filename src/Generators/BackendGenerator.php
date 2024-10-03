@@ -110,6 +110,11 @@ abstract class BackendGenerator extends Generator
         })->filter(fn ($field) => $field['cast'] !== null)->toArray();
     }
 
+    protected function getDateFields(): array
+    {
+        return collect($this->getFields())->filter(fn ($field) => Field::isDate($field))->toArray();
+    }
+
     protected function getPermissionsTranslated(): array
     {
         $modelTitle = Str::title($this->modelNameKebab);

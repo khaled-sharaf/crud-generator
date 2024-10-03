@@ -166,6 +166,6 @@ class ShowGenerator extends FrontendGenerator
 
     protected function getValueClass(array $field): string
     {
-        return Field::isMultiFile($field) ? ' class="value"' : '';
+        return Field::isMultiFile($field) ? ' class="value"' : " :class=\"{value: !model.{$field['name']}}\"";
     }
 }

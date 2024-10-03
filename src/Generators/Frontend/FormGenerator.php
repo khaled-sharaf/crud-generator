@@ -93,17 +93,32 @@ class FormGenerator extends FrontendGenerator
 
     protected function getJsDeclaredLookups(): string
     {
-        return collect($this->getFieldsHasBackendLookupOnly())->map(function ($field) {
+        return collect($this->getFieldsHasBackendLookupOnly())
+        ->filter(fn ($field) => !Field::isHiddenEdit($field) && !Field::isHiddenCreate($field))
+        ->map(function ($field) {
             $lookupName = Str::camel($this->getLookupName($field['name']));
+            return "\n\t\t\t{$lookupName}: []";
+        })->implode(",") . collect($this->getFieldsHasModelLookup())
+        ->filter(fn ($field) => !Field::isHiddenEdit($field) && !Field::isHiddenCreate($field))
+        ->map(function ($field) {
+            $lookupName = Field::getLookupModelName($field);
             return "\n\t\t\t{$lookupName}: []";
         })->implode(",");
     }
 
     protected function getJsGetLookups(): string
     {
-        return collect($this->getFieldsHasBackendLookupOnly())->map(function ($field) {
+        return collect($this->getFieldsHasBackendLookupOnly())
+        ->filter(fn ($field) => !Field::isHiddenEdit($field) && !Field::isHiddenCreate($field))
+        ->map(function ($field) {
             $lookupName = Str::camel($this->getLookupName($field['name']));
             return "\n\t\tthis.{$lookupName} = await this.\$getLookup('{$this->getLookupApiRouteName($field['name'])}')";
+        })->implode(",") . collect($this->getFieldsHasModelLookup())
+        ->filter(fn ($field) => !Field::isHiddenEdit($field) && !Field::isHiddenCreate($field))
+        ->map(function ($field) {
+            $routeName = Field::getLookupModelRouteName($field);
+            $lookupName = Field::getLookupModelName($field);
+            return "\n\t\tthis.{$lookupName} = await this.\$getLookup('{$routeName}')";
         })->implode(",");
     }
 
@@ -178,7 +193,8 @@ class FormGenerator extends FrontendGenerator
     protected function getLookupNameForOptionGroup(array $field): string
     {
         $lookupName = $this->getLookupName($field['name']);
-        return Field::hasLookupFrontend($field) ? $lookupName : Str::camel($lookupName);
+        $lookupBackend = Field::hasLookupModel($field) ? Field::getLookupModelName($field) : Str::camel($lookupName);
+        return Field::hasLookupFrontend($field) ? $lookupName : $lookupBackend;
     }
 
     protected function getOptionsGroupType(array $field): string

@@ -5,6 +5,7 @@ namespace W88\CrudSystem\Generators\Backend;
 use W88\CrudSystem\Generators\BackendGenerator;
 use Touhidurabir\StubGenerator\StubGenerator;
 use Illuminate\Support\Str;
+use W88\CrudSystem\Facades\Field;
 
 class ModelGenerator extends BackendGenerator
 {
@@ -102,7 +103,9 @@ class ModelGenerator extends BackendGenerator
 
     protected function getFillable(): string
     {
-        return collect($this->getFields())->map(function ($field, $name) {
+        return collect($this->getFields())
+        ->filter(fn($field) => !Field::isViewOnly($field))
+        ->map(function ($field, $name) {
             return "\n\t\t'$name'";
         })->implode(",");
     }
@@ -113,10 +116,12 @@ class ModelGenerator extends BackendGenerator
         $translatable = $this->getTranslatable();
         $casts = $this->getCasts();
         $fileCasts = $this->getFileCasts();
+        $dates = $this->getDates();
         $booted = $this->getBooted();
         if ($translatable) $options[] = $translatable;
         if ($casts) $options[] = $casts;
         if ($fileCasts) $options[] = $fileCasts;
+        if ($dates) $options[] = $dates;
         if ($booted) $options[] = $booted;
         return count($options) ? collect($options)->implode("\n") . "\n" : '';
     }
@@ -153,6 +158,16 @@ class ModelGenerator extends BackendGenerator
             return "\n\t\t'{$name}'";   
         })->implode(',');
         return "\n\tpublic \$translatable = [{$fields}\n\t];";
+    }
+    
+    protected function getDates(): string
+    {
+        $dateFields = $this->getDateFields();
+        if (!count($dateFields)) return '';
+        $fields = collect($dateFields)->map(function ($field, $name) {
+            return "\n\t\t'{$name}'";   
+        })->implode(',');
+        return "\n\tprotected \$dates = [{$fields}\n\t];";
     }
 
     protected function getBooted(): string
