@@ -1,8 +1,6 @@
 <template>
     <v-form v-if="ready" ref="myFormRef" v-slot="{ validate, resetForm }" :validation-schema="validationSchema" :initial-values="form" as="span">
-        <div class="px-7 pt-3 flex justify-end">
-            <TranslateSelect form="{{ FORM_NAME }}" />
-        </div>
+        {{ TRANSLATABLE_SELECT }}
         <q-card-section>
             <!-- begin::row -->
             <div class="row">

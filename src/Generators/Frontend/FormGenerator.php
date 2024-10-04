@@ -66,9 +66,19 @@ class FormGenerator extends FrontendGenerator
     {
         return [
             'FIELDS' => $this->getVueFormFields(),
-            'FORM_NAME' => Str::camel($this->getFormFileName()),
             'SCRIPT' => $this->getScript(),
+            'TRANSLATABLE_SELECT' => $this->getTranslatableSelect(),
         ];
+    }
+
+    protected function getTranslatableSelect(): string
+    {
+        $fields = collect($this->getFieldsVisibleInForm())->filter(fn ($field) => Field::isTranslatable($field));
+        if ($fields->isEmpty()) return '';
+        $formName = Str::camel($this->getFormFileName());
+        return "<div class=\"px-7 pt-3 flex justify-end\">
+            <TranslateSelect form=\"{$formName}\" />
+        </div>";
     }
 
     protected function getScript(): string
@@ -130,7 +140,6 @@ class FormGenerator extends FrontendGenerator
             $field['label'] = $this->getLangPath("table.{$field['name']}");
             $fieldReplacers = collect($field)->only('name', 'label')->mapWithKeys(fn ($value, $key) => [strtoupper($key) => $value])->toArray();
             $fieldReplacers = array_merge($fieldReplacers, [
-                'FORM_NAME_ATTR' => $this->getFormNameAttr(),
                 'TYPE' => $this->getFormFieldType($field),
                 'REQUIRED' => $this->getRequiredAttr($field),
                 'REQUIRED_HTML' => $this->getRequiredHtml($field),
@@ -150,11 +159,6 @@ class FormGenerator extends FrontendGenerator
         return implode("\n", $fields);
     }
 
-    protected function getFormNameAttr($tabs = "\n\t\t\t\t\t\t"): string
-    {
-        return "{$tabs}formName=\"" . Str::camel($this->getFormFileName()) . '"';
-    }
-
     protected function getFormFieldType(array $field): string
     {
         return $field['type'] == 'textarea' || $field['type'] == 'number' ? $field['type'] : 'text';
@@ -172,7 +176,8 @@ class FormGenerator extends FrontendGenerator
     
     protected function getTranslatableAttr(array $field, $tabs = "\n\t\t\t\t\t\t"): string
     {
-        return Field::isTranslatable($field) ? "{$tabs}translatable" : '';
+        $formName = "{$tabs}formName=\"" . Str::camel($this->getFormFileName()) . '"';
+        return Field::isTranslatable($field) ? "{$tabs}translatable{$formName}" : '';
     }
 
     protected function getFileType(array $field): string
@@ -215,7 +220,7 @@ class FormGenerator extends FrontendGenerator
     protected function getJsFormFields(): string
     {
         return collect($this->getFieldsVisibleInForm())->map(function ($field) {
-            $default = Field::hasDefault($field) ? json_encode($field['default']) : ($field['type'] == 'editor' ? "''" : 'null');
+            $default = $field['type'] == 'editor' ? "''" : 'null';
             $value = Field::isTranslatable($field) ? '{}' : (Field::isFrontArray($field) ? '[]' : $default);
             return "\n\t\t\t\t{$field['name']}: {$value}";
         })->implode(',');

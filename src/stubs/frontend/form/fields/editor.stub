@@ -5,7 +5,7 @@
                         :placeholder="$t('{{ LABEL }}')"
                         :form="form"
                         name="{{ NAME }}"
-                        :label="$t('{{ LABEL }}')"{{ REQUIRED }}{{ TRANSLATABLE }}{{ FORM_NAME_ATTR }}
+                        :label="$t('{{ LABEL }}')"{{ REQUIRED }}{{ TRANSLATABLE }}
                     />
                 </div>
                 <!-- ================= ./{{ NAME }} ================= -->
