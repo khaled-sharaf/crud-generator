@@ -61,6 +61,7 @@ class CreateGenerator extends FrontendGenerator
             'TABLE_ID' => $this->getTableId(),
             'COMPONENT_FORM' => $this->getFormFileName(),
             'LIST_ROUTE_NAME' => $this->getListRouteName(),
+            'POPUP_WIDTH' => $this->getFormPopupWidth(),
             'DIALOG_NAME' => Str::camel($this->getCreateFileName()),
             'DIALOG_TITLE' => $this->getLangPath("create_{$this->modelNameSnake}"),
             'SCRIPT' => $this->getScript(),

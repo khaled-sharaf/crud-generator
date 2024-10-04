@@ -78,6 +78,7 @@ class ShowGenerator extends FrontendGenerator
         return [
             'ACTIONS' => $this->getActions(),
             'SHOW_CONTENT' => $this->getShowContent(),
+            'POPUP_WIDTH' => $this->getShowPopupWidth(),
             'DIALOG_NAME' => Str::camel($this->getShowFileName()),
             'DIALOG_TITLE' => $this->getLangPath("view_{$this->modelNameSnake}"),
             'SCRIPT' => $this->getScript(),

@@ -70,6 +70,7 @@ class EditGenerator extends FrontendGenerator
             'MODEL_NAME_KEBAB' => $this->modelNameKebab,
             'COMPONENT_FORM' => $this->getFormFileName(),
             'LIST_ROUTE_NAME' => $this->getListRouteName(),
+            'POPUP_WIDTH' => $this->getFormPopupWidth(),
             'DIALOG_NAME' => Str::camel($this->getEditFileName()),
             'DIALOG_TITLE' => $this->getLangPath("edit_{$this->modelNameSnake}"),
             'SCRIPT' => $this->getScript(),

@@ -25,7 +25,12 @@ abstract class FrontendGenerator extends Generator
 
     protected function getFrontendCrudPath(): string
     {
-        return $this->getFrontendModulePath() . "/cruds/{$this->modelNameCamel}";
+        return "{$this->getFrontendModulePath()}/cruds/{$this->modelNameCamel}";
+    }
+
+    protected function getCrudIcon(): string
+    {
+        return $this->config['options']['icon'] ?? 'view_list';
     }
 
     protected function hasShowPopup(): bool
@@ -36,6 +41,16 @@ abstract class FrontendGenerator extends Generator
     protected function hasFormPopup(): bool
     {
         return $this->config['options']['formPopup'] ?? false;
+    }
+
+    protected function getShowPopupWidth(): string
+    {
+        return $this->config['options']['showPopupWidth'] ?? '800px';
+    }
+
+    protected function getFormPopupWidth(): string
+    {
+        return $this->config['options']['formPopupWidth'] ?? '800px';
     }
 
     protected function hasMultiSelection(): bool

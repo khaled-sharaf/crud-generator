@@ -1,6 +1,6 @@
 <template>
     <q-dialog v-model="$store.modals.list.{{ DIALOG_NAME }}">
-        <q-card style="width: 800px; max-width: 80vw;">
+        <q-card style="width: {{ POPUP_WIDTH }}; max-width: 80vw;">
             <DialogTitle :title="$t('{{ DIALOG_TITLE }}')" />
             {{ SHOW_CONTENT }}
         </q-card>

@@ -4,7 +4,7 @@ namespace W88\CrudSystem\Generators\Frontend;
 
 use W88\CrudSystem\Generators\FrontendGenerator;
 use Touhidurabir\StubGenerator\StubGenerator;
-
+use Illuminate\Support\Facades\File;
 class SidebarGenerator extends FrontendGenerator
 {
 
@@ -44,6 +44,7 @@ class SidebarGenerator extends FrontendGenerator
     protected function getReplacers(): array
     {
         return [
+            'ORDER' => $this->getOrder(),
             'LINKS' => $this->getLinks(),
         ];
     }
@@ -63,7 +64,7 @@ class SidebarGenerator extends FrontendGenerator
         
         return "{{$permissionList}
             label: app => app.\$t('{$this->getPageTitle('label')}'),
-            icon: 'list',
+            icon: '{$this->getCrudIcon()}',
             to: {name: '{$this->getListRouteName()}'}{$createRoute}
         }";
     }
@@ -72,5 +73,10 @@ class SidebarGenerator extends FrontendGenerator
     {
         return "{$this->frontendModuleName}.{$this->modelNameSnake}_crud.{$title}";
     }
-    
+
+    protected function getOrder(): string
+    {
+        $crudsPath = "{$this->getFrontendModulePath()}/cruds";
+        return count(File::directories($crudsPath)) + 1;
+    }
 }

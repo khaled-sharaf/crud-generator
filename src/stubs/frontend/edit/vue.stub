@@ -8,7 +8,7 @@
         <div class="inner-page">
             <q-card>
                 <{{ COMPONENT_FORM }} v-if="model" :modelEdit="model" formType="edit" @submited="() => $router.push({name: '{{ LIST_ROUTE_NAME }}'})" />
-                <q-card-section v-else style="min-height: 400px">
+                <q-card-section v-else style="min-height: 500px">
                     <q-inner-loading  showing color="primary" />
                 </q-card-section>
             </q-card>

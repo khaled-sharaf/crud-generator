@@ -35,8 +35,11 @@ return [
     // ],
 
     'options' => [
+        // 'icon' => 'view_list',
         // 'showPopup' => true, // show show in popup
         // 'formPopup' => true, // show create/edit form in popup
+        // 'showPopupWidth' => '800px',
+        // 'formPopupWidth' => '800px',
         // 'permissions' => true, // Add permissions to permission file with translation
         // 'addLogs' => true, // Enable add logs
         // 'softDeletes' => true, // Enable soft deletes
@@ -92,6 +95,7 @@ return [
             //     'type' => 'belongsTo', // default: belongsTo
             // ],
             'frontend' => [
+                // 'fullWidth' => true,
                 'visibleList' => true,
                 'sortable' => true,
                 'exportable' => true, // optional - add field to table export in csv file
