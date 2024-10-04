@@ -1,6 +1,6 @@
 
                 <!-- ================= {{ NAME }} ================= -->
-                <div class="{{ CLASS_FIELD }} pb-5">
+                <div class="{{ CLASS_FIELD }} pb-5"{{ SHOW_CONDITION }}>
                     <v-field name="{{ NAME }}" :label="$t('{{ LABEL }}').toLowerCase()" v-slot="{ field, errorMessage }">
                         <div :class="{'toggle-error': Boolean(errorMessage)}">
                             <q-checkbox

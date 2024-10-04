@@ -174,22 +174,26 @@ class ModelGenerator extends BackendGenerator
 
     protected function getBooted(): string
     {
-        $fileFields = $this->getFileFields();
-        if (!count($fileFields)) return '';
-        $deleteMethod = $this->hasSoftDeletes() ? 'forceDeleted' : 'deleted';
         $modelFieldsDelete = $this->getModelFieldsDelete();
+        if (empty($modelFieldsDelete)) return '';
+        $deleteMethod = $this->hasSoftDeletes() ? 'forceDeleted' : 'deleted';
         return "\n\tprotected static function booted()\n\t{\n\t\tstatic::{$deleteMethod}(function (\$model) {{$modelFieldsDelete}\n\t\t});\n\t}";
     }
 
     protected function getModelFieldsDelete(): string
     {
-        $modelFieldsDelete = collect($this->getFileFields())->map(function ($field, $name) {
+        $deleteFiles = collect($this->getFileFields())->map(function ($field, $name) {
             if (Str::contains($field['type'], 'multi_')) {
                 return "\n\t\t\tforeach (\$model->{$name}Urls as \$file) {\n\t\t\t\t\$model->deleteFile(\$file['url'], \$model->filePaths['multi']);\n\t\t\t}";
             }
             return "\n\t\t\t\$model->deleteFile(\$model->{$name}, \$model->filePaths['single']);";
-        });
-        return $modelFieldsDelete->implode('');
+        })->implode('');
+        $deleteRelations = collect($this->getModelRelations())
+        ->filter(fn ($relation, $name) => ($relation['deleteRelation'] ?? false))
+        ->map(function ($relation, $name) {
+            return "\n\t\t\t\$model->{$name}()->delete();";
+        })->implode('');
+        return $deleteFiles . $deleteRelations;
     }
 
     protected function getScopes(): string

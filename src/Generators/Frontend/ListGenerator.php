@@ -487,14 +487,15 @@ class ListGenerator extends FrontendGenerator
         $showKey = Field::getKeyShowInFront($field);
         if (!Field::hasKeyShowInFront($field) && Field::hasRelation($field)) {
             $relationName = Field::getRelationName($field);
-            $label = Field::getLookupModelLabel($field);
-            $showKey = "{$relationName}?.{$label}";
+            $lookupLabel = Field::getLookupModelLabel($field);
+            $showKey = "row.{$relationName}?.{$lookupLabel}";
         }
+        $showKey = str_replace('{model}', 'row', $showKey);
         $columnProperties = collect($columnProperties)->filter(fn ($property) => !empty($property))->implode("\n\t\t\t\t\t\t");
         return "{
                         name: '{$name}',
                         label: this.\$filters.title(this.\$t('{$label}')),
-                        field: row => row.{$showKey},
+                        field: row => {$showKey},
                         {$columnProperties}
                     },";
     }

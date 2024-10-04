@@ -11,8 +11,9 @@ class {{ CLASS_NAME }} extends FormRequest
      */
     public function rules(): array
     {
-        return [{{ RULES }}
-        ];
+        $rules = [{{ RULES }}
+        ];{{ CUSTOM_RULES_WHEN_CREATE }}{{ CUSTOM_RULES_WHEN_UPDATE }}
+        return $rules;
     }
 
     /**

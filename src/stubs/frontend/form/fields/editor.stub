@@ -1,6 +1,6 @@
 
                 <!-- ================= {{ NAME }} ================= -->
-                <div class="col-12 col-padding pb-5">
+                <div class="col-12 col-padding pb-5"{{ SHOW_CONDITION }}>
                     <EditorInput
                         :placeholder="$t('{{ LABEL }}')"
                         :form="form"

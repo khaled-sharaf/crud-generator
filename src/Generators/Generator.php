@@ -150,6 +150,11 @@ abstract class Generator implements GeneratorInterface
         return $fields;
     }
 
+    protected function getFieldByName(string $name): array|null
+    {
+        return collect($this->getFields())->filter(fn ($field) => $field['name'] === $name)->first();
+    }
+
     protected function getFileFields(): array
     {
         return collect($this->getFields())->filter(fn ($field) => Field::hasFile($field))->toArray();

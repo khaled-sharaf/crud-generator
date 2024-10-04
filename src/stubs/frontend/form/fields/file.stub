@@ -1,6 +1,6 @@
 
                 <!-- ================= {{ NAME }} ================= -->
-                <div class="{{ CLASS_FIELD }} pb-5">
+                <div class="{{ CLASS_FIELD }} pb-5"{{ SHOW_CONDITION }}>
                     <label class="label-form">
                         {{ $t('{{ LABEL }}') }} {{ REQUIRED_HTML }}
                     </label>

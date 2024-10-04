@@ -154,6 +154,7 @@ class FormGenerator extends FrontendGenerator
                 'IS_MULTI_SELECT' => $this->getIsMultiSelect($field),
                 'IS_USE_CHIPS' => $this->getIsUseChips($field),
                 'CLASS_FIELD' => $this->getClassField($field),
+                'SHOW_CONDITION' => $this->getShowCondition($field),
             ]);
             $fields[] = (new StubGenerator())->from($stubPath, true)->withReplacers($fieldReplacers)->toString();
         }
@@ -233,6 +234,12 @@ class FormGenerator extends FrontendGenerator
             }
         }
         return "{$class} col-padding";
+    }
+
+    protected function getShowCondition(array $field): string
+    {
+        $hiddenPage = Field::isHiddenEdit($field) ? 'edit' : (Field::isHiddenCreate($field) ? 'create' : null);
+        return $hiddenPage ? " v-if=\"formType !== '{$hiddenPage}'\"" : '';
     }
 
     protected function getJsFormFields(): string

@@ -164,11 +164,11 @@ class ShowGenerator extends FrontendGenerator
             if (Field::hasRelation($field)) {
                 $relationName = Field::getRelationName($field);
                 $label = Field::getLookupModelLabel($field);
-                $showKey = "{$relationName}?.{$label}";
+                $showKey = "model.{$relationName}?.{$label}";
             }
         }
-        $value = "model.{$showKey}";
-        return Field::hasLookupFrontend($field) ? "{$lookupName}.getByValue($value)" : $value;
+        $showKey = str_replace('{model}', 'model', $showKey);
+        return Field::hasLookupFrontend($field) ? "{$lookupName}.getByValue($showKey)" : $showKey;
     }
 
     protected function getClassField(array $field): string

@@ -56,6 +56,7 @@ return [
         'title' => [
             'type' => 'text',
             'label' => 'Title',
+            // 'keyShowInFront' => "{model}.title ? 'Mr . ' + {model}.title : ''",
             // 'notDatabase' => true, // not add migration
             // 'nullable' => true,
             // 'default' => 'string_test',
@@ -122,12 +123,16 @@ return [
         //     'model' => 'Modules\Website\app\Models\User',
         //     'foreignKey' => 'user_id', // optional
         //     'localKey' => 'id', // optional
+        //     'deleteRelation' => true, // delete relation when delete model
+        //     'checkOnDelete' => true, // check on delete model, prevent delete when has relation
         // ],
         // 'comments' => [
         //     'type' => 'hasMany',
         //     'model' => 'Modules\Website\app\Models\Comment',
         //     'foreignKey' => 'post_id', // optional
         //     'localKey' => 'id', // optional
+        //     'deleteRelation' => true, // delete relation when delete model
+        //     'checkOnDelete' => true, // check on delete model, prevent delete when has relation
         // ],
         // 'tags' => [
         //     'type' => 'belongsToMany',
@@ -136,6 +141,8 @@ return [
         //     'table' => 'post_tag', // optional
         //     'foreignKey' => 'post_id', // optional
         //     'localKey' => 'tag_id', // optional
+        //     'deleteRelation' => true, // delete relation when delete model
+        //     'checkOnDelete' => true, // check on delete model, prevent delete when has relation
         //     // Define pivot table attributes for many-to-many relationships
         //     'pivot' => [ // optional
         //         'active' => [ // pivot table column name

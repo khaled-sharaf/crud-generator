@@ -69,9 +69,10 @@ class ServiceGenerator extends BackendGenerator
     protected function getMethods(): string
     {
         $methods = $this->getIndexMethod();
-        if ($this->checkApiRoute('show') || $this->checkApiRoute('edit')) $methods .= $this->getShowMethod();
         if ($this->checkApiRoute('create')) $methods .= $this->getStoreMethod();
+        if ($this->checkApiRoute('show') || $this->checkApiRoute('edit')) $methods .= $this->getShowMethod();
         if ($this->checkApiRoute('edit')) $methods .= $this->getUpdateMethod();
+        if ($this->checkApiRoute('delete')) $methods .= $this->getDestroyMethod();
         return $methods;
     }
 
@@ -96,8 +97,9 @@ class ServiceGenerator extends BackendGenerator
     protected function getStoreMethod(): string
     {
         $handleFieldsWhenCreate = $this->handleFieldsWhenCreateAndUpdate();
+        $handleAddingRelations = $this->handleAddingRelations();
         return "\n\n\tpublic function create(\$data)\n\t{{$handleFieldsWhenCreate}
-        \${$this->modelNameCamel} = {$this->modelName}::create(\$data);
+        \${$this->modelNameCamel} = {$this->modelName}::create(\$data);{$handleAddingRelations}
         return \${$this->modelNameCamel};
     }";
     }
@@ -105,14 +107,29 @@ class ServiceGenerator extends BackendGenerator
     protected function getUpdateMethod(): string
     {
         $handleFieldsWhenUpdate = $this->handleFieldsWhenCreateAndUpdate('update');
+        $handleAddingRelations = $this->handleAddingRelations('update');
         return "\n\n\tpublic function update(\$id, \$data)\n\t{
         \${$this->modelNameCamel} = \$this->show(\$id);{$handleFieldsWhenUpdate}
-        \${$this->modelNameCamel}->update(\$data);
+        \${$this->modelNameCamel}->update(\$data);{$handleAddingRelations}
         return \${$this->modelNameCamel};
     }";
     }
 
+    protected function getDestroyMethod(): string
+    {
+        $hasPermission = $this->hasPermissions() ? ", '{$this->modelNameKebab}'" : '';
+        return "\n\n\tpublic function delete(\$id)\n\t{
+        return CrudHelper::deleteActions(\$id, new {$this->modelName}$hasPermission);
+    }";
+    }
+
     protected function handleFieldsWhenCreateAndUpdate($formType = 'create'): string
+    {
+        $fieldsHandled = $this->handleUploadFiles($formType);
+        return $fieldsHandled;
+    }
+
+    protected function handleUploadFiles($formType = 'create'): string
     {
         $fileFields = $this->getFileFields();
         if (!count($fileFields)) return '';
@@ -126,6 +143,21 @@ class ServiceGenerator extends BackendGenerator
             return "\n\t\t\$data['{$name}'] = uploader(){$addModel}->path((new {$this->modelName})->filePaths['single'])->fieldName('{$name}'){$hasAddQuality}->upload();";
         })->implode('');
         return $fileUploads;
+    }
+
+    protected function handleAddingRelations($formType = 'create'): string
+    {
+        $relations = collect($this->getModelRelations())->filter(function ($relation, $name) {
+            $field = $this->getFieldByName($name);
+            return $field && in_array($relation['type'], ['belongsToMany', 'morphToMany']);
+        })->toArray();
+        if (!count($relations)) return '';
+        $addRelations = [];
+        $belongsToManyMethods = $formType == 'update' ? 'sync' : 'attach';
+        foreach ($relations as $name => $relation) {
+            $addRelations[] = "\n\t\t\${$this->modelNameCamel}->{$name}()->{$belongsToManyMethods}(\$data['{$name}'] ?? []);";
+        }
+        return collect($addRelations)->implode('');
     }
 
     protected function getFilters(): string

@@ -68,8 +68,8 @@ class ControllerGenerator extends BackendGenerator
             "use {$this->getServiceNamespace()}\\{$this->getServiceName()};",
             "use {$this->getResourceNamespace()}\\{$this->getResourceName()};",
         ];
-        if ($this->checkApiRoute('delete') || $this->getActivationRouteOption()) $useClasses[] = $useCrudHelper;
-        if ($this->checkApiRoute('edit') || $this->checkApiRoute('delete') || $this->getActivationRouteOption()) $useClasses[] = $useModel;
+        if ($this->getActivationRouteOption()) $useClasses[] = $useCrudHelper;
+        if ($this->getActivationRouteOption() || $this->checkOnDeleteRelations()) $useClasses[] = $useModel;
         if ($this->checkApiRoute('create') || $this->checkApiRoute('edit')) $useClasses[] = $useRequest;
         return collect($useClasses)->implode("\n");
     }
@@ -124,10 +124,28 @@ class ControllerGenerator extends BackendGenerator
 
     protected function getDestroyMethod(): string
     {
-        $hasPermission = $this->hasPermissions() ? ", '{$this->modelNameKebab}'" : '';
-        return "\n\n\tpublic function destroy(\$id)\n\t{
-        return sendData(CrudHelper::deleteActions(\$id, new {$this->modelName} $hasPermission));
+        $checkOnDeleteRelations = $this->checkOnDeleteRelations();
+        return "\n\n\tpublic function destroy(\$id)\n\t{{$checkOnDeleteRelations}
+        return sendData(\$this->{$this->getServiceNameCamel()}->delete(\$id));
     }";
+    }
+
+    protected function checkOnDeleteRelations(): string
+    {
+        $relations = collect($this->getModelRelations())->filter(fn ($relation, $name) => ($relation['checkOnDelete'] ?? false))->toArray();
+        if (!count($relations)) return '';
+        $index = 0;
+        $check = "\n\t\t\${$this->modelNameCamel}Exists = {$this->modelName}::where('id', \$id)";
+        foreach ($relations as $name => $relation) {
+            $method = $index == 0 ? 'has' : 'orHas';
+            $check .= "->{$method}('{$name}')";
+            $index++;
+        }
+        $check .= "->exists();";
+        $check .= "\n\t\tif (\${$this->modelNameCamel}Exists) {
+            return sendError(__('view.messages.has_related_relation'), 400);
+        }";
+        return $check;
     }
 
     protected function getActivationMethod(): string

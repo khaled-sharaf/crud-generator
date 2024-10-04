@@ -55,6 +55,8 @@ class RequestGenerator extends BackendGenerator
             'CLASS_NAME' => $this->getRequestName(),
             'TRANSLATION_PATH' => "{$this->moduleNameSnake}::view.{$this->modelNameSnake}_crud.validation",
             'RULES' => $rules,
+            'CUSTOM_RULES_WHEN_CREATE' => $this->getCustomRulesWhenCreate($rules),
+            'CUSTOM_RULES_WHEN_UPDATE' => $this->getCustomRulesWhenUpdate($rules),
             'USE_CLASSES' => $this->getUseClasses($rules),
         ];
     }
@@ -67,28 +69,81 @@ class RequestGenerator extends BackendGenerator
         return '';
     }
 
-    protected function getRules(): string
+    protected function getAllRules(): array
     {
-        return collect($this->getFieldsVisibleInForm())->map(fn($field, $name) => $this->getFieldValidationRule($name, $field))->implode(',');
-    }
-
-    protected function getFieldValidationRule(string $name, array $field): string
-    {
-        $validations = collect($field)->filter(fn($value, $key) => Str::startsWith($key, 'validation'))->map(function($value, $key) use ($name) {
-            $key = str_replace('validation', $name, $key);
-            $rule = is_array($value) ? $this->handleArrayValidationRule($value) : "'{$value}'";
-            return "\n\t\t\t'{$key}' => $rule";
-        });
-        $defaultValidation = "\n\t\t\t'$name' => 'nullable'";
-        if (Field::isUnique($field)) {
-            $defaultValidation = "\n\t\t\t'$name' => 'nullable|unique:{$this->modelNameSnakePlural}'";
+        $allRules = [];
+        $rules = collect($this->getFieldsVisibleInForm())->map(fn($field, $name) =>  $this->handleFieldValidationRule($name, $field))->values()->all();
+        foreach ($rules as $value) {
+            foreach ($value as $key => $rule) {
+                $allRules[$key] = $rule;
+            }
         }
-        return count($validations) ? $validations->implode(',') : $defaultValidation;
+        return $allRules;
     }
 
-    public function handleArrayValidationRule(array $validation): string
+    protected function handleFieldValidationRule(string $name, array $field): array
+    {
+        $rules = [];
+        $validations = collect($field)->filter(fn($value, $key) => Str::startsWith($key, 'validation'))->toArray();
+        if ($validations) {
+            foreach ($validations as $key => $value) {
+                $key = str_replace('validation', $name, $key);
+                $rule = is_array($value) ? $this->handleArrayValidationRule($value) : "'{$value}'";
+                $rules[$key] = $rule;
+            }
+        } else {
+            if (Field::isUnique($field)) {
+                $isNullable = Field::isNullable($field) ? 'nullable|' : '';
+                $rules[$name] = "'{$isNullable}unique:{$this->modelNameSnakePlural}'";
+            } else {
+                $rules[$name] = "'nullable'";
+            }
+        }
+        return $rules;
+    }
+
+    protected function handleArrayValidationRule(array $validation): string
     {
         return '[' . collect($validation)->map(fn($rule) => "\n\t\t\t\t" . ($this->isPhpCode($rule) ? $rule : "'{$rule}'"))->implode(',') . "\n\t\t\t]";
+    }
+    
+    protected function getRules(): string
+    {
+        return collect($this->getAllRules())->filter(function ($rule, $name) {
+            $field = $this->getFieldByName(Str::before($name, '.'));
+            return ($field && !Field::isHiddenCreate($field) && !Field::isHiddenEdit($field));
+        })->map(fn($rule, $name) => "\n\t\t\t'{$name}' => $rule")->implode(',');
+    }
+
+    protected function getCustomRulesWhenCreate(string $rules): string
+    {
+        $rules = collect($this->getAllRules())->filter(function ($rule, $name) {
+            $field = $this->getFieldByName(Str::before($name, '.'));
+            return $field && Field::isHiddenEdit($field) && !Field::isHiddenCreate($field);
+        })->toArray();
+        return $this->handleCustomRules($rules, 'POST');
+    }
+
+    protected function getCustomRulesWhenUpdate(string $rules): string
+    {
+        $rules = collect($this->getAllRules())->filter(function ($rule, $name) {
+            $field = $this->getFieldByName(Str::before($name, '.'));
+            return $field && Field::isHiddenCreate($field) && !Field::isHiddenEdit($field);
+        })->toArray();
+        return $this->handleCustomRules($rules, 'PUT');
+    }
+
+    protected function handleCustomRules(array $rules, string $method): string
+    {
+        $rulesString = '';
+        if (count($rules)) {
+            $rulesString = "\n\t\tif (\$this->isMethod('{$method}')) {";
+            foreach ($rules as $name => $rule) {
+                $rulesString .= "\n\t\t\t\$rules['{$name}'] = $rule;";
+            }
+            $rulesString .= "\n\t\t}";
+        }
+        return $rulesString;
     }
     
 }

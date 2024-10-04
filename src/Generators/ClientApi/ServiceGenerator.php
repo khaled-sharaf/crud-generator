@@ -37,7 +37,7 @@ class ServiceGenerator extends BackendServiceGenerator
         if ($this->checkApiRoute('show', 'clientApi') || $this->checkApiRoute('edit', 'clientApi') || $this->checkApiRoute('delete', 'clientApi')) $methods .= $this->getShowMethod();
         if ($this->checkApiRoute('create', 'clientApi')) $methods .= $this->getStoreMethod();
         if ($this->checkApiRoute('edit', 'clientApi')) $methods .= $this->getUpdateMethod();
-        if ($this->checkApiRoute('delete', 'clientApi')) $methods .= $this->getDeleteMethod();
+        if ($this->checkApiRoute('delete', 'clientApi')) $methods .= $this->getDestroyMethod();
         return $methods;
     }
 
@@ -52,7 +52,7 @@ class ServiceGenerator extends BackendServiceGenerator
     }";
     }
 
-    protected function getDeleteMethod(): string
+    protected function getDestroyMethod(): string
     {
         return "\n\n\tpublic function delete(\$id)\n\t{
         \${$this->modelNameCamel} = \$this->show(\$id);
