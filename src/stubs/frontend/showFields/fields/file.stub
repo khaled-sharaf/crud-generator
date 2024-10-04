@@ -1,6 +1,6 @@
                                     
                                     <!-- ================= {{ NAME }} ================= -->
-                                    <div class="col-12{{ COL_SIZE }}">
+                                    <div class="{{ CLASS_FIELD }}">
                                         <div class="item">
                                             <div class="label" v-text="$t('{{ LABEL }}')"></div>
                                             <div{{ VALUE_CLASS }}>

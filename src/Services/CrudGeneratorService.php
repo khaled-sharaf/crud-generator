@@ -34,7 +34,7 @@ class CrudGeneratorService
         }
         $this->command->newLine();
         if ($generated == 'single') {
-            $this->command->info("  CRUD for {$crudName} in module {$moduleName} generated successfully.");
+            $this->command->info("  CRUD '{$crudName}' in module '{$moduleName}' has been successfully generated.");
         } else if ($generated == 'all') {
             $this->command->info("  All CRUD generated successfully.");
         } else {
@@ -57,6 +57,7 @@ class CrudGeneratorService
         }
         $time = (int) ((microtime(true) * 1000) - $time);
         $this->command->line(Crud::formatCommandRunGenerator($crud->file_name, 'done', $time));
+        $this->command->newLine();
         sleep(1);
     }
 

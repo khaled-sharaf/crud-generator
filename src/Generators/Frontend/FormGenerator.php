@@ -220,7 +220,19 @@ class FormGenerator extends FrontendGenerator
 
     protected function getClassField(array $field): string
     {
-        return Field::isFullWidth($field) ? 'col-12 col-padding' : 'col-12 col-md-6 col-padding';
+        $class = 'col-12 col-md-6';
+        if (Field::isFullWidth($field)) {
+            $class = 'col-12';
+        } else {
+            if ($this->hasFormPopup()) {
+                if (intval($this->getFormPopupWidth()) >= 600) {
+                    $class = 'col-12 col-sm-6';
+                } else {
+                    $class = 'col-12';
+                }
+            }
+        }
+        return "{$class} col-padding";
     }
 
     protected function getJsFormFields(): string
