@@ -4,7 +4,7 @@ namespace W88\CrudSystem\Generators\Backend;
 
 use W88\CrudSystem\Generators\BackendGenerator;
 use Illuminate\Support\Facades\File;
-use Touhidurabir\StubGenerator\Facades\StubGenerator;
+use Touhidurabir\StubGenerator\StubGenerator;
 use W88\CrudSystem\Facades\Field;
 use Illuminate\Support\Str;
 
@@ -59,7 +59,7 @@ class MigrationGenerator extends BackendGenerator
 
     protected function generateMigrationFile(): void
     {
-        StubGenerator::from($this->getStubPath(), true)
+        (new StubGenerator)->from($this->getStubPath(), true)
             ->to($this->getGeneratorDirectory(), true, true)
             ->withReplacers($this->getReplacers())
             ->as($this->generateMigrationFileName($this->generateMigrationName()))

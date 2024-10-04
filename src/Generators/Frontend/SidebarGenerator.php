@@ -3,7 +3,7 @@
 namespace W88\CrudSystem\Generators\Frontend;
 
 use W88\CrudSystem\Generators\FrontendGenerator;
-use Touhidurabir\StubGenerator\Facades\StubGenerator;
+use Touhidurabir\StubGenerator\StubGenerator;
 
 class SidebarGenerator extends FrontendGenerator
 {
@@ -32,7 +32,7 @@ class SidebarGenerator extends FrontendGenerator
 
     protected function generateSidebar(): void
     {
-        StubGenerator::from($this->getStubPath(), true)
+        (new StubGenerator)->from($this->getStubPath(), true)
         ->to($this->getGeneratorDirectory())
         ->withReplacers($this->getReplacers())
         ->replace(true)

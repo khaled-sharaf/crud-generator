@@ -3,7 +3,7 @@
 namespace W88\CrudSystem\Generators\Backend;
 
 use W88\CrudSystem\Generators\BackendGenerator;
-use Touhidurabir\StubGenerator\Facades\StubGenerator;
+use Touhidurabir\StubGenerator\StubGenerator;
 
 class PermissionGenerator extends BackendGenerator
 {
@@ -32,7 +32,7 @@ class PermissionGenerator extends BackendGenerator
 
     protected function generatePermission(): void
     {
-        StubGenerator::from($this->getStubPath(), true)
+        (new StubGenerator)->from($this->getStubPath(), true)
             ->to($this->getGeneratorDirectory())
             ->withReplacers($this->getReplacers())
             ->replace(true)

@@ -3,7 +3,7 @@
 namespace W88\CrudSystem\Generators\Backend;
 
 use W88\CrudSystem\Generators\BackendGenerator;
-use Touhidurabir\StubGenerator\Facades\StubGenerator;
+use Touhidurabir\StubGenerator\StubGenerator;
 use W88\CrudSystem\Facades\Field;
 
 class ResourceGenerator extends BackendGenerator
@@ -38,7 +38,7 @@ class ResourceGenerator extends BackendGenerator
 
     protected function generateResource(): void
     {
-        StubGenerator::from($this->getStubPath(), true)
+        (new StubGenerator)->from($this->getStubPath(), true)
             ->to($this->getGeneratorDirectory())
             ->withReplacers($this->getReplacers())
             ->replace(true)

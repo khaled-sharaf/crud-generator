@@ -6,7 +6,7 @@ use Illuminate\Console\Command;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
 use Nwidart\Modules\Facades\Module;
-use Touhidurabir\StubGenerator\Facades\StubGenerator;
+use Touhidurabir\StubGenerator\StubGenerator;
 use W88\CrudSystem\Models\Crud;
 
 class MakeCrud extends Command
@@ -45,7 +45,7 @@ class MakeCrud extends Command
         }
         $this->print('info', "Creating config file for {$crudName} in module {$this->module}.");
         $fileName = $this->getFileName($crudName);
-        StubGenerator::from($crudStubPath, true)
+        (new StubGenerator)->from($crudStubPath, true)
                     ->withReplacers($this->getReplacers())
                     ->to($modulePath, true, true)
                     ->as($fileName)

@@ -34,10 +34,10 @@ class CrudGeneratorService
         $config = $this->loadCrudClientConfig($moduleName, $crud->file_name);
         $lockAfterGenerate = $config['lockAfterGenerate'] ?? false;
         $this->runAllGenerators($moduleName, $config);
-        $crud->markAsGenerated();
-        if ($lockAfterGenerate) {
-            $crud->markAsLocked();
-        }
+        // $crud->markAsGenerated();
+        // if ($lockAfterGenerate) {
+        //     $crud->markAsLocked();
+        // }
     }
 
     protected function runAllGenerators(string $moduleName, array $config): void
