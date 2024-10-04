@@ -6,12 +6,19 @@ use Illuminate\Support\Facades\File;
 use W88\CrudSystem\Facades\Crud;
 use Illuminate\Support\Str;
 use W88\CrudSystem\Models\Crud as ModelsCrud;
+use Illuminate\Console\Command;
 
 class CrudGeneratorService
 {
 
+    public function __construct(private Command $command) {
+
+    }
+
+
     public function generate(string $moduleName = null, string $crudName = null, bool $force = false)
     {
+        Crud::formatCommandInfo($this->command, "Generating CRUD");
         $generated = null;
         if ($moduleName && $crudName) {
             $crud = $this->getCrud($moduleName, $crudName, $force);
@@ -25,19 +32,31 @@ class CrudGeneratorService
                 $generated = 'all';
             }
         }
-        return $generated;
+        $this->command->newLine();
+        if ($generated == 'single') {
+            $this->command->info("  CRUD for {$crudName} in module {$moduleName} generated successfully.");
+        } else if ($generated == 'all') {
+            $this->command->info("  All CRUD generated successfully.");
+        } else {
+            $this->command->warn('  Not Found CRUD to generate.');
+        }
+        $this->command->newLine();
     }
 
     protected function singleGenerator($crud)
     {
+        $this->command->line(Crud::formatCommandRunGenerator($crud->file_name, 'running'));
+        $time = microtime(true) * 1000;
         $moduleName = $crud->module;
         $config = $this->loadCrudClientConfig($moduleName, $crud->file_name);
         $lockAfterGenerate = $config['lockAfterGenerate'] ?? false;
         $this->runAllGenerators($moduleName, $config);
-        // $crud->markAsGenerated();
-        // if ($lockAfterGenerate) {
-        //     $crud->markAsLocked();
-        // }
+        $crud->markAsGenerated();
+        if ($lockAfterGenerate) {
+            $crud->markAsLocked();
+        }
+        $time = (int) ((microtime(true) * 1000) - $time);
+        $this->command->line(Crud::formatCommandRunGenerator($crud->file_name, 'done', $time));
         sleep(1);
     }
 

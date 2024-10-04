@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
 use Nwidart\Modules\Facades\Module;
 use Touhidurabir\StubGenerator\StubGenerator;
+use W88\CrudSystem\Facades\Crud as FacadesCrud;
 use W88\CrudSystem\Models\Crud;
 
 class MakeCrud extends Command
@@ -43,15 +44,19 @@ class MakeCrud extends Command
             $this->print('error', "{$crudName} CRUD already exists.");
             return;
         }
-        $this->print('info', "Creating config file for {$crudName} in module {$this->module}.");
         $fileName = $this->getFileName($crudName);
+        FacadesCrud::formatCommandInfo($this, "Creating {$crudName} CRUD");
+        $this->line(FacadesCrud::formatCommandRunGenerator($fileName, 'creating'));
+        $time = microtime(true) * 1000;
         (new StubGenerator)->from($crudStubPath, true)
-                    ->withReplacers($this->getReplacers())
-                    ->to($modulePath, true, true)
-                    ->as($fileName)
-                    ->save();
+        ->withReplacers($this->getReplacers())
+        ->to($modulePath, true, true)
+        ->as($fileName)
+        ->save();
         Crud::newCrud($crudName, $fileName, $this->module);
-        $this->print('info', "Config file for {$crudName} in module {$this->module} created successfully.");
+        $time = (int) ((microtime(true) * 1000) - $time);
+        $this->line(FacadesCrud::formatCommandRunGenerator($fileName, 'done', $time));
+        $this->newLine();
     }
 
     protected function getReplacers(): array
@@ -71,6 +76,7 @@ class MakeCrud extends Command
 
     private function print(string $type, string $message): void
     {
-        $this->$type("\n\n   {$message}\n");
+        $this->$type("\n\n  {$message}\n");
+        $this->newLine();
     }
 }

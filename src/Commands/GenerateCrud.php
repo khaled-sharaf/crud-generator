@@ -29,21 +29,15 @@ class GenerateCrud extends Command
             $this->print('error', 'Module name is required when generating a single CRUD.');
             return;
         }
-        $crudGeneratorService = new CrudGeneratorService();
-        $generated = $crudGeneratorService->generate($moduleName, $crudName, $force);
-        if ($generated == 'single') {
-            $this->print('info', "CRUD for {$crudName} in module {$moduleName} generated successfully.");
-        } else if ($generated == 'all') {
-            $this->print('info', "All CRUD generated successfully.");
-        } else {
-            $this->print('warn', 'Not Found CRUD to generate.');
-        }
+        $crudGeneratorService = new CrudGeneratorService($this);
+        $crudGeneratorService->generate($moduleName, $crudName, $force);
     }
 
     private function print(string $type, string $message): void
     {
-        $this->$type("\n\n   {$message}\n");
+        $this->$type("\n\n  {$message}\n");
+        $this->newLine();
     }
-    
+
 }
 
