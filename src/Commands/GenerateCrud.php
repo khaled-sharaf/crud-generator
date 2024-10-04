@@ -9,7 +9,7 @@ use Illuminate\Support\Str;
 
 class GenerateCrud extends Command
 {
-    protected $signature = 'fr:crud-generate {name?} {module?} {--force}';
+    protected $signature = 'crud:generate {name?} {--module=} {--force}';
     protected $description = 'Generate CRUD operations for a given model within a specified module based on config file';
 
     
@@ -19,23 +19,31 @@ class GenerateCrud extends Command
         if ($force) {
             $sureForce = $this->confirm('Are you sure you want to delete the existing files?');
             if (!$sureForce) {
-                $this->info("No CRUD generated.");
+                $this->alert('No CRUD generated.');
                 return;
             }
         }
-        $moduleName = $this->argument('module') ?? null;
+        $moduleName = $this->option('module') ?? null;
         $crudName = $this->argument('name') ? strtolower(Str::snake($this->argument('name'))) : null;
+        if ($crudName && !$moduleName) {
+            $this->print('error', 'Module name is required when generating a single CRUD.');
+            return;
+        }
         $crudGeneratorService = new CrudGeneratorService();
         $generated = $crudGeneratorService->generate($moduleName, $crudName, $force);
         if ($generated == 'single') {
-            $this->info("CRUD for {$crudName} in module {$moduleName} generated successfully.");
+            $this->print('info', "CRUD for {$crudName} in module {$moduleName} generated successfully.");
         } else if ($generated == 'all') {
-            $this->info("All CRUD generated successfully.");
+            $this->print('info', "All CRUD generated successfully.");
         } else {
-            $this->info("No CRUD generated.");
+            $this->alert('Not Found CRUD to generate.');
         }
     }
 
+    private function print(string $type, string $message): void
+    {
+        $this->$type("\n\n   {$message}\n");
+    }
     
 }
 
