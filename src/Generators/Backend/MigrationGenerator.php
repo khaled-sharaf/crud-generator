@@ -88,9 +88,9 @@ class MigrationGenerator extends BackendGenerator
     protected function generateFieldDefinition(string $name, array $field): string
     {
         $type = Field::getMigrationType($field);
-        // $params = Field::getMigrationParams($field);
-        // $appendParams = count($params) ? ', ' . collect($params)->map(fn($value, $key) => "$key: " . json_encode($value))->implode(', ') : '';
-        $definition = "\$table->{$type}('{$name}')";
+        $params = Field::getMigrationParams($field);
+        $appendParams = count($params) ? ', ' . collect($params)->map(fn($value) => json_encode($value))->implode(', ') : '';
+        $definition = "\$table->{$type}('{$name}'{$appendParams})";
         if (Field::isNullable($field)) $definition .= '->nullable()';
         if (Field::isUnique($field)) $definition .= '->unique()';
         if (Field::hasDefault($field)) {

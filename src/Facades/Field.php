@@ -18,6 +18,11 @@ class Field
         return isset(static::types()[$field['type']]['migration']) ? static::types()[$field['type']]['migration'] : 'string';
     }
 
+    public static function getMigrationParams(array $field): array
+    {
+        return $field['migrationParams'] ?? [];
+    }
+
     public static function getSeederType(array $field): string
     {
         // try {

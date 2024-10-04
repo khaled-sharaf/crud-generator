@@ -57,7 +57,8 @@ return [
             // 'nullable' => true,
             // 'default' => 'string_test',
             // 'unique' => true,
-            // 'migrationType' => 'string',
+            // 'migrationType' => 'decimal',
+            // 'migrationParams' => [8, 2],
             // 'translatable' => true,
             // 'validation' => 'required', // or 'validation.*', 'validation.*.objectKey'
             // 'route' => 'toggle-display',
