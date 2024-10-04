@@ -112,8 +112,8 @@ class SeederGenerator extends BackendGenerator
         $content = File::get($filePath);
         $contentTemplate = "\n\t\t\$this->call({$this->getSeederName()}::class);";
         if (strpos($content, $contentTemplate) === false) {
-            $pattern = '/public function run\(\)(?:\s*:\s*void)?\s*\{/';
-            $content = preg_replace($pattern, '$0' . $contentTemplate, $content);
+            $pattern = '/\s*\}\s*\}/';
+            $content = preg_replace($pattern, $contentTemplate . "\n\t}\n}", $content);
             File::put($filePath, $content);
         }
     }
