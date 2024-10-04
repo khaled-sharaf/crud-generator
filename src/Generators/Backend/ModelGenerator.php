@@ -204,20 +204,22 @@ class ModelGenerator extends BackendGenerator
     protected function getRelations(): string
     {
         $relations = [];
+        $index = 1;
         foreach ($this->getModelRelations() as $name => $relation) {
-            $relation = $this->defineRelation($name, $relation);
+            $relation = $this->defineRelation($name, $relation, $index);
             if ($relation) $relations[] = $relation;
+            $index++;
         }
         return count($relations) ? collect($relations)->implode("\n") . "\n" : '';
     }
 
-    protected function defineRelation($name, $relation): string
+    protected function defineRelation($name, $relation, $index): string
     {
-        $relationHandler = $this->getRelationHandler($name, $relation);
+        $relationHandler = $this->getRelationHandler($name, $relation, $index);
         return "\n\tpublic function {$name}()\n\t{\n\t\treturn \$this->{$relationHandler};\n\t}";
     }
 
-    protected function getRelationHandler($name, $relation): string
+    protected function getRelationHandler($name, $relation, $index): string
     {
         $model = isset($relation['model']) ? Str::afterLast($relation['model'], '\\') . '::class' : null;
         $normalRelations = ['belongsTo', 'hasOne', 'hasMany'];
@@ -225,7 +227,7 @@ class ModelGenerator extends BackendGenerator
         $type = in_array($relation['type'], $normalRelations) ? 'normal' : (in_array($relation['type'], $morphRelations) ? 'morph' : $relation['type']);
         $relation['model'] = $model;
         $relation['name'] = $name;
-        if ($relation['addMigrationFile'] ?? false) $this->generateMigrationRelation($relation);
+        if ($relation['addMigrationFile'] ?? false) $this->generateMigrationRelation($relation, $index);
         return $this->{"{$type}RelationHandler"}($relation);
     }
 
@@ -280,27 +282,27 @@ class ModelGenerator extends BackendGenerator
         return "{$relation['type']}({$relation['model']}, '{$name}'{$tablePrint}{$foreignKeyPrint}{$localKeyPrint})";
     }
 
-    protected function generateMigrationRelation($relation): void
+    protected function generateMigrationRelation($relation, $index): void
     {
         $type = $relation['type'];
         if (in_array($type, ['morphToMany', 'belongsToMany'])) {
-            $this->{"{$type}MigrationHandler"}($relation);
+            $this->{"{$type}MigrationHandler"}($relation, $index);
         }
     }
 
-    protected function belongsToManyMigrationHandler($relation): void
+    protected function belongsToManyMigrationHandler($relation, $index): void
     {
         $tableNameConvention = $this->getBelongsToManyMigrationFileName(Str::before($relation['model'], '::class'));
         $tableName = $relation['table'] ?? $tableNameConvention;
-        $fileName = $this->getRelationMigrationFileName($tableName, $this->belongsToManyMigrationName);
+        $fileName = $this->getRelationMigrationFileName($tableName, $this->belongsToManyMigrationName, $index);
         $replacers = $this->getBelongsToManyReplacers($tableName, $tableNameConvention, $relation['pivot'] ?? []);
         $this->generateMigrationRelationFile($fileName, $replacers);
     }
 
-    protected function morphToManyMigrationHandler($relation): void
+    protected function morphToManyMigrationHandler($relation, $index): void
     {
         $tableName = Str::snake(Str::plural($this->makePolymorphic(Str::singular($relation['name']))));
-        $fileName = $this->getRelationMigrationFileName($tableName, $this->morphToManyMigrationName);
+        $fileName = $this->getRelationMigrationFileName($tableName, $this->morphToManyMigrationName, $index);
         $replacers = $this->getMorphToManyReplacers($tableName, $relation);
         $this->generateMigrationRelationFile($fileName, $replacers);
     }
@@ -320,11 +322,11 @@ class ModelGenerator extends BackendGenerator
         return 'create_' . $name . '_table';
     }
 
-    protected function getRelationMigrationFileName(string $tableName, $oldName = null): string
+    protected function getRelationMigrationFileName(string $tableName, $oldName = null, $index = 1): string
     {
         $migrationName = $this->generateMigrationName($tableName);
         $this->migrationGenerator->deleteOldMigration($migrationName, $oldName);
-        return $this->migrationGenerator->generateMigrationFileName($migrationName, $oldName, 5);
+        return $this->migrationGenerator->generateMigrationFileName($migrationName, $oldName, ($index * 2));
     }
 
     protected function getBelongsToManyMigrationFileName($related): string
