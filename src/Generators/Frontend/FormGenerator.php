@@ -153,6 +153,7 @@ class FormGenerator extends FrontendGenerator
                 'OPTIONS_GROUP_TYPE' => $this->getOptionsGroupType($field),
                 'IS_MULTI_SELECT' => $this->getIsMultiSelect($field),
                 'IS_USE_CHIPS' => $this->getIsUseChips($field),
+                'CLASS_FIELD' => $this->getClassField($field),
             ]);
             $fields[] = (new StubGenerator())->from($stubPath, true)->withReplacers($fieldReplacers)->toString();
         }
@@ -215,6 +216,11 @@ class FormGenerator extends FrontendGenerator
     protected function getIsUseChips(array $field, $tabs = "\n\t\t\t\t\t\t\t"): string
     {
         return $field['type'] == 'multi_select' ? "{$tabs}use-chips" : '';
+    }
+
+    protected function getClassField(array $field): string
+    {
+        return Field::isFullWidth($field) ? 'col-12 col-padding' : 'col-12 col-md-6 col-padding';
     }
 
     protected function getJsFormFields(): string

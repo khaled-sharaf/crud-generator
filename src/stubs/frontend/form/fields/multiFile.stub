@@ -1,6 +1,6 @@
 
                 <!-- ================= {{ NAME }} ================= -->
-                <div class="col-12 pb-5 col-padding">
+                <div class="col-12 col-padding pb-5">
                     <MultiUploader
                         croping
                         size-icon="25px"

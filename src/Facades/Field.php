@@ -219,6 +219,11 @@ class Field
         );
     }
 
+    public static function isFullWidth(array $field): bool
+    {
+        return $field['frontend']['fullWidth'] ?? false;
+    }
+
     public static function isVisibleList(array $field): bool
     {
         return $field['frontend']['visibleList'] ?? false;

@@ -1,6 +1,6 @@
 
                 <!-- ================= {{ NAME }} ================= -->
-                <div class="col-12 col-md-6 col-padding">
+                <div class="{{ CLASS_FIELD }}">
                     <TextInput
                         :form="form"
                         type="{{ TYPE }}"

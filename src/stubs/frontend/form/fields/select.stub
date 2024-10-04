@@ -1,6 +1,6 @@
 
                 <!-- ================= {{ NAME }} ================= -->
-                <div class="col-12 col-md-6 pb-5 col-padding">
+                <div class="{{ CLASS_FIELD }}">
                     <v-field name="{{ NAME }}" :label="$t('{{ LABEL }}').toLowerCase()" v-slot="{ field, errorMessage }">
                         <q-select
                             v-model="form.{{ NAME }}"
