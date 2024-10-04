@@ -36,7 +36,7 @@ class GenerateCrud extends Command
         } else if ($generated == 'all') {
             $this->print('info', "All CRUD generated successfully.");
         } else {
-            $this->alert('Not Found CRUD to generate.');
+            $this->print('warn', 'Not Found CRUD to generate.');
         }
     }
 

@@ -22,8 +22,8 @@ class CrudGeneratorService
         } else {
             foreach ($this->getAllCruds($moduleName) as $crud) {
                 $this->singleGenerator($crud);
+                $generated = 'all';
             }
-            $generated = 'all';
         }
         return $generated;
     }
