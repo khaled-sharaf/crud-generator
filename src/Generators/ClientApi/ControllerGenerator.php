@@ -30,8 +30,8 @@ class ControllerGenerator extends BackendControllerGenerator
             "use {$this->getServiceNamespace()}\\{$this->clientDirectory}\\{$this->getServiceName()};",
             "use {$this->getResourceNamespace()}\\{$this->clientDirectory}\\{$this->getResourceName()};",
         ];
-        if ($this->checkApiRoute('create') || $this->checkApiRoute('edit')) $useClasses[] = $useRequest;
-        if ($this->checkApiRoute('edit') || $this->checkApiRoute('delete')) $useClasses[] = $useModel;
+        if ($this->checkOnDeleteRelations()) $useClasses[] = $useModel;
+        if ($this->checkApiRoute('create', 'clientApi') || $this->checkApiRoute('edit', 'clientApi')) $useClasses[] = $useRequest;
         return collect($useClasses)->implode("\n");
     }
 
@@ -57,7 +57,8 @@ class ControllerGenerator extends BackendControllerGenerator
 
     protected function getDestroyMethod(): string
     {
-        return "\n\n\tpublic function destroy(\$id)\n\t{
+        $checkOnDeleteRelations = $this->checkOnDeleteRelations();
+        return "\n\n\tpublic function destroy(\$id)\n\t{{$checkOnDeleteRelations}
         \$this->{$this->getServiceNameCamel()}->delete(\$id);
         return sendData(__('view.messages.deleted_success'));
     }";

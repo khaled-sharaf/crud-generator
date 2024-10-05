@@ -68,8 +68,9 @@ class ControllerGenerator extends BackendGenerator
             "use {$this->getServiceNamespace()}\\{$this->getServiceName()};",
             "use {$this->getResourceNamespace()}\\{$this->getResourceName()};",
         ];
-        if ($this->getActivationRouteOption()) $useClasses[] = $useCrudHelper;
-        if ($this->getActivationRouteOption() || $this->checkOnDeleteRelations()) $useClasses[] = $useModel;
+        $booleanRouteFields = count($this->getBooleanRouteFields());
+        if ($this->getActivationRouteOption() || $booleanRouteFields) $useClasses[] = $useCrudHelper;
+        if ($this->getActivationRouteOption() || $this->checkOnDeleteRelations() || $booleanRouteFields) $useClasses[] = $useModel;
         if ($this->checkApiRoute('create') || $this->checkApiRoute('edit')) $useClasses[] = $useRequest;
         return collect($useClasses)->implode("\n");
     }
