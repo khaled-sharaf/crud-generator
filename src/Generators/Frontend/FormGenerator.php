@@ -77,8 +77,8 @@ class FormGenerator extends FrontendGenerator
         if ($fields->isEmpty()) return '';
         $formName = Str::camel($this->getFormFileName());
         return "<div class=\"px-7 pt-3 flex justify-end\">
-            <TranslateSelect form=\"{$formName}\" />
-        </div>";
+                <TranslateSelect form=\"{$formName}\" />
+            </div>";
     }
 
     protected function getScript(): string
