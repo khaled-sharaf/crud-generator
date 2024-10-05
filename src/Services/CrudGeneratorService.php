@@ -51,10 +51,10 @@ class CrudGeneratorService
         $config = $this->loadCrudClientConfig($moduleName, $crud->file_name);
         $lockAfterGenerate = $config['lockAfterGenerate'] ?? false;
         $this->runAllGenerators($moduleName, $config);
-        $crud->markAsGenerated();
-        if ($lockAfterGenerate) {
-            $crud->markAsLocked();
-        }
+        // $crud->markAsGenerated();
+        // if ($lockAfterGenerate) {
+        //     $crud->markAsLocked();
+        // }
         $time = (int) ((microtime(true) * 1000) - $time);
         $this->command->line(Crud::formatCommandRunGenerator($crud->file_name, 'done', $time));
         $this->command->newLine();

@@ -485,10 +485,12 @@ class ListGenerator extends FrontendGenerator
             "// required: true"
         ];
         $showKey = Field::getKeyShowInFront($field);
-        if (!Field::hasKeyShowInFront($field) && Field::hasRelation($field)) {
+        if (Field::hasRelation($field) && Field::hasLookupModel($field)) {
             $relationName = Field::getRelationName($field);
             $lookupLabel = Field::getLookupModelLabel($field);
-            $showKey = "row.{$relationName}?.{$lookupLabel}";
+            $showKey = "{model}.{$relationName}?.{$lookupLabel}";
+        } else if (!Field::hasLookupFrontend($field) && Field::hasLookup($field) && !Field::isJson($field)) {
+            $showKey = "{model}.{$name}_view";
         }
         $showKey = str_replace('{model}', 'row', $showKey);
         $columnProperties = collect($columnProperties)->filter(fn ($property) => !empty($property))->implode("\n\t\t\t\t\t\t");

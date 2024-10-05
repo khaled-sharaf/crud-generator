@@ -14,7 +14,7 @@ export default {
     
     methods: {
         getModel() {
-            this.$request('get').url(`{{ API_ROUTE_NAME }}/${this.modelId}`).send().then(res => {
+            this.$request('get').url(`{{ API_ROUTE_NAME }}/${this.modelId}`).params({__toForm: true}).send().then(res => {
                 this.model = res.data
             }).catch(err => {
                 if (err.statusCode == 404) {

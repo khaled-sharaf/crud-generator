@@ -160,8 +160,8 @@ class ShowGenerator extends FrontendGenerator
         $showKey = Field::getKeyShowInFront($field);
         if (!Field::hasKeyShowInFront($field)) {
             $lookupName = $this->getLookupName($name);
-            if (!Field::hasLookupFrontend($field) && Field::hasLookup($field) && !Field::isJson($field)) $showKey = "{$name}_view";
-            if (Field::hasRelation($field)) {
+            if (!Field::hasLookupFrontend($field) && Field::hasLookup($field) && !Field::isJson($field)) $showKey = "{model}.{$name}_view";
+            if (Field::hasRelation($field) && Field::hasLookupModel($field)) {
                 $relationName = Field::getRelationName($field);
                 $label = Field::getLookupModelLabel($field);
                 $showKey = "model.{$relationName}?.{$label}";

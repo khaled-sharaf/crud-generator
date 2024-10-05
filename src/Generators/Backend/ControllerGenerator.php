@@ -135,7 +135,7 @@ class ControllerGenerator extends BackendGenerator
         $relations = collect($this->getModelRelations())->filter(fn ($relation, $name) => ($relation['checkOnDelete'] ?? false))->toArray();
         if (!count($relations)) return '';
         $index = 0;
-        $check = "\n\t\t\${$this->modelNameCamel}Exists = {$this->modelName}::where('id', \$id)";
+        $check = "\n\t\t\${$this->modelNameCamel}Exists = {$this->modelName}::whereIn('id', request()->ids ?? [])";
         foreach ($relations as $name => $relation) {
             $method = $index == 0 ? 'has' : 'orHas';
             $check .= "->{$method}('{$name}')";

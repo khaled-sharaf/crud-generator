@@ -5,6 +5,7 @@ namespace W88\CrudSystem\Generators\Backend;
 use W88\CrudSystem\Generators\BackendGenerator;
 use Touhidurabir\StubGenerator\StubGenerator;
 use W88\CrudSystem\Facades\Field;
+use Illuminate\Support\Str;
 
 class ResourceGenerator extends BackendGenerator
 {
@@ -62,31 +63,102 @@ class ResourceGenerator extends BackendGenerator
 
     protected function getFieldsData(): string
     {
-        return collect($this->getNotHiddenFields())->map(function ($field, $name) {
-            $value = "\$this->{$name}";
-            if (Field::isTranslatable($field)) {
-                $value .= ",\n\t\t\t'{$name}_trans' => \$this->getTranslations('{$name}')";
-            } else if (Field::hasRelation($field)) {
-                $relation = Field::getRelationName($field);
-                if ($relation === $field['name']) {
-                    $value = "\$this->whenLoaded('{$relation}')";
-                } else {
-                    $value .= ",\n\t\t\t'{$relation}' => \$this->whenLoaded('{$relation}')";
-                }
-            } else if (!Field::hasLookupFrontend($field) && Field::hasLookup($field)) {
-                $lookup = "\\{$this->getConstantNamespace()}\\{$this->getConstantName($field)}";
-                if (Field::isJson($field)) {
-                    $value = "{$lookup}::getListForSelect(\$this->{$name})";
-                } else {
-                    $value .= ",\n\t\t\t'{$name}_view' => {$lookup}::get(\$this->{$name})";
-                }
-            } else if (Field::isMultiFile($field)) {
-                $value .= "Urls";
-            } else if (Field::hasFile($field) && !Field::isMultiFile($field)) {
-                $value .= "Url";
+        return collect($this->getNotHiddenFields())
+            ->map(function ($field, $name) {
+                return $this->getFieldData($field, $name);
+            })
+            ->implode(",\n\t\t\t") . $this->getTimestampsFields();
+    }
+
+    protected function getFieldData(array $field, string $name): string
+    {
+        $value = $this->getBaseFieldValue($field, $name);
+        $value = $this->applyTranslatableLogic($field, $name, $value);
+        $value = $this->applyRelationLogic($field, $name, $value);
+        $value = $this->applyLookupLogic($field, $name, $value);
+        $value = $this->applyFileLogic($field, $name, $value);
+
+        return "'$name' => $value";
+    }
+
+    protected function getBaseFieldValue(array $field, string $name): string
+    {
+        return "\$this->{$name}";
+    }
+
+    protected function applyTranslatableLogic(array $field, string $name, string $value): string
+    {
+        if (Field::isTranslatable($field)) {
+            return "request('__toForm') ? \$this->getTranslations('{$name}') : \$this->{$name}";
+        }
+        return $value;
+    }
+
+    protected function applyRelationLogic(array $field, string $name, string $value): string
+    {
+        if (Field::hasRelation($field)) {
+            $relationName = Field::getRelationName($field);
+            if (Field::hasLookupModel($field)) {
+                return $this->getLookupModelRelationValue($field, $relationName, $value);
+            } else {
+                return $this->getRegularRelationValue($name, $relationName, $value);
             }
-            return "'$name' => {$value}";
-        })->implode(",\n\t\t\t") . $this->getTimestampsFields();
+        }
+        return $value;
+    }
+
+    protected function getLookupModelRelationValue(array $field, string $relationName, string $value): string
+    {
+        $lookupValue = Field::getLookupModelValue($field);
+        $lookupLabel = Field::getLookupModelLabel($field);
+        $relation = isset($this->getModelRelations()[$relationName]['type']) ? $this->getModelRelations()[$relationName] : null;
+
+        if ($relation && in_array($relation['type'], ['belongsTo', 'hasOne'])) {
+            return "{$value},\n\t\t\t'{$relationName}' => \$this->whenLoaded('{$relationName}') ? [
+                '{$lookupValue}' => \$this->{$relationName}->{$lookupValue},
+                '{$lookupLabel}' => \$this->{$relationName}->{$lookupLabel}
+            ] : null";
+        } elseif ($relation && in_array($relation['type'], ['belongsToMany', 'morphToMany'])) {
+            $relationNameSingular = Str::singular($relationName);
+            return "\$this->whenLoaded('{$relationName}') ? (request('__toForm') ? \$this->{$relationName}->pluck('{$lookupValue}') : \$this->{$relationName}->map(fn (\${$relationNameSingular}) => [
+                '{$lookupValue}' => \${$relationNameSingular}->{$lookupValue},
+                '{$lookupLabel}' => \${$relationNameSingular}->{$lookupLabel},
+            ])) : []";
+        } else {
+            return "\$this->whenLoaded('{$relationName}')";
+        }
+    }
+
+    protected function getRegularRelationValue(string $name, string $relationName, string $value): string
+    {
+        if ($relationName === $name) {
+            return "\$this->whenLoaded('{$relationName}')";
+        } else {
+            return "{$value},\n\t\t\t'{$relationName}' => \$this->whenLoaded('{$relationName}')";
+        }
+    }
+
+    protected function applyLookupLogic(array $field, string $name, string $value): string
+    {
+        if (!Field::hasLookupFrontend($field) && Field::hasLookup($field)) {
+            $lookup = "\\{$this->getConstantNamespace()}\\{$this->getConstantName($field)}";
+            if (Field::isJson($field)) {
+                return "{$lookup}::getListForSelect(\$this->{$name})";
+            } else {
+                return "{$value},\n\t\t\t'{$name}_view' => {$lookup}::get(\$this->{$name})";
+            }
+        }
+        return $value;
+    }
+
+    protected function applyFileLogic(array $field, string $name, string $value): string
+    {
+        if (Field::isMultiFile($field)) {
+            return "{$value}Urls";
+        } elseif (Field::hasFile($field) && !Field::isMultiFile($field)) {
+            return "{$value}Url";
+        }
+        return $value;
     }
 
 }

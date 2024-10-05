@@ -44,7 +44,7 @@ export default {
     async created() {{{ GET_LOOKUPS }}
         this.$store.general.setSsrErrors(false)
         if (this.formType && this.formType == 'edit') {
-            this.modelId = this.modelEdit.id{{ TRANSLATION_FIELDS_IN_EDIT }}
+            this.modelId = this.modelEdit.id
             this.form = {...this.modelEdit}
         }{{ TRANSLATION_FIELDS_IN_CREATE }}
         this.ready = true

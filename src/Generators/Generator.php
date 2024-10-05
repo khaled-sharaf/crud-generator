@@ -145,6 +145,10 @@ abstract class Generator implements GeneratorInterface
                 'label' => 'Active',
                 'default' => $activationDefault,
                 'validation' => 'nullable|boolean',
+                'frontend' => [
+                    'visibleList' => true,
+                    'sortable' => true,
+                ],
             ];
         }
         return $fields;

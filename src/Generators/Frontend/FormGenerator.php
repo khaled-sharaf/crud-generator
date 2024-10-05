@@ -96,7 +96,7 @@ class FormGenerator extends FrontendGenerator
             'VALIDATION_FIELDS' => $this->getJsFormFieldsValidation(),
             'DECLARED_LOOKUPS' => $this->getJsDeclaredLookups(),
             'GET_LOOKUPS' => $this->getJsGetLookups(),
-            'TRANSLATION_FIELDS_IN_EDIT' => $this->getJsFormFieldsTranslationInEdit(),
+            // 'TRANSLATION_FIELDS_IN_EDIT' => $this->getJsFormFieldsTranslationInEdit(),
             'TRANSLATION_FIELDS_IN_CREATE' => $this->getJsFormFieldsTranslationInCreate(),
         ];
     }
