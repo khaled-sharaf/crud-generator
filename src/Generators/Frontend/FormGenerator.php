@@ -246,7 +246,7 @@ class FormGenerator extends FrontendGenerator
     {
         return collect($this->getFieldsVisibleInForm())->map(function ($field) {
             $default = Field::hasDefault($field) && (Field::isBoolean($field) || Field::hasConstant($field)) ? json_encode($field['default']) : ($field['type'] == 'editor' ? "''" : 'null');
-            $value = Field::isTranslatable($field) ? '{}' : (Field::isFrontArray($field) ? '[]' : $default);
+            $value = Field::isBackendTranslatable($field) ? '{}' : (Field::isFrontArray($field) ? '[]' : $default);
             return "\n\t\t\t\t{$field['name']}: {$value}";
         })->implode(',');
     }

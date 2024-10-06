@@ -173,8 +173,8 @@ return [
             'array' => [
                 'migration' => 'json',
                 'seeder' => '[]',
-                // 'stub_view' => 'arrayOfText',
-                // 'stub_form' => 'array',
+                'stub_view' => 'arrayOfText',
+                'stub_form' => 'array',
             ],
             'location' => [
                 'migration' => 'json',
@@ -189,6 +189,7 @@ return [
             'text' => 'json',
             'textarea' => 'json',
             'editor' => 'json',
+            'array' => 'json',
         ],
 
         /* ======================== File ======================== */

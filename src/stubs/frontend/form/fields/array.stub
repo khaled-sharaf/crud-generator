@@ -1,0 +1,12 @@
+
+                <!-- ================= {{ NAME }} ================= -->
+                <div class="{{ CLASS_FIELD }}"{{ SHOW_CONDITION }}>
+                    <ArrayOfText
+                        :form="form"
+                        type="{{ TYPE }}"
+                        name="{{ NAME }}"
+                        :dense="form.{{ NAME }}.length > 1"
+                        :label="$t('{{ LABEL }}')"{{ REQUIRED }}{{ TRANSLATABLE }}
+                    />
+                </div>
+                <!-- ================= ./{{ NAME }} ================= -->

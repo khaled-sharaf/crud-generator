@@ -224,6 +224,11 @@ abstract class Generator implements GeneratorInterface
         return collect($this->getFields())->filter(fn ($field) => Field::isTranslatable($field))->toArray();
     }
 
+    protected function getBackendTranslatableFields(): array
+    {
+        return collect($this->getFields())->filter(fn ($field) => Field::isBackendTranslatable($field))->toArray();
+    }
+
     /* ======================== Helpers ======================== */
 
     protected function removeLeadingTab($text, $countTabs = 1) {

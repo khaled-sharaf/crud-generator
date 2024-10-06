@@ -83,7 +83,7 @@ class ModelGenerator extends BackendGenerator
         $classesNeedUsing = $this->getClassesNeedUsing();
         $useClasses = [];
         if (count($this->getFileFields())) $useClasses[] = $classesNeedUsing['FileHelper'];
-        if (count($this->getTranslatableFields())) $useClasses[] = $classesNeedUsing['HasTranslations'];
+        if (count($this->getBackendTranslatableFields())) $useClasses[] = $classesNeedUsing['HasTranslations'];
         if ($this->hasSoftDeletes()) $useClasses[] = $classesNeedUsing['SoftDeletes'];
         if ($this->hasAddLogs()) $useClasses[] = $classesNeedUsing['ActivityLogHelper'];
         foreach ($this->getModelRelations() as $relation) {
@@ -154,7 +154,7 @@ class ModelGenerator extends BackendGenerator
     
     protected function getTranslatable(): string
     {
-        $translatableFields = $this->getTranslatableFields();
+        $translatableFields = $this->getBackendTranslatableFields();
         if (!count($translatableFields)) return '';
         $fields = collect($translatableFields)->map(function ($field, $name) {
             return "\n\t\t'{$name}'";   

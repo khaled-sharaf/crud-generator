@@ -4,7 +4,7 @@
                                         <div class="item">
                                             <div class="label" v-text="$t('{{ LABEL }}')"></div>
                                             <div class="value">
-                                                {{ model.{{ NAME }}.join(', ') }}
+                                                <ArrayOfTextView :list="model.{{ NAME }}" />
                                             </div>
                                         </div>
                                     </div>

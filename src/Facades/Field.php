@@ -96,6 +96,11 @@ class Field
         return isset($field['translatable']) && $field['translatable'] === true && isset(static::translatableFields()[$field['type']]);
     }
 
+    public static function isBackendTranslatable(array $field): bool
+    {
+        return isset($field['translatable']) && $field['translatable'] === true && $field['type'] !== 'array' && isset(static::translatableFields()[$field['type']]);
+    }
+
     public static function isJson(array $field): bool
     {
         return isset($field['type']) && array_key_exists($field['type'], static::jsonFields());
