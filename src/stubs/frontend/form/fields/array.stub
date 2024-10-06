@@ -6,7 +6,8 @@
                         type="{{ TYPE }}"
                         name="{{ NAME }}"
                         :dense="form.{{ NAME }}.length > 1"
-                        :label="$t('{{ LABEL }}')"{{ REQUIRED }}{{ TRANSLATABLE }}
+                        :label="$t('{{ LABEL }}')"
+                        item-label{{ REQUIRED }}{{ TRANSLATABLE }}
                     />
                 </div>
                 <!-- ================= ./{{ NAME }} ================= -->

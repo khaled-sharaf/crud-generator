@@ -311,7 +311,31 @@ class Field
 
     public static function hasValidation(array $field): bool
     {
-        return isset($field['validation']);
+        return collect($field)->filter(function ($value, $key) {
+            return Str::startsWith($key, 'validation') && !empty($value);
+        })->isNotEmpty();
+    }
+
+    public static function getValidationType(array $field): string
+    {
+        if ($field['type'] == 'array') {
+            $validationType = 'array';
+        } else if ($field['type'] == 'array_of_object') {
+            $validationType = 'array_of_object';
+        } else if (Field::isBackendTranslatable($field)) {
+            $validationType = 'translatable';
+        } else {
+            $validationType = collect($field)->filter(fn ($value, $key) => self::hasValidation($field))->keys()->map(function ($key) {
+                if (Str::endsWith($key, '.*')) {
+                    return 'array';
+                } else if (Str::contains($key, '.*.')) {
+                    return 'array_of_object';
+                } else if (Str::contains($key, '.')) {
+                    return 'object';
+                }
+            })->first();
+        }
+        return $validationType ?? 'string';
     }
 
     public static function getOptions(array $field): array

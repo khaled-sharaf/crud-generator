@@ -4,7 +4,7 @@
                     <ArrayOfObject
                         :list="form.{{ NAME }}"
                         :new-object="{}"
-                        label="$t('{{ LABEL }}')"{{ REQUIRED }}
+                        :label="$t('{{ LABEL }}')"{{ REQUIRED }}
                     >
                         <template v-slot="{ object, index }">
                             <div class="row">

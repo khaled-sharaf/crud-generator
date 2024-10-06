@@ -254,9 +254,35 @@ class FormGenerator extends FrontendGenerator
     protected function getJsFormFieldsValidation(): string
     {
         return collect($this->getFieldsVisibleInForm())->map(function ($field) {
-            if (Field::isNullable($field) || !Field::hasValidation($field)) return '';
-            return "\n\t\t\t\t{$field['name']}: 'required'";
+            $beforeValidation = "\n\t\t\t\t// ";
+            $validationValueFormat = $this->getValidationValueFormat($field);
+            return "{$beforeValidation}{$field['name']}: {$validationValueFormat}";
         })->filter(fn ($rule) => !empty($rule))->implode(',');
+    }
+
+    protected function getValidationValueFormat(array $field): string
+    {
+        $validationType = Field::getValidationType($field);
+        if ($validationType == 'array') {
+            return "this.\$vt.array(this.form.{$field['name']}.length, 'required')";
+        } else if ($validationType == 'array_of_object') {
+            return "this.\$vt.array(this.form.{$field['name']}.length, this.\$vt.object({
+                //     key1: 'required',
+                //     key2: 'required',
+                // }))";
+        } else if ($validationType == 'translatable') {
+            return "this.\$vt.object({
+                //     en: 'required',
+                //     ar: 'required',
+                // })";
+        } else if ($validationType == 'object') {
+            return "this.\$vt.object({
+                //     key1: 'required',
+                //     key2: 'required',
+                // })";
+        } else {
+            return "'required'";
+        }
     }
 
     protected function getJsFormFieldsTranslationInEdit(): string
