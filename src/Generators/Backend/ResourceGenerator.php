@@ -89,7 +89,9 @@ class ResourceGenerator extends BackendGenerator
     protected function applyTranslatableLogic(array $field, string $name, string $value): string
     {
         if (Field::isBackendTranslatable($field)) {
-            return "request('__toForm') ? \$this->getTranslations('{$name}') : \$this->{$name}";
+            $addFillAllLanguages = $field['type'] === 'editor' ? 'fillAllLanguages(' : '';
+            $closeFillAllLanguages = $field['type'] === 'editor' ? ')' : '';
+            return "request('__toForm') ? {$addFillAllLanguages}\$this->getTranslations('{$name}'){$closeFillAllLanguages} : \$this->{$name}";
         }
         return $value;
     }

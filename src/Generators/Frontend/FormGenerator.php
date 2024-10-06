@@ -95,9 +95,7 @@ class FormGenerator extends FrontendGenerator
             'API_ROUTE_NAME' => $this->getApiRouteName(),
             'VALIDATION_FIELDS' => $this->getJsFormFieldsValidation(),
             'DECLARED_LOOKUPS' => $this->getJsDeclaredLookups(),
-            'GET_LOOKUPS' => $this->getJsGetLookups(),
-            // 'TRANSLATION_FIELDS_IN_EDIT' => $this->getJsFormFieldsTranslationInEdit(),
-            'TRANSLATION_FIELDS_IN_CREATE' => $this->getJsFormFieldsTranslationInCreate(),
+            'GET_LOOKUPS' => $this->getJsGetLookups()
         ];
     }
 
@@ -283,20 +281,6 @@ class FormGenerator extends FrontendGenerator
         } else {
             return "'required'";
         }
-    }
-
-    protected function getJsFormFieldsTranslationInEdit(): string
-    {
-        return collect($this->getTranslatableFields())->map(function ($field) {
-            return "\n\t\t\tthis.modelEdit.{$field['name']} = this.modelEdit.{$field['name']}_trans";
-        })->implode('');
-    }
-
-    protected function getJsFormFieldsTranslationInCreate(): string
-    {
-        return collect($this->getTranslatableFields())->filter(fn ($field) => $field['type'] == 'editor')->map(function ($field) {
-            return "\n\t\tthis.languages.forEach(code => {\n\t\t\tthis.form.{$field['name']}[code] = this.form.{$field['name']}[code] ?? '';\n\t\t})";
-        })->implode('');
     }
 
 }
