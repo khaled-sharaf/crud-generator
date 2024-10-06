@@ -1,0 +1,21 @@
+
+                <!-- ================= {{ NAME }} ================= -->
+                <div class="{{ CLASS_FIELD }}"{{ SHOW_CONDITION }}>
+                    <ArrayOfObject
+                        :list="form.{{ NAME }}"
+                        :new-object="{}"
+                        label="$t('{{ LABEL }}')"{{ REQUIRED }}
+                    >
+                        <template v-slot="{ object, index }">
+                            <div class="row">
+                                <div class="col-12 col-md-6 col-padding">
+                                    <!-- Add your inputs here -->
+                                </div>
+                                <div class="col-12 col-md-6 col-padding">
+                                    <!-- Add your inputs here -->
+                                </div>
+                            </div>
+                        </template>
+                    </ArrayOfObject>
+                </div>
+                <!-- ================= ./{{ NAME }} ================= -->

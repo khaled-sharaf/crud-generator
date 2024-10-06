@@ -176,6 +176,12 @@ return [
                 'stub_view' => 'arrayOfText',
                 'stub_form' => 'array',
             ],
+            'array_of_object' => [
+                'migration' => 'json',
+                'seeder' => '[]',
+                'stub_view' => 'arrayOfText',
+                'stub_form' => 'arrayOfObject',
+            ],
             'location' => [
                 'migration' => 'json',
                 'seeder' => '[]',
