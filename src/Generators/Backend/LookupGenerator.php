@@ -75,7 +75,7 @@ class LookupGenerator extends BackendGenerator
     {
         $lookups = [];
         foreach ($this->getLookupFields() as $name => $field) {
-            $constantClass = '\\' . $this->getConstantNamespace() . '\\' . Str::studly($this->modelName . $name);
+            $constantClass = '\\' . $this->getConstantNamespace() . '\\' . $this->modelName . Str::studly($name);
             if (class_exists($constantClass)) {
                 $lookups[] = "Lookup::register({$constantClass}::class);";
             }
