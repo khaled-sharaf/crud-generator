@@ -117,7 +117,7 @@ abstract class BackendGenerator extends Generator
 
     protected function getPermissionsTranslated(): array
     {
-        $modelTitle = Str::title($this->modelNameKebab);
+        $modelTitle = Str::title(Str::replace('-', ' ', $this->modelNameKebab));
         $permissions = [
             "view-list-{$this->modelNameKebab}" => "View {$modelTitle} List"
         ];

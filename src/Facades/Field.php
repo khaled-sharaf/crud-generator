@@ -304,9 +304,14 @@ class Field
         return self::isFilterable($field) && self::hasFieldAllowedFilter($field) && self::hasConstant($field);
     }
 
+    public static function hasApiRoute(array $field): bool
+    {
+        return isset($field['route']) && is_string($field['route']);
+    }
+
     public static function hasBooleanRouteFilter(array $field): bool
     {
-        return self::isBoolean($field) && isset($field['route']) && is_string($field['route']);
+        return self::isBoolean($field) && self::hasApiRoute($field);
     }
 
     public static function hasValidation(array $field): bool

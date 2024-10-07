@@ -137,13 +137,14 @@ class ListGenerator extends FrontendGenerator
     protected function handleBodyCellBooleanField(array $field): string
     {
         $hasFilter = Field::isFilterable($field) ? ', true' : '';
-        $route = Field::hasBooleanRouteFilter($field) ? "\n\t\t\t\t\t\t@update:model-value=\"\$store.tableList.toggleBooleanInTables('{$this->modelNameCamelPlural}', props.row, '{$field['name']}', `{$this->getApiRouteName()}/\${props.row.id}/{$field['route']}`{$hasFilter})\"" : '';
-        $disable = $this->hasPermissions() ? "\n\t\t\t\t\t\t:disable=\"!\$can('{$field['route']}-{$this->modelNameKebab}')\"" : '';
+        $route = Field::hasBooleanRouteFilter($field) && Field::hasApiRoute($field) ? "\n\t\t\t\t\t\t@update:model-value=\"\$store.tableList.toggleBooleanInTables('{$this->modelNameCamelPlural}', props.row, '{$field['name']}', `{$this->getApiRouteName()}/\${props.row.id}/{$field['route']}`{$hasFilter})\"" : '';
+        $disable = $this->hasPermissions() && Field::hasApiRoute($field) ? "\n\t\t\t\t\t\t:disable=\"!\$can('{$field['route']}-{$this->modelNameKebab}')\"" : '';
+        $showKey = str_replace('{model}', 'row', Field::getKeyShowInFront($field));
         return "\n\t\t\t<!-- =========================== Body {$field['name']} =========================== -->
             <template v-slot:body-cell-{$field['name']}=\"props\">
                 <q-td :props=\"props\">
                     <q-toggle
-                        :model-value=\"props.row.{$field['name']}\"
+                        :model-value=\"props.{$showKey}\"
                         color=\"green-7\"
                         size=\"32px\"{$route}{$disable}
                     />
@@ -155,10 +156,11 @@ class ListGenerator extends FrontendGenerator
     {
         $lookupName = $this->getLookupName($field['name']);
         $hasLookupFrontend = Field::hasLookupFrontend($field);
-        $singleValue = $hasLookupFrontend ? "{$lookupName}.getByValue(props.row.{$field['name']})" : "props.row.{$field['name']}";
+        $showKey = str_replace('{model}', 'row', Field::getKeyShowInFront($field));
+        $singleValue = $hasLookupFrontend ? "{$lookupName}.getByValue(props.{$showKey})" : "props.{$showKey}";
         $multiValue = $hasLookupFrontend ? "{$lookupName}.getByValue(item)" : 'item';
         $addLabel = Field::isSingleConstant($field) ? ":label=\"{$singleValue}\"" :
-        "v-for=\"(item, index) in props.row.{$field['name']}\"\n\t\t\t\t\t\t:key=\"index\"\n\t\t\t\t\t\t:label=\"{$multiValue}\"";
+        "v-for=\"(item, index) in props.{$showKey}\"\n\t\t\t\t\t\t:key=\"index\"\n\t\t\t\t\t\t:label=\"{$multiValue}\"";
         return "\n\t\t\t<!-- =========================== Body {$field['name']} =========================== -->
             <template v-slot:body-cell-{$field['name']}=\"props\">
                 <q-td :props=\"props\">

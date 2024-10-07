@@ -56,8 +56,8 @@ class LangGenerator extends FrontendGenerator
 
     protected function getContentTemplate(): string
     {
-        $modelTitlePlural = Str::title($this->modelNameSnakePlural);
-        $modelTitle = Str::title($this->modelNameSnake);
+        $modelTitlePlural = Str::title(Str::replace('-', ' ', $this->modelNameKebabPlural));
+        $modelTitle = Str::title(Str::replace('-', ' ', $this->modelNameKebab));
         $content = "{$this->modelNameSnake}_crud: {\n\t\tlabel: '{$modelTitle} List',";
         $content .= $this->hasSoftDeletes() ? "\n\t\ttrash_label: 'Trash of {$modelTitlePlural}'," : '';
         $content .= $this->checkApiRoute('create') ? "\n\t\tcreate_{$this->modelNameSnake}: 'Create {$modelTitle}'," : '';

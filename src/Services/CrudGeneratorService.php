@@ -34,7 +34,7 @@ class CrudGeneratorService
         }
         $this->command->newLine();
         if ($generated == 'single') {
-            $this->command->info("  CRUD '{$crudName}' in module '{$moduleName}' has been successfully generated.");
+            $this->command->info("  CRUD [{$crudName}] in module [{$moduleName}] has been successfully generated.");
         } else if ($generated == 'all') {
             $this->command->info("  All CRUD generated successfully.");
         } else {

@@ -56,7 +56,7 @@ class LangGenerator extends BackendGenerator
 
     protected function getContentTemplate(): string
     {
-        $modelTitle = Str::title($this->modelNameSnakePlural);
+        $modelTitle = Str::title(Str::replace('-', ' ', $this->modelNameKebabPlural));
         $content = "'{$this->modelNameSnake}_crud' => [\n\t\t'label' => '{$modelTitle}',";
         $content .= $this->getPermissionsTemplate();
         $content .= $this->getValidationTemplate();

@@ -30,23 +30,22 @@ class MakeCrud extends Command
         }
 
         if (!File::exists($crudStubPath)) {
-            $this->print('error', "Stub file not found at path: {$crudStubPath}.");
+            $this->print('error', "Stub file not found at path: [{$crudStubPath}]");
             return;
         }
 
         if (!Module::has($this->module)) {
-            $this->print('error', "Module not found: {$this->module}.");
+            $this->print('error', "Module [{$this->module}] not found.");
             return;
         }
 
         $crud = Crud::whereName($crudName)->whereModule($this->module)->first();
         if ($crud) {
-            $this->print('error', "{$crudName} CRUD already exists.");
+            $this->print('error', "CRUD [{$crudName}] already exists.");
             return;
         }
         $fileName = $this->getFileName($crudName);
-        FacadesCrud::formatCommandInfo($this, "Creating {$crudName} CRUD");
-        $this->line(FacadesCrud::formatCommandRunGenerator($fileName, 'creating'));
+        FacadesCrud::formatCommandInfo($this, "Creating [{$crudName}] CRUD");
         $time = microtime(true) * 1000;
         (new StubGenerator)->from($crudStubPath, true)
         ->withReplacers($this->getReplacers())
