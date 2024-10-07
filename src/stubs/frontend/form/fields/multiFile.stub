@@ -1,12 +1,18 @@
 
                 <!-- ================= {{ NAME }} ================= -->
                 <div class="col-12 col-padding pb-5"{{ SHOW_CONDITION }}>
-                    <MultiUploader
-                        croping
-                        size-icon="25px"
-                        :form-files="form.{{ NAME }}"{{ MULTI_FILE_TYPE }}
-                        :label="$t('{{ LABEL }}')"
-                        icon="{{ FILE_ICON }}"
-                    />
+                    <v-field name="{{ NAME }}" :label="$t('{{ LABEL }}').toLowerCase()" v-slot="{ field, errorMessage }">
+                        <MultiUploader
+                            croping
+                            size-icon="25px"
+                            :max-size="2"
+                            :form-files="form.{{ NAME }}"{{ MULTI_FILE_TYPE }}
+                            :label="$t('{{ LABEL }}')"
+                            icon="{{ FILE_ICON }}"
+                            :error="Boolean(errorMessage)"
+                            :error-message="errorMessage"
+                            v-bind="field"
+                        />
+                    </v-field>
                 </div>
                 <!-- ================= ./{{ NAME }} ================= -->

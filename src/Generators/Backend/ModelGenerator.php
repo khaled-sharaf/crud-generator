@@ -145,8 +145,8 @@ class ModelGenerator extends BackendGenerator
         $filePaths = "\n\tpublic \$filePaths = [{$singlePath}{$multiPath}\n\t];\n";
         $fileCasts = collect($fileFields)->map(function ($field, $name) {
             $cast = Str::contains($field['type'], 'multi_') ? 'multi' : 'single';
-            $url = $cast == 'multi' ? 'Urls' : 'Url';
-            return "\n\t\t'{$name}' => '{$cast}', // call \$this->{$name}{$url}  or \$this->{$name}StringUrls";
+            $url = $cast == 'multi' ? "Urls or \$this->{$name}StringUrls" : 'Url';
+            return "\n\t\t'{$name}' => '{$cast}', // call \$this->{$name}{$url}";
         })->implode('');
         $fileCasts = "\n\tpublic \$fileCasts = [{$fileCasts}\n\t];";
         return $filePaths . $fileCasts;

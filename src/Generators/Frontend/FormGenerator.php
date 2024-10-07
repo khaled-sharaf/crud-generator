@@ -185,7 +185,7 @@ class FormGenerator extends FrontendGenerator
         return Field::hasFileImage($field) ? 'image' : (Field::hasFileVideo($field) ? 'video' : 'any');
     }
     
-    protected function getMultiFileType(array $field, $tabs = "\n\t\t\t\t\t\t"): string
+    protected function getMultiFileType(array $field, $tabs = "\n\t\t\t\t\t\t\t"): string
     {
         return Field::hasFileImage($field) ? "{$tabs}onlyImage" : (Field::hasFileVideo($field) ? "{$tabs}onlyVideo" : '');
     }

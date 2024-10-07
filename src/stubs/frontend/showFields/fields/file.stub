@@ -6,6 +6,7 @@
                                             <div{{ VALUE_CLASS }}>
                                                 <MediaViewer
                                                     :{{ NAME_OF_FILE_ATTR_IN_MEDIA_VIEWER }}="model.{{ NAME }}"
+                                                    {{ FILE_TYPE_IN_MEDIA_VIEWER }}
                                                 />
                                             </div>
                                         </div>

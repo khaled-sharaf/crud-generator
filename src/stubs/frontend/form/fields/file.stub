@@ -4,7 +4,7 @@
                     <label class="label-form">
                         {{ $t('{{ LABEL }}') }} {{ REQUIRED_HTML }}
                     </label>
-                    <v-field name="{{ NAME }}" :label="$t('{{ LABEL }}').toLowerCase()" v-slot="{ field }">
+                    <v-field name="{{ NAME }}" :label="$t('{{ LABEL }}').toLowerCase()" v-slot="{ field, errorMessage }">
                         <FileUploader
                             croping
                             file-type="{{ FILE_TYPE }}"
@@ -14,6 +14,8 @@
                             :form="form"
                             key-file-name="{{ NAME }}"
                             :label="$t('{{ LABEL }}')"
+                            :error="Boolean(errorMessage)"
+                            :error-message="errorMessage"
                             v-bind="field"
                         />
                     </v-field>

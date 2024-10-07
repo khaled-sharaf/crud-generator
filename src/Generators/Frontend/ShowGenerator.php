@@ -125,6 +125,7 @@ class ShowGenerator extends FrontendGenerator
             $fieldReplacers = collect($field)->only('name', 'label')->mapWithKeys(fn ($value, $key) => [strtoupper($key) => $value])->toArray();
             $fieldReplacers = array_merge($fieldReplacers, [
                 'NAME_OF_FILE_ATTR_IN_MEDIA_VIEWER' => $this->getFileNameOfFileAttrInMediaViewer($field),
+                'FILE_TYPE_IN_MEDIA_VIEWER' => $this->getFileTypeInMediaViewer($field),
                 'VALUE_OF_ITEM_IN_BADGE' => $this->getValueOfItemInBadge($field),
                 'TITLE_TRUE' => $this->getTitleTrue($field),
                 'TITLE_FALSE' => $this->getTitleFalse($field),
@@ -141,6 +142,12 @@ class ShowGenerator extends FrontendGenerator
     protected function getFileNameOfFileAttrInMediaViewer(array $field): string
     {
         return Field::isMultiFile($field) ? 'files' : 'file-one';
+    }
+
+    protected function getFileTypeInMediaViewer(array $field): string
+    {
+        $type = Field::hasFileImage($field) ? 'image' : (Field::hasFileVideo($field) ? 'video' : null);
+        return $type ? "file-type=\"{$type}\"" : '';
     }
 
     protected function getValueOfItemInBadge(array $field): string
