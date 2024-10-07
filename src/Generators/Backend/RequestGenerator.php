@@ -50,19 +50,21 @@ class RequestGenerator extends BackendGenerator
     protected function getReplacers(): array
     {
         $rules = $this->getRules();
+        $rules = $this->getRules();
         return [
             'CLASS_NAMESPACE' => $this->getLocalRequestNamespace(),
             'CLASS_NAME' => $this->getRequestName(),
             'TRANSLATION_PATH' => "{$this->moduleNameSnake}::view.{$this->modelNameSnake}_crud.validation",
             'RULES' => $rules,
-            'CUSTOM_RULES_WHEN_CREATE' => $this->getCustomRulesWhenCreate($rules),
-            'CUSTOM_RULES_WHEN_UPDATE' => $this->getCustomRulesWhenUpdate($rules),
+            'CUSTOM_RULES_WHEN_CREATE' => $this->getCustomRulesWhenCreate(),
+            'CUSTOM_RULES_WHEN_UPDATE' => $this->getCustomRulesWhenUpdate(),
             'USE_CLASSES' => $this->getUseClasses($rules),
         ];
     }
 
-    protected function getUseClasses(string $rules): string
+    protected function getUseClasses(): string
     {
+        $rules = implode(',', $this->getAllRules());
         if (strpos($rules, 'Rule::') !== false || strpos($rules, 'new Rule') !== false) {
             return "use Illuminate\Validation\Rule;\n";
         }
@@ -115,7 +117,7 @@ class RequestGenerator extends BackendGenerator
         })->map(fn($rule, $name) => "\n\t\t\t'{$name}' => $rule")->implode(',');
     }
 
-    protected function getCustomRulesWhenCreate(string $rules): string
+    protected function getCustomRulesWhenCreate(): string
     {
         $rules = collect($this->getAllRules())->filter(function ($rule, $name) {
             $field = $this->getFieldByName(Str::before($name, '.'));
@@ -124,7 +126,7 @@ class RequestGenerator extends BackendGenerator
         return $this->handleCustomRules($rules, 'POST');
     }
 
-    protected function getCustomRulesWhenUpdate(string $rules): string
+    protected function getCustomRulesWhenUpdate(): string
     {
         $rules = collect($this->getAllRules())->filter(function ($rule, $name) {
             $field = $this->getFieldByName(Str::before($name, '.'));
