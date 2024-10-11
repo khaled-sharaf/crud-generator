@@ -12,7 +12,7 @@ class ListGenerator extends FrontendGenerator
 
     public function checkBeforeGenerate(): bool
     {
-        return true;
+        return $this->hasDashboardApi();
     }
     
     public function generate(): void

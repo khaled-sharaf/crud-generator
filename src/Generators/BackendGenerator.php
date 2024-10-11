@@ -9,13 +9,6 @@ abstract class BackendGenerator extends Generator
 {
     
     /* ======================== Checks ======================== */
-    protected function hasClientApi(): bool
-    {
-        $clientApi = $this->config['clientApi'] ?? false;
-        if (is_array($clientApi)) $clientApi = count($clientApi) && !collect($clientApi)->every(fn ($route) => $route === false);
-        return boolval($clientApi);
-    }
-
     protected function hasAddLogs(): bool
     {
         return $this->config['options']['addLogs'] ?? false;
@@ -118,9 +111,8 @@ abstract class BackendGenerator extends Generator
     protected function getPermissionsTranslated(): array
     {
         $modelTitle = Str::title(Str::replace('-', ' ', $this->modelNameKebab));
-        $permissions = [
-            "view-list-{$this->modelNameKebab}" => "View {$modelTitle} List"
-        ];
+        $permissions = [];
+        if ($this->hasDashboardApi()) $permissions["view-list-{$this->modelNameKebab}"] = "View {$modelTitle} List";
         if ($this->hasTableExport()) $permissions["export-list-{$this->modelNameKebab}"] = "Export {$modelTitle} List";
         if ($this->checkApiRoute('show')) $permissions["view-{$this->modelNameKebab}"] = "View {$modelTitle}";
         if ($this->checkApiRoute('create')) $permissions["create-{$this->modelNameKebab}"] = "Create {$modelTitle}";

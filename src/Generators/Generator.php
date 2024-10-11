@@ -80,6 +80,21 @@ abstract class Generator implements GeneratorInterface
     }
 
     /* ======================== Checks ======================== */
+
+    protected function hasDashboardApi(): bool
+    {
+        $dashboardApi = $this->config['dashboardApi'] ?? false;
+        if (is_array($dashboardApi)) $dashboardApi = count($dashboardApi) && !collect($dashboardApi)->every(fn ($route) => $route === false);
+        return boolval($dashboardApi);
+    }
+
+    protected function hasClientApi(): bool
+    {
+        $clientApi = $this->config['clientApi'] ?? false;
+        if (is_array($clientApi)) $clientApi = count($clientApi) && !collect($clientApi)->every(fn ($route) => $route === false);
+        return boolval($clientApi);
+    }
+    
     protected function checkApiRoute($route, $type = 'dashboardApi'): bool|array
     {
         $checkClientApi = $type === 'clientApi' ? $this->allClientApiIsAllowed() : false;

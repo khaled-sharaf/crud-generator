@@ -14,7 +14,7 @@ class RouteGenerator extends BackendGenerator
 
     public function checkBeforeGenerate(): bool
     {
-        return true;
+        return $this->hasDashboardApi();
     }
     
     public function generate(): void
