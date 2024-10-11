@@ -362,7 +362,7 @@ class ListGenerator extends FrontendGenerator
             $options[] = "titleOfTrashList: this.\$t('{$this->frontendModuleName}.{$this->modelNameSnake}_crud.trash_label'),";
             $options[] = $hasPermissions ? "showIfTrashedList: this.\$can('view-trashed-{$this->modelNameKebab}-list')," : '';
         }
-        if ($hasPermissions) {
+        if ($hasPermissions && $this->checkApiRoute('delete')) {
             $deletePermission = "\n\t\t\t\t\tdelete: this.\$can('delete-{$this->modelNameKebab}'),";
             $forceDeletePermission = $hasSoftDeletes ? "\n\t\t\t\t\tforceDelete: this.\$can('force-delete-{$this->modelNameKebab}')," : '';
             $restorePermission = $hasSoftDeletes ? "\n\t\t\t\t\trestore: this.\$can('restore-{$this->modelNameKebab}')," : '';
