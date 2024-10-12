@@ -207,12 +207,12 @@ class FormGenerator extends FrontendGenerator
         return $field['type'] == 'multi_checkbox' ? 'checkbox' : 'radio';
     }
 
-    protected function getIsMultiSelect(array $field, $tabs = "\n\t\t\t\t\t\t\t"): string
+    protected function getIsMultiSelect(array $field, $tabs = "\n\t\t\t\t\t\t"): string
     {
         return $field['type'] == 'multi_select' ? "{$tabs}multiple" : '';
     }
 
-    protected function getIsUseChips(array $field, $tabs = "\n\t\t\t\t\t\t\t"): string
+    protected function getIsUseChips(array $field, $tabs = "\n\t\t\t\t\t\t"): string
     {
         return $field['type'] == 'multi_select' ? "{$tabs}use-chips" : '';
     }

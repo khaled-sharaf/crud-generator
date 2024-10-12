@@ -1,23 +1,13 @@
 
                 <!-- ================= {{ NAME }} ================= -->
                 <div class="{{ CLASS_FIELD }}"{{ SHOW_CONDITION }}>
-                    <v-field name="{{ NAME }}" :label="$t('{{ LABEL }}').toLowerCase()" v-slot="{ field, errorMessage }">
-                        <q-select
-                            v-model="form.{{ NAME }}"
-                            :options="{{ OPTIONS }}"
-                            v-bind="field"
-                            :error="Boolean(errorMessage)"
-                            :error-message="errorMessage"
-                            label-slot
-                            outlined
-                            map-options
-                            emit-value
-                            clearable{{ IS_MULTI_SELECT }}{{ IS_USE_CHIPS }}
-                        >
-                            <template v-slot:label>
-                                {{ $t('{{ LABEL }}') }} {{ REQUIRED_HTML }}
-                            </template>
-                        </q-select>
-                    </v-field>
+                    <FormSelect
+                        :form="form"
+                        :options="{{ OPTIONS }}"
+                        name="{{ NAME }}"
+                        validation-name="{{ NAME }}"
+                        :label="$t('{{ LABEL }}')"
+                        clearable{{ REQUIRED }}{{ IS_MULTI_SELECT }}{{ IS_USE_CHIPS }}
+                    />
                 </div>
                 <!-- ================= ./{{ NAME }} ================= -->
