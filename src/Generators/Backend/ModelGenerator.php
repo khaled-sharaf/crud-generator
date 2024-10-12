@@ -368,8 +368,7 @@ class ModelGenerator extends BackendGenerator
         $foreignKeyName = $this->makePolymorphic($singularName);
         $migrationFields = [
             "\$table->foreignId('{$singularName}_id')->constrained()->cascadeOnDelete();",
-            "\n\t\t\t\$table->unsignedBigInteger('{$foreignKeyName}_id');",
-            "\n\t\t\t\$table->string('{$foreignKeyName}_type');",
+            "\n\t\t\t\$table->morphs('{$foreignKeyName}');",
         ];
         return [
             'TABLE_NAME' => $tableName,
