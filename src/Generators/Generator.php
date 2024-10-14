@@ -204,6 +204,11 @@ abstract class Generator implements GeneratorInterface
         return collect($this->getFields())->filter(fn ($field) => Field::hasBooleanFilter($field))->toArray();
     }
 
+    protected function getDateFilterFields(): array
+    {
+        return collect($this->getFields())->filter(fn ($field) => Field::hasDateFilter($field))->toArray();
+    }
+
     protected function getConstantFilterFields(): array
     {
         return collect($this->getFields())->filter(fn ($field) => Field::hasConstantFilter($field))->toArray();

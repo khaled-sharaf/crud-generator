@@ -283,6 +283,11 @@ class Field
     {
         return $field['type'] === 'boolean' && isset($field['filter']) && $field['filter'] === true;
     }
+
+    public static function hasDateFilter(array $field): bool
+    {
+        return self::isDate($field) && isset($field['filter']) && $field['filter'] === true;
+    }
     
     public static function isSingleConstant(array $field): bool
     {

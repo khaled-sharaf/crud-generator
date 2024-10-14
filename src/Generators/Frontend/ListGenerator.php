@@ -125,6 +125,9 @@ class ListGenerator extends FrontendGenerator
         foreach ($booleanFields as $field) {
             $filters[] = $this->handleFilterBooleanField($field);
         }
+        foreach ($this->getDateFilterFields() as $field) {
+            $filters[] = $this->handleFilterDateField($field);
+        }
         foreach ($this->getConstantFilterFields() as $field) {
             $filters[] = $this->handleFilterConstantField($field);
         }
@@ -185,6 +188,18 @@ class ListGenerator extends FrontendGenerator
                     :filters=\"filters.options\"
                     filterName=\"{$name}\"
                     :label=\"\$t('{$label}')\"{$trueTitle}{$falseTitle}{$nullable}
+                />";
+    }
+
+    protected function handleFilterDateField(array $field): string
+    {
+        $name = $field['name'];
+        $label = $this->getLangPath("table.{$name}");
+        return "\n\t\t\t\t<!-- ================= Filter By {$name} ================= -->
+                <FilterDate
+                    :filters=\"filters.options\"
+                    filterName=\"{$name}\"
+                    :label=\"\$t('{$label}')\"
                 />";
     }
 

@@ -170,7 +170,12 @@ class ServiceGenerator extends BackendGenerator
         }
         if ($this->hasTableSearch()) $filters[] = "\App\Filters\Search\TableSearchText::class";
         if ($this->hasSoftDeletes()) $filters[] = "\App\Filters\Boolean\Trashed::class";
-        if ($this->hasTableFilter()) $filters = array_merge($filters, $this->getBooleanFilters(), $this->getConstantFilters());
+        if ($this->hasTableFilter()) $filters = array_merge(
+            $filters,
+            $this->getBooleanFilters(),
+            $this->getDateFilters(),
+            $this->getConstantFilters()
+        );
         return count($filters) ? ',' . collect($filters)->map(fn ($filter) => "\n\t\t\t" . $filter)->implode(',') : '';
     }
 
@@ -182,6 +187,16 @@ class ServiceGenerator extends BackendGenerator
         if ($activationRouteOption) array_unshift($fieldNames, $activationRouteOption['column'] ?? 'is_active');
         foreach ($fieldNames as $fieldName) {
             $filters[] = "new \App\Filters\Boolean\ToggleBoolean('{$fieldName}')";
+        }
+        return $filters;
+    }
+
+    protected function getDateFilters(): array
+    {
+        $filters = [];
+        $fieldNames = collect($this->getDateFilterFields())->pluck('name')->toArray();
+        foreach ($fieldNames as $fieldName) {
+            $filters[] = "new \App\Filters\Date\Date('{$fieldName}')";
         }
         return $filters;
     }
