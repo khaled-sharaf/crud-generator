@@ -122,7 +122,7 @@ class RouteGenerator extends BackendGenerator
     protected function getRouteResourceTemplate(): string
     {
         $methods = $this->getExcludedOrOnlyMethods();
-        return "Route::apiResource('{$this->modelNameKebabPlural}', {$this->getControllerName()}::class){$methods};\n";
+        return "Route::apiResource('{$this->modelNameKebabPlural}', {$this->getControllerName()}::class){$methods};\n\n";
     }
 
     protected function getRouteActivationTemplate(): string
