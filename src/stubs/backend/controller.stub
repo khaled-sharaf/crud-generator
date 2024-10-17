@@ -7,11 +7,10 @@ use App\Http\Controllers\Controller;
 
 class {{ CLASS_NAME }} extends Controller
 {
-    protected ${{ SERVICE_NAME_CAMEL }};
 
-    public function __construct({{ SERVICE_NAME }} ${{ SERVICE_NAME_CAMEL }})
-    {
-        {{ PERMISSIONS }}$this->{{ SERVICE_NAME_CAMEL }} = ${{ SERVICE_NAME_CAMEL }};
+    public function __construct(
+        protected {{ SERVICE_NAME }} ${{ SERVICE_NAME_CAMEL }}
+    ) {}
     }{{ METHODS }}
 
 }
