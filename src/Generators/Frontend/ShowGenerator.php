@@ -180,7 +180,7 @@ class ShowGenerator extends FrontendGenerator
 
     protected function getClassField(array $field): string
     {
-        $class = 'col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2';
+        $class = 'col-12 col-sm-6 col-lg-4';
         $isFullWidth = Field::isFullWidth($field) || Field::isMultiFile($field);
         if ($isFullWidth) {
             $class = 'col-12';
