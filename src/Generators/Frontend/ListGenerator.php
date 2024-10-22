@@ -160,8 +160,8 @@ class ListGenerator extends FrontendGenerator
         $lookupName = $this->getLookupName($field['name']);
         $hasLookupFrontend = Field::hasLookupFrontend($field);
         $showKey = str_replace('{model}', 'row', Field::getKeyShowInFront($field));
-        $singleValue = $hasLookupFrontend ? "{$lookupName}.getByValue(props.{$showKey})" : "props.{$showKey}";
-        $multiValue = $hasLookupFrontend ? "{$lookupName}.getByValue(item)" : 'item';
+        $singleValue = $hasLookupFrontend ? "{$lookupName}.getByValue(props.{$showKey})?.label" : "props.{$showKey}";
+        $multiValue = $hasLookupFrontend ? "{$lookupName}.getByValue(item)?.label" : 'item';
         $addLabel = Field::isSingleConstant($field) ? ":label=\"{$singleValue}\"" :
         "v-for=\"(item, index) in props.{$showKey}\"\n\t\t\t\t\t\t:key=\"index\"\n\t\t\t\t\t\t:label=\"{$multiValue}\"";
         return "\n\t\t\t<!-- =========================== Body {$field['name']} =========================== -->
@@ -169,7 +169,8 @@ class ListGenerator extends FrontendGenerator
                 <q-td :props=\"props\">
                     <q-badge
                         {$addLabel}
-                        class=\"px-2 py-1 bg-primary\"
+                        class=\"px-2 py-1\"
+                        color=\"primary\"
                         rounded
                     />
                 </q-td>

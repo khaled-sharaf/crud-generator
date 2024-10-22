@@ -156,7 +156,7 @@ class ShowGenerator extends FrontendGenerator
         $value = 'item';
         $relationLabel = Field::getLookupModelLabel($field);
         if (!Field::hasLookupFrontend($field) && Field::hasLookup($field) && Field::isJson($field)) $value = "item.label";
-        if (Field::hasLookupFrontend($field)) $value = "{$lookupName}.getByValue(item)";
+        if (Field::hasLookupFrontend($field)) $value = "{$lookupName}.getByValue(item)?.label";
         if (Field::hasRelation($field)) $value = "item.{$relationLabel}";
         return $value;
     }
@@ -175,7 +175,7 @@ class ShowGenerator extends FrontendGenerator
             }
         }
         $showKey = str_replace('{model}', 'model', $showKey);
-        return Field::hasLookupFrontend($field) ? "{$lookupName}.getByValue($showKey)" : $showKey;
+        return Field::hasLookupFrontend($field) ? "{$lookupName}.getByValue($showKey)?.label" : $showKey;
     }
 
     protected function getClassField(array $field): string

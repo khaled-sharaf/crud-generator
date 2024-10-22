@@ -179,7 +179,7 @@ class Field
 
     public static function getLookupModelRouteName(array $field): string
     {
-        return is_string($field['lookupModel']) ? $field['lookupModel'] : Str::singular(str_replace('_id', '', $field['name'])) . '-list';
+        return is_string($field['lookupModel']) ? $field['lookupModel'] : Str::kebab(Str::singular(str_replace('_id', '', $field['name']))) . '-list';
     }
 
     public static function getLookupModelName(array $field): string
