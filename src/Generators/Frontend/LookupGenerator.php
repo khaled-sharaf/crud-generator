@@ -12,7 +12,7 @@ class LookupGenerator extends FrontendGenerator
 
     public function checkBeforeGenerate(): bool
     {
-        return count($this->getFieldsHasLookupFrontend());
+        return $this->hasDashboardApi() && count($this->getFieldsHasLookupFrontend());
     }
     
     public function generate(): void
