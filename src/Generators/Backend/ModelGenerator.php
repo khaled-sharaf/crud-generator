@@ -264,7 +264,7 @@ class ModelGenerator extends BackendGenerator
     protected function morphRelationHandler($relation): string
     {
         if (!$relation['model']) return '';
-        $name = $this->makePolymorphic(Str::singular($relation['name']));
+        $name = $relation['morphName'] ?? Str::snake($this->makePolymorphic(Str::singular($relation['name'])));
         return "{$relation['type']}({$relation['model']}, '{$name}')";
     }
 
@@ -276,7 +276,7 @@ class ModelGenerator extends BackendGenerator
     protected function morphedByManyRelationHandler($relation): string
     {
         if (!$relation['model']) return '';
-        $name = $this->makePolymorphic($this->modelNameSnake);
+        $name = $relation['morphName'] ?? $this->makePolymorphic($this->modelNameSnake);
         $table = $relation['table'] ?? null;
         $foreignKey = $relation['foreignKey'] ?? null;
         $localKey = $relation['localKey'] ?? null;
@@ -289,7 +289,9 @@ class ModelGenerator extends BackendGenerator
     protected function generateMigrationRelation($relation, $index): void
     {
         $type = $relation['type'];
-        if (in_array($type, ['morphToMany', 'belongsToMany'])) {
+        $morphRelations = ['morphOne', 'morphMany', 'morphToMany'];
+        if (in_array($type, ['morphOne', 'morphMany', 'morphToMany', 'belongsToMany'])) {
+            $type = in_array($type, $morphRelations) ? 'morph' : $type;
             $this->{"{$type}MigrationHandler"}($relation, $index);
         }
     }
@@ -303,11 +305,11 @@ class ModelGenerator extends BackendGenerator
         $this->generateMigrationRelationFile($fileName, $replacers);
     }
 
-    protected function morphToManyMigrationHandler($relation, $index): void
+    protected function morphMigrationHandler($relation, $index): void
     {
-        $tableName = Str::snake(Str::plural($this->makePolymorphic(Str::singular($relation['name']))));
+        $tableName = $relation['table'] ?? Str::snake(Str::plural($this->makePolymorphic(Str::singular($relation['name']))));
         $fileName = $this->getRelationMigrationFileName($tableName, $this->morphToManyMigrationName, $index);
-        $replacers = $this->getMorphToManyReplacers($tableName, $relation);
+        $replacers = $this->getMorphReplacers($tableName, $relation, $relation['pivot'] ?? []);
         $this->generateMigrationRelationFile($fileName, $replacers);
     }
 
@@ -340,35 +342,46 @@ class ModelGenerator extends BackendGenerator
         return implode('_', $segments);
     }
 
+    protected function handlePivots(array $pivots = []): array
+    {
+        $pivotFields = [];
+        foreach ($pivots as $key => $pivot) {
+            $params = $pivot['params'] ?? [];
+            $appendParams = count($params) ? ', ' . collect($params)->map(fn($value) => json_encode($value))->implode(', ') : '';
+            $definition = "\n\t\t\t\$table->{$pivot['type']}('{$key}'{$appendParams})";
+
+            if (isset($pivot['nullable']) && $pivot['nullable'] === true) $definition .= '->nullable()';
+            if (isset($pivot['default']) && $pivot['default'] !== null) {
+                $default = is_bool($pivot['default']) || is_numeric($pivot['default']) ? json_encode($pivot['default']) : "'{$pivot['default']}'";
+                $definition .= "->default({$default})";
+            }
+            $pivotFields[] = $definition . ';';
+        }
+        return $pivotFields;
+    }
+
     protected function getBelongsToManyReplacers($tableName, $tableNameConvention, $pivots = []): array
     {
         [$key1, $key2] = explode('_', $tableNameConvention);
         $migrationFields = [
             "\$table->foreignId('{$key1}_id')->constrained()->cascadeOnDelete();",
             "\n\t\t\t\$table->foreignId('{$key2}_id')->constrained()->cascadeOnDelete();",
+            ...$this->handlePivots($pivots),
         ];
-        foreach ($pivots as $key => $pivot) {
-            $field = "\n\t\t\t\$table->{$pivot['type']}('{$key}')";
-            if (isset($pivot['nullable']) && $pivot['nullable'] === true) $field .= '->nullable()';
-            if (isset($pivot['default']) && $pivot['default'] !== null) {
-                $default = is_bool($pivot['default']) || is_numeric($pivot['default']) ? json_encode($pivot['default']) : "'{$pivot['default']}'";
-                $field .= "->default({$default})";
-            }
-            $migrationFields[] = $field . ';';
-        }
         return [
             'TABLE_NAME' => $tableName,
             'FIELDS' => implode("", $migrationFields),
         ];
     }
 
-    protected function getMorphToManyReplacers($tableName, $relation): array
+    protected function getMorphReplacers($tableName, $relation, $pivots = []): array
     {
         $singularName = Str::snake(Str::singular($relation['name']));
-        $foreignKeyName = $this->makePolymorphic($singularName);
+        $foreignKeyName = $relation['morphName'] ?? $this->makePolymorphic($singularName);
         $migrationFields = [
             "\$table->foreignId('{$singularName}_id')->constrained()->cascadeOnDelete();",
             "\n\t\t\t\$table->morphs('{$foreignKeyName}');",
+            ...$this->handlePivots($pivots),
         ];
         return [
             'TABLE_NAME' => $tableName,

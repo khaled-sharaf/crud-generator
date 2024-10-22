@@ -65,7 +65,7 @@ return [
             // 'migrationParams' => [8, 2],
             // 'translatable' => true,
             // 'validation' => 'required', // or 'validation.*', 'validation.*.objectKey'
-            // 'route' => 'toggle-display',
+            // 'route' => 'toggle-display', // only for boolean type
             // 'options' => [
             //     'key_and_value' => 'Title', // 'key and value' => label
             // ],
@@ -101,7 +101,7 @@ return [
                 'sortable' => true,
                 'exportable' => true, // optional - add field to table export in csv file
                 'searchable' => true, // optional - add field to table search
-                // 'advancedSearchable' => true, // optional - add field to advanced search
+                'advancedSearchable' => true, // optional - add field to advanced search
                 // 'searchableName' => 'name', // optional - name of field in database
                 // 'advancedSearchName' => 'name', // optional - name of field in database
 
@@ -138,6 +138,7 @@ return [
         //     'type' => 'belongsToMany',
         //     'model' => 'Modules\Website\app\Models\Tag',
         //     'addMigrationFile' => true, // optional - add migration file
+        //     'morphName' => 'postable', // optional - with relations: morphOne, morphMany, morphToMany, morphedByMany
         //     'table' => 'post_tag', // optional
         //     'foreignKey' => 'post_id', // optional
         //     'localKey' => 'tag_id', // optional
@@ -147,6 +148,7 @@ return [
         //     'pivot' => [ // optional
         //         'active' => [ // pivot table column name
         //             'type' => 'boolean', // pivot table column type
+        //             'params' => [8, 2], // pivot table column params
         //             'nullable' => true, // pivot table column nullable (Default false)
         //             'default' => false, // pivot table column default value
         //         ],

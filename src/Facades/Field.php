@@ -163,7 +163,8 @@ class Field
     
     public static function getFilterRelation(array $field): string
     {
-        return $field['filterRelationName'] ?? null;
+        $relationName = Str::camel(str_replace('_id', '', $field['name']));
+        return $field['filterRelationName'] ?? $relationName;
     }
 
     public static function getFilterRelationColumnName(array $field): string
