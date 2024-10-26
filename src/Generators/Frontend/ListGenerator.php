@@ -218,14 +218,11 @@ class ListGenerator extends FrontendGenerator
         $label = $this->getLangPath("table.{$name}");
         return "\n\t\t\t\t<!-- ================= Filter By {$name} ================= -->
                 <div class=\"mt-4\">
-                    <q-select
+                    <SelectOption
                         v-model=\"filters.options.{$name}\"
                         :label=\"\$t('{$label}')\"
                         :options=\"{$lookupName}\"
-                        outlined
                         dense
-                        emit-value
-                        map-options
                         clearable
                     />
                 </div>";
@@ -239,25 +236,18 @@ class ListGenerator extends FrontendGenerator
         $label = $this->getLangPath("table.{$name}");
         $isCheckbox = str_replace('multi_', '', $field['type']) === 'checkbox';
         $checkboxFilter = "<div class=\"mt-4\">
-                    <div class=\"filter-section-label\" v-text=\"\$t('{$label}')\"></div>
-                    <q-option-group
+                    <FilterOptions
                         v-model=\"filters.options.{$name}\"
                         :options=\"{$lookupName}\"
-                        dense
-                        inline
-                        type=\"checkbox\"
-                        class=\"px-1\"
+                        :label=\"\$t('{$label}')\"
                     />
                 </div>";
         $selectFilter = "<div class=\"mt-4\">
-                    <q-select
+                    <SelectOption
                         v-model=\"filters.options.{$name}\"
                         :label=\"\$t('{$label}')\"
                         :options=\"{$lookupName}\"
-                        outlined
                         dense
-                        emit-value
-                        map-options
                         clearable
                         use-chips
                         multiple
@@ -276,14 +266,11 @@ class ListGenerator extends FrontendGenerator
         $multiple = Field::getFilter($field) == 'multi' ? "\n\t\t\t\t\t\tmultiple\n\t\t\t\t\t\tuse-chips" : '';
         return "\n\t\t\t\t<!-- ================= Filter By {$name} ================= -->
                 <div class=\"mt-4\">
-                    <q-select
+                    <SelectOption
                         v-model=\"filters.options.{$name}\"
                         :label=\"\$t('{$label}')\"
                         :options=\"{$lookupName}\"
-                        outlined
                         dense
-                        emit-value
-                        map-options
                         clearable{$multiple}
                     />
                 </div>";
