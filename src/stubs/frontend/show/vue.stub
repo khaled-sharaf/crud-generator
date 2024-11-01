@@ -1,6 +1,6 @@
 <template>
     <div>
-        <PageTitle>
+        <PageTitle :modelId="modelId">
             <template #actions>
                 {{ ACTIONS }}
             </template>
