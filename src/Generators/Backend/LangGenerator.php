@@ -79,7 +79,8 @@ class LangGenerator extends BackendGenerator
     {
         $validation = "\n\t\t'validation' => [";
         $validation .= collect($this->getNotHiddenFields())->map(function ($field, $name) {
-            return "\n\t\t\t'{$name}' => '{$field['label']}',";
+            $label = strtolower($field['label']);
+            return "\n\t\t\t'{$name}' => '{$label}',";
         })->join('');
         return $validation . "\n\t\t],";
     }
