@@ -157,7 +157,7 @@ abstract class Generator implements GeneratorInterface
         if ($activationRouteOption) {
             $fields[$activationColumn] = [
                 'type' => 'boolean',
-                'label' => 'Active',
+                'label' => 'Activation',
                 'default' => $activationDefault,
                 'validation' => 'nullable|boolean',
                 'frontend' => [
