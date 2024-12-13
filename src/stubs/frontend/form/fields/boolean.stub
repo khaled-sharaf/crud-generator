@@ -1,7 +1,7 @@
 
                 <!-- ================= {{ NAME }} ================= -->
                 <div class="{{ CLASS_FIELD }} pb-5"{{ SHOW_CONDITION }}>
-                    <label class="label-form">
+                    <label class="label-form block">
                         {{ $t('{{ LABEL }}') }}
                     </label>
                     <q-toggle
