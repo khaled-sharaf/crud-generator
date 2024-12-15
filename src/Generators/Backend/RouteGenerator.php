@@ -53,7 +53,7 @@ class RouteGenerator extends BackendGenerator
         if ($this->checkApiRoute('list', $this->routeApiType . 'Api') || $this->routeApiType === 'dashboard') $methods[] = 'index';
         if ($this->checkApiRoute('create', $this->routeApiType . 'Api')) $methods[] = 'store';
         if ($this->checkApiRoute('edit', $this->routeApiType . 'Api')) $methods[] = 'update';
-        if ($this->checkApiRoute('show', $this->routeApiType . 'Api')) $methods[] = 'show';
+        if ($this->checkApiRoute('show', $this->routeApiType . 'Api') || $this->checkApiRoute('edit', $this->routeApiType . 'Api')) $methods[] = 'show';
         if ($this->checkApiRoute('delete', $this->routeApiType . 'Api')) $methods[] = 'destroy';
         return $methods;
     }
