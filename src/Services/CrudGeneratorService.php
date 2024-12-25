@@ -11,9 +11,9 @@ use Illuminate\Console\Command;
 class CrudGeneratorService
 {
 
-    public function __construct(private Command $command) {
-
-    }
+    public function __construct(
+        private Command $command
+    ) {}
 
 
     public function generate(string $moduleName = null, string $crudName = null, bool $force = false)

@@ -28,14 +28,14 @@ class LangGenerator extends FrontendGenerator
 
     protected function getFilePath(): string
     {
-        return $this->getGeneratorDirectory() . '/en.js';
+        return $this->getGeneratorDirectory() . '/en.json';
     }
 
     protected function ensureFileExists(): void
     {
         $filePath = $this->getFilePath();
         if (!File::exists($filePath)) {
-            File::put($filePath, "export default {\n\n}");
+            File::put($filePath, "{}");
         }
     }
 
@@ -43,56 +43,60 @@ class LangGenerator extends FrontendGenerator
     {
         $filePath = $this->getFilePath();
         $contentFile = File::get($filePath);
-        $contentTemplate = $this->getContentTemplate();
-        if (strpos($contentFile, $contentTemplate) === false) {
-            $pattern = '/\s*\}$/';
-            $comma = ',';
-            if (preg_match('/,\s*\}$/', $contentFile)) $pattern = '/,\s*\}$/';
-            if (preg_match('/export default \{\s*\}$/', $contentFile)) $comma = '';
-            $contentFile = preg_replace($pattern, $comma . "\n\n\t". $contentTemplate . "\n}", $contentFile);
-            File::put($filePath, $contentFile);
-        }
+        $contentFile = json_decode($contentFile, true);
+        $newContent = $this->getContentTemplate();
+        $contentFile = array_merge($contentFile, $newContent);
+        File::put($filePath, json_encode($contentFile, JSON_PRETTY_PRINT));
     }
 
-    protected function getContentTemplate(): string
+    protected function getContentTemplate(): array
     {
         $modelTitlePlural = Str::title(Str::replace('-', ' ', $this->modelNameKebabPlural));
         $modelTitle = Str::title(Str::replace('-', ' ', $this->modelNameKebab));
-        $content = "{$this->modelNameSnake}_crud: {\n\t\tlabel: '{$modelTitle} List',";
-        $content .= $this->hasSoftDeletes() ? "\n\t\ttrash_label: 'Trash of {$modelTitlePlural}'," : '';
-        $content .= $this->checkApiRoute('create') ? "\n\t\tcreate_{$this->modelNameSnake}: 'Create {$modelTitle}'," : '';
-        $content .= $this->checkApiRoute('edit') ? "\n\t\tedit_{$this->modelNameSnake}: 'Edit {$modelTitle}'," : '';
-        $content .= $this->checkApiRoute('show') ? "\n\t\tview_{$this->modelNameSnake}: 'View {$modelTitle}'," : '';
-        $content .= $this->getFormTemplate();
-        $content .= $this->getLookupTemplate();
-        return $content . "\n\t},\n";
+        $content = [
+            'label' => "{$modelTitle} List",
+        ];
+        if ($this->hasSoftDeletes()) {
+            $content['trash_label'] = "Trash of {$modelTitlePlural}";
+        }
+        if ($this->checkApiRoute('create')) {
+            $content['create_' . $this->modelNameSnake] = "Create {$modelTitle}";
+        }
+        if ($this->checkApiRoute('edit')) {
+            $content['edit_' . $this->modelNameSnake] = "Edit {$modelTitle}";
+        }
+        if ($this->checkApiRoute('show')) {
+            $content['view_' . $this->modelNameSnake] = "View {$modelTitle}";
+        }
+        $content['table'] = $this->getFormTemplate();
+        $content['lookups'] = $this->getLookupTemplate();
+        return ["{$this->modelNameSnake}_crud" => $content];
     }
 
-    protected function getFormTemplate(): string
+    protected function getFormTemplate(): array
     {
-        $validation = "\n\t\ttable: {";
-        $validation .= collect($this->getNotHiddenFields())->map(function ($field, $name) {
-            return "\n\t\t\t{$name}: '{$field['label']}'";
-        })->join(',');
-        return $validation . "\n\t\t},";
+        $table = [];
+        foreach ($this->getNotHiddenFields() as $name => $field) {
+            $table[$name] = $field['label'];
+        }
+        return $table;
     }
 
-    protected function getLookupTemplate(): string
+    protected function getLookupTemplate(): array
     {
         $constantFields = $this->getFieldsHasLookupFrontend();
-        if (empty($constantFields)) return '';
-        $constants = "\n\t\tlookups: {";
+        if (empty($constantFields)) return [];
+        $lookups = [];
         foreach ($constantFields as $fieldName => $field) {
             $fieldName = strtolower(Str::snake($fieldName));
-            $constants .= "\n\t\t\t{$fieldName}: {";
+            $lookups[$fieldName] = [];
             foreach (Field::getOptions($field) as $key => $value) {
                 $key = strtolower(Str::snake($key));
                 $value = $value['label'] ?? $value;
-                $constants .= "\n\t\t\t\t{$key}: '{$value}',";
+                $lookups[$fieldName][$key] = $value;
             }
-            $constants .= "\n\t\t\t},";
         }
-        return $constants . "\n\t\t},";
+        return $lookups;
     }
 
 }
