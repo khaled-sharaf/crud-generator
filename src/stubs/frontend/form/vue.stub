@@ -11,7 +11,7 @@
                 <SsrError />
             </q-card-section>
 
-            <q-card-section align="right">
+            <q-card-section class="flex justify-end">
                 <q-btn :color="formType == 'edit' ? 'teal' : 'primary'" :label="$t(formType == 'edit' ? 'update' : 'create')" @click="createOrUpdate(validate, resetForm)" />
             </q-card-section>
         </v-form>
