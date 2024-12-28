@@ -14,23 +14,33 @@ export default {
         return {
             ready: false,
             modelId: null,
+            originalForm: {},
             form: {{{ FIELDS }}
             },{{ DECLARED_LOOKUPS }}
         }
     },
 
     methods: {
-        createOrUpdate(validate, resetForm) {
+        createOrUpdate(validate, resetForm, afterSubmit = 'noKeep') {
             validate().then(({valid, errors}) => {
                 if (valid) {
                     const method = this.formType == 'edit' ? 'put{{ FORMDATA_TYPE }}' : 'post{{ FORMDATA_TYPE }}'
                     const url = `{{API_ROUTE_NAME}}${this.formType == 'edit' ? `/${this.form.id}` : ''}`
                     this.$request(method).url(url).body(this.form).loadingPage().send().then(res => {
                         resetForm()
-                        this.$emit('submited', res)
+                        this.resetFormValue()
+                        this.$emit('submit', {afterSubmit, res})
+                        if (afterSubmit === 'noKeep') {
+                            this.$emit('submited', {afterSubmit, res})
+                        }
                     })
                 }
             })
+        },
+
+        resetFormValue() {
+            if (this.formType == 'edit') return
+            this.form = this.$cloneArrayOfObject(this.originalForm)
         },
     },
 
@@ -43,6 +53,7 @@ export default {
 
     async created() {{{ GET_LOOKUPS }}
         this.$store.general.setSsrErrors(false)
+        this.originalForm = this.$cloneArrayOfObject(this.form)
         if (this.formType && this.formType == 'edit') {
             this.modelId = this.modelEdit.id
             this.form = {...this.modelEdit}

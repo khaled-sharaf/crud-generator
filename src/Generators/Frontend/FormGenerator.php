@@ -68,6 +68,7 @@ class FormGenerator extends FrontendGenerator
             'FIELDS' => $this->getVueFormFields(),
             'SCRIPT' => $this->getScript(),
             'TRANSLATABLE_SELECT' => $this->getTranslatableSelect(),
+            'KEEP_AFTER_SUBMIT' => $this->hasFormPopup() ? 'no-keep' : '',
         ];
     }
 

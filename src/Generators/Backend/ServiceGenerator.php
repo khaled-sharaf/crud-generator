@@ -91,7 +91,8 @@ class ServiceGenerator extends BackendGenerator
     protected function getShowMethod(): string
     {
         $with = $this->getWith($this->getFieldsHasRelationForShow(), 'after');
-        return "\n\n\tpublic function show(\$id)\n\t{\n\t\treturn {$this->modelName}::{$with}findOrFail(\$id);\n\t}";
+        $withTrashed = $this->hasSoftDeletes() ? 'withTrashed()->' : '';
+        return "\n\n\tpublic function show(\$id)\n\t{\n\t\treturn {$this->modelName}::{$withTrashed}{$with}findOrFail(\$id);\n\t}";
     }
 
     protected function getStoreMethod(): string

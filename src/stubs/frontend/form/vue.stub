@@ -12,7 +12,13 @@
             </q-card-section>
 
             <q-card-section class="flex justify-end">
-                <q-btn :color="formType == 'edit' ? 'teal' : 'primary'" :label="$t(formType == 'edit' ? 'update' : 'create')" @click="createOrUpdate(validate, resetForm)" />
+                <FormAction
+                    :formType="formType"
+                    :validate="validate"
+                    :resetForm="resetForm"
+                    :submit="createOrUpdate"
+                    {{ KEEP_AFTER_SUBMIT }}
+                />
             </q-card-section>
         </v-form>
         <q-card-section v-else style="min-height: 500px">
