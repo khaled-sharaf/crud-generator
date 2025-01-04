@@ -6,6 +6,7 @@
                     </label>
                     <v-field name="{{ NAME }}" :label="$t('{{ LABEL }}').toLowerCase()" v-slot="{ field, errorMessage }">
                         <FileUploader
+                            :refForm="$refs.{{ FORM_NAME }}"
                             croping
                             file-type="{{ FILE_TYPE }}"
                             icon="{{ FILE_ICON }}"

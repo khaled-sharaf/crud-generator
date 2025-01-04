@@ -2,6 +2,7 @@
                 <!-- ================= {{ NAME }} ================= -->
                 <div class="{{ CLASS_FIELD }}"{{ SHOW_CONDITION }}>
                     <FormSelect
+                        :refForm="$refs.{{ FORM_NAME }}"
                         :form="form"
                         :options="{{ OPTIONS }}"
                         name="{{ NAME }}"

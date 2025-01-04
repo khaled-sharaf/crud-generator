@@ -1,6 +1,6 @@
 <template>
     <div>
-        <v-form v-if="ready" ref="myFormRef" v-slot="{ validate, resetForm }" :validation-schema="validationSchema" :initial-values="form" as="span">
+        <v-form v-if="ready" ref="{{ FORM_NAME }}" v-slot="{ validate, resetForm }" :validation-schema="validationSchema" :initial-values="form" as="span">
             {{ TRANSLATABLE_SELECT }}
             <q-card-section>
                 <!-- begin::row -->

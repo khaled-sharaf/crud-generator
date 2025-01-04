@@ -69,6 +69,7 @@ class FormGenerator extends FrontendGenerator
             'SCRIPT' => $this->getScript(),
             'TRANSLATABLE_SELECT' => $this->getTranslatableSelect(),
             'KEEP_AFTER_SUBMIT' => $this->hasFormPopup() ? 'no-keep' : '',
+            'FORM_NAME' => $this->getFormFileName(),
         ];
     }
 
@@ -154,6 +155,7 @@ class FormGenerator extends FrontendGenerator
                 'IS_USE_CHIPS' => $this->getIsUseChips($field),
                 'CLASS_FIELD' => $this->getClassField($field),
                 'SHOW_CONDITION' => $this->getShowCondition($field),
+                'FORM_NAME' => $this->getFormFileName(),
             ]);
             $fields[] = (new StubGenerator())->from($stubPath, true)->withReplacers($fieldReplacers)->toString();
         }
