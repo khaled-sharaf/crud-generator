@@ -15,9 +15,15 @@ export default {
     methods: {
         getModel() {
             this.modelId = this.$route.params.id
-            this.$request('get').url(`{{ API_ROUTE_NAME }}/${this.modelId}`).params({__toForm: true}).send().then(res => {
+            this.$request('get')
+            .url(`{{ API_ROUTE_NAME }}/${this.modelId}`)
+            .params({__toForm: true})
+            .cancelToken('{{ DIALOG_NAME }}')
+            .send()
+            .then(res => {
                 this.model = res.data
-            }).catch(err => {
+            })
+            .catch(err => {
                 if (err.statusCode == 404) {
                     this.$router.push({name: '{{ LIST_ROUTE_NAME }}'})
                 }
@@ -28,4 +34,8 @@ export default {
     created() {
         this.getModel()
     },
+
+    beforeUnmount() {
+        this.$store.general.cancelRequests('{{ DIALOG_NAME }}')
+    }
 }

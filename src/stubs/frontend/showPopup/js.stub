@@ -8,9 +8,14 @@ export default {
     
     methods: {
         getModel() {
-            this.$request('get').url(`{{ API_ROUTE_NAME }}/${this.modelId}`).send().then(res => {
+            this.$request('get')
+            .url(`{{ API_ROUTE_NAME }}/${this.modelId}`)
+            .cancelToken('{{ DIALOG_NAME }}')
+            .send()
+            .then(res => {
                 this.model = res.data
-            }).catch(err => {
+            })
+            .catch(err => {
                 if (err.statusCode == 404) {
                     this.$store.modals.hideModal('{{ DIALOG_NAME }}')
                 }
@@ -24,6 +29,8 @@ export default {
                 this.model = null
                 this.modelId = this.$store.modals.getData('{{ DIALOG_NAME }}').id
                 this.getModel()
+            } else {
+                this.$store.general.cancelRequests('{{ DIALOG_NAME }}')
             }
         }
     },
