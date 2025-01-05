@@ -5,6 +5,7 @@
                         {{ $t('{{ LABEL }}') }}
                     </label>
                     <q-toggle
+                        color="{{ BOOLEAN_COLOR }}"
                         v-model="form.{{ NAME }}"
                         :label="form.{{ NAME }} ? $t('{{ TITLE_TRUE }}') : $t('{{ TITLE_FALSE }}')"
                     />

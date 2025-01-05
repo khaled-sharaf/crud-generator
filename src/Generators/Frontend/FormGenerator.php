@@ -156,6 +156,7 @@ class FormGenerator extends FrontendGenerator
                 'CLASS_FIELD' => $this->getClassField($field),
                 'SHOW_CONDITION' => $this->getShowCondition($field),
                 'FORM_NAME' => $this->getFormFileName(),
+                'BOOLEAN_COLOR' => $this->getBooleanColor($field),
             ]);
             $fields[] = (new StubGenerator())->from($stubPath, true)->withReplacers($fieldReplacers)->toString();
         }
@@ -241,6 +242,11 @@ class FormGenerator extends FrontendGenerator
     {
         $hiddenPage = Field::isHiddenEdit($field) ? 'edit' : (Field::isHiddenCreate($field) ? 'create' : null);
         return $hiddenPage ? " v-if=\"formType !== '{$hiddenPage}'\"" : '';
+    }
+
+    protected function getBooleanColor(array $field): string
+    {
+        return $field['name'] == 'activation' ? 'green-7' : 'primary';
     }
 
     protected function getJsFormFields(): string
