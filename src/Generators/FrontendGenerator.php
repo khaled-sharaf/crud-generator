@@ -1,10 +1,10 @@
 <?php
 
-namespace W88\CrudSystem\Generators;
+namespace Khaled\CrudSystem\Generators;
 
-use W88\CrudSystem\Facades\Crud;
+use Khaled\CrudSystem\Facades\Crud;
 use Illuminate\Support\Facades\File;
-use W88\CrudSystem\Facades\Field;
+use Khaled\CrudSystem\Facades\Field;
 use Illuminate\Support\Str;
 abstract class FrontendGenerator extends Generator
 {

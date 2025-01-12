@@ -1,11 +1,11 @@
 <?php
 
-namespace W88\CrudSystem\Generators\Backend;
+namespace Khaled\CrudSystem\Generators\Backend;
 
-use W88\CrudSystem\Generators\BackendGenerator;
+use Khaled\CrudSystem\Generators\BackendGenerator;
 use Illuminate\Support\Facades\File;
 use Touhidurabir\StubGenerator\StubGenerator;
-use W88\CrudSystem\Facades\Field;
+use Khaled\CrudSystem\Facades\Field;
 
 class SeederGenerator extends BackendGenerator
 {

@@ -1,10 +1,10 @@
 <?php
 
-namespace W88\CrudSystem\Generators\Backend;
+namespace Khaled\CrudSystem\Generators\Backend;
 
-use W88\CrudSystem\Generators\BackendGenerator;
+use Khaled\CrudSystem\Generators\BackendGenerator;
 use Touhidurabir\StubGenerator\StubGenerator;
-use W88\CrudSystem\Facades\Field;
+use Khaled\CrudSystem\Facades\Field;
 use Illuminate\Support\Str;
 
 class ResourceGenerator extends BackendGenerator

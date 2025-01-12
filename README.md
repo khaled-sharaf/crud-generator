@@ -5,194 +5,341 @@ crud-system is a laravel package that helps you to generate a complete crud syst
 ## Installation
 
 ```bash
-composer require --dev w88/crud-system
+composer require --dev Khaled/crud-system
 ```
 
 ## Usage
 
 ```bash
-php artisan fr:crud-make {name} {module}
+php artisan crud-make {name} {--module=}
 ```
 
 ## Example
 
 ```bash
-php artisan fr:crud-make User users
+php artisan crud-make User Users
 ```
 
 ## Generate a complete crud system for a models
 
 ```bash
-php artisan fr:crud-generate
+php artisan crud-generate {name?} {--module=} {--force}
 ```
 
-## Configuration
+Example:
+```bash
+php artisan crud-generate User --module=Users
+```
+
+---
+
+## Basic Configuration
+
+### 1. `name`
+- **Description**: The name of the model for which you want to generate CRUD operations.
+- **Default Value**: `{{ MODEL_NAME }}`
+
+### 2. `frontendModule`
+- **Description**: The name of the module to be used in the frontend.
+- **Default Value**: `{{ MODULE_NAME }}`
+
+### 3. `lockAfterGenerate`
+- **Description**: If set to `true`, the generated files will be locked to prevent further modifications.
+- **Default Value**: `true`
+
+---
+
+## Dashboard API Configuration (`dashboardApi`)
+
+### 1. `create`, `show`, `edit`, `delete`
+- **Description**: Enable or disable CRUD operations in the dashboard.
+- **Default Value**: `true`
+
+### 2. `activation`
+- **Description**: Enable or disable the activation feature for the model. You can set it to `true` or customize it further using `column` to specify the column to be used.
+- **Default Value**: `true`
+
+### 3. `lookup`
+- **Description**: Enable or disable the lookup feature. You can set it to `true` or specify a specific field for lookup.
+- **Default Value**: `true`
+
+---
+
+## Client API Configuration (`clientApi`)
+
+### 1. `list`, `create`, `show`, `edit`, `delete`
+- **Description**: Enable or disable CRUD operations in the API.
+- **Default Value**: `true`
+
+---
+
+## Additional Options (`options`)
+
+### 1. `icon`
+- **Description**: Icon to be used in the frontend.
+- **Default Value**: `view_list`
+
+### 2. `showPopup`, `formPopup`
+- **Description**: Display the form in a popup window.
+- **Default Value**: `true`
+
+### 3. `permissions`
+- **Description**: Add permissions to the permissions file with translation.
+- **Default Value**: `true`
+
+### 4. `softDeletes`
+- **Description**: Enable soft delete functionality.
+- **Default Value**: `true`
+
+### 5. `seeder`
+- **Description**: Enable the creation of a Seeder file with Factory.
+- **Default Value**: `true`
+
+### 6. `tableSettings`
+- **Description**: Configure table settings for the frontend.
+  - `multiSelection`: Enable multi-selection for delete or other actions in the frontend list.
+  - `tableSearch`: Enable table search.
+  - `tableFilter`: Enable table filter.
+  - `tableExport`: Enable table export.
+- **Default Value**: `false`
+
+---
+
+## Fields Configuration (`fields`)
+
+### 1. `type`
+- **Description**: The type of the field (e.g., `text`, `decimal`, `boolean`).
+- **Default Value**: `text`
+
+### 2. `label`
+- **Description**: The label to be displayed in the frontend.
+- **Default Value**: `Title`
+
+### 3. `nullable`
+- **Description**: Whether the field can be nullable.
+- **Default Value**: `false`
+
+### 4. `default`
+- **Description**: The default value for the field.
+- **Default Value**: `string_test`
+
+### 5. `unique`
+- **Description**: Whether the field should be unique.
+- **Default Value**: `false`
+
+### 6. `migrationType`
+- **Description**: The type of the field in the migration file.
+- **Default Value**: `decimal`
+
+### 7. `migrationParams`
+- **Description**: Additional parameters for the migration type (e.g., precision for `decimal`).
+- **Default Value**: `[8, 2]`
+
+### 8. `translatable`
+- **Description**: Whether the field is translatable.
+- **Default Value**: `false`
+
+### 9. `validation`
+- **Description**: Validation rules for the field (e.g., `required`).
+- **Default Value**: `required`
+
+### 10. `route`
+- **Description**: Route to be used for boolean fields (e.g., `toggle-display`).
+- **Default Value**: `null`
+
+### 11. `lookup`
+- **Description**: Enable or disable lookup for the field.
+- **Default Value**: `false`
+
+### 12. `filter`
+- **Description**: Enable or disable filtering for the field.
+- **Default Value**: `false`
+
+### 13. `relation`
+- **Description**: Define relationships for the field (e.g., `belongsTo`, `hasMany`).
+- **Default Value**: `null`
+
+---
+
+## Relationships Configuration (`relations`)
+
+### 1. `type`
+- **Description**: The type of relationship (e.g., `belongsTo`, `hasMany`, `belongsToMany`).
+- **Default Value**: `belongsTo`
+
+### 2. `model`
+- **Description**: The model to which the relationship is defined.
+- **Default Value**: `null`
+
+### 3. `foreignKey`
+- **Description**: The foreign key for the relationship.
+- **Default Value**: `null`
+
+### 4. `localKey`
+- **Description**: The local key for the relationship.
+- **Default Value**: `null`
+
+### 5. `deleteRelation`
+- **Description**: Whether to delete the relationship when the model is deleted.
+- **Default Value**: `false`
+
+### 6. `checkOnDelete`
+- **Description**: Check for relationships before deleting the model.
+- **Default Value**: `false`
+
+### 7. `pivot`
+- **Description**: Define pivot table attributes for many-to-many relationships.
+- **Default Value**: `null`
+
+---
+
+## Example Configuration
 
 ```php
-/**
- * Configuration array for the CRUD system
- *
- * @return array The configuration settings
- */
 return [
-    // Model name
-    'name' => 'User',
+    'name' => 'Product',
+    'frontendModule' => 'Products',
+    'lockAfterGenerate' => true,
 
-    // Dashboard settings
-    // Dashboard settings
-    // These settings control the visibility and functionality of various dashboard features
-    'dashboard' => [
-        'create' => true,  // Enable/disable create functionality (default: true)
-        'update' => true,  // Enable/disable update functionality (default: true)
-        'profile' => true, // Enable/disable profile view (default: true)
-        'delete' => true,  // Enable/disable delete functionality (default: true)
-        'activation' => true,  // Enable/disable activation functionality (default: true)
-        'tableSearch' => true,  // Enable/disable table search feature (default: true)
-        'tableFilter' => true,  // Enable/disable table filtering (default: true)
-        'tableExport' => true,  // Enable/disable table export feature (default: true)
+    'dashboardApi' => [
+        'create' => true,
+        'show' => true,
+        'edit' => true,
+        'delete' => true,
+        'activation' => true,
+        'lookup' => 'title',
     ],
 
-    // Client API settings
-    // These settings control which API endpoints are available for client-side use
     'clientApi' => [
-        'list' => true,    // Enable/disable list API endpoint (default: true)
-        'create' => true,  // Enable/disable create API endpoint (default: true)
-        'update' => true,  // Enable/disable update API endpoint (default: true)
-        'delete' => true,  // Enable/disable delete API endpoint (default: true)
-        'show' => true,    // Enable/disable show (single item) API endpoint (default: true)
+        'list' => true,
+        'create' => true,
+        'show' => true,
+        'edit' => true,
+        'delete' => true,
     ],
 
-    // Note: Changing any value to false will disable the corresponding feature
-    // in the dashboard or API. This allows for fine-grained control over
-    // the CRUD functionality exposed to users and client applications.
+    'options' => [
+        'icon' => 'view_list',
+        'showPopup' => true,
+        'formPopup' => true,
+        'permissions' => true,
+        'softDeletes' => true,
+        'seeder' => true,
+    ],
 
-    /**
-     * Field definitions for the CRUD system
-     */
     'fields' => [
-        // Example field: 'title'
         'title' => [
-            'type' => 'text', // Field type (e.g., text, number, date)
-            'label' => 'Title', // Label for the field (used in forms and lists)
-            // 'enum' => ['key' => 'value'], // Possible values for selection or checkbox fields
-            'nullable' => true, // Whether the field can be null (default: false)
-            'default' => 'string_test', // Default value for the field
-            'migrationType' => 'string', // Database column type (default: same as 'type')
-            'addToFilter' => true, // Add a custom filter for this field (default: false)
-            'translatable' => true, // Whether the field is translatable (default: false)
-            'validation' => [ // Laravel validation rules (optional)
-                // 'required',
-                // 'string',
-            ],
-            // 'relation' => true, // or array
-            'relation' => [
-                'constrained' => true, // optional
-                'onUpdate' => 'cascade', // optional
-                'onDelete' => 'set null', // optional
-                'table' => 'categories', // optional
-                'foreignKey' => 'category_id', // optional
-            ],
-            'frontend' => [
-                'sortable' => false, // Allow sorting in frontend tables (default: true)
-                'searchable' => false, // Allow searching in frontend tables (default: true)
-                'exportable' => false, // Include in exports (default: true)
-                'advancedSearchable' => false, // Include in advanced search (default: true)
-                // 'advancedSearchName' => 'title', // Custom name for advanced search (default: field name)
-                'hidden' => [ // Hide field in different views
-                    'create' => true, // Hide in create form (default: false)
-                    'update' => true, // Hide in update form (default: false)
-                    'list'  => true, // Hide in list view (default: false)
-                ],
-                'visibleList' => true, // Show in list view (default: false)
-            ]
+            'type' => 'text',
+            'label' => 'Title',
+            'nullable' => true,
+            'default' => 'Default Title',
+            'unique' => true,
+            'translatable' => true,
+            'validation' => 'required',
         ],
-        // Add more fields as needed
     ],
 
-    /**
-     * Define the relationships for the CRUD model
-     */
     'relations' => [
-        [
-            // Example of a one-to-one relationship
-            'type' => 'hasOne',
-            'table' => 'phone',
-            // 'foreign_key' => 'user_id',
-            // 'local_key' => 'id',
-
-            // Output in model:
-            // public function phone()
-            // {
-            //     return $this->hasOne(Phone::class);
-            // }
-
-            // Example of a many-to-one relationship
+        'category' => [
             'type' => 'belongsTo',
-            'table' => 'department',
-            // 'foreign_key' => 'department_id',
-            // 'local_key' => 'id',
-
-            // Output in model:
-            // public function department()
-            // {
-            //     return $this->belongsTo(Department::class);
-            // }
-
-            // Example of a one-to-many relationship
-            'type' => 'hasMany',
-            'table' => 'comment',
-            // 'foreign_key' => 'comment_id',
-            // 'local_key' => 'id',
-
-            // Output in model:
-            // public function comments()
-            // {
-            //     return $this->hasMany(Comment::class);
-            // }
-
-            // Example of a many-to-many relationship
-            'type' => 'belongsToMany',
-            'table' => 'phone',
-            // 'local_key' => 'user_id',
-            // 'foreign_key' => 'phone_id',
-
-            // Output in model:
-            // public function phones()
-            // {
-            //     return $this->belongsToMany(Phone::class)
-            //                 ->withPivot('active')
-            //                 ->withTimestamps();
-            // }
-            
-            // Define pivot table attributes for many-to-many relationships
-            'pivot' => [
-                'active' => [
-                    'type' => 'boolean',
-                    'default' => false,
-                ],
-                // This will add withPivot('active') in the model relationship
-            ],
-        ]
+            'model' => 'App\Models\Category',
+            'foreignKey' => 'category_id',
+        ],
     ],
-
-    // Permissions: Determines whether to add permissions to the permission file with translations
-    'permissions' => true,
-
-    // Timestamps: Includes created_at and updated_at columns in the database table
-    'timestamps' => true,
-
-    // Soft Deletes: When enabled, adds a deleted_at column for soft deletion functionality
-    'softDeletes' => false,
-
-    // Multi Selection: Allows multiple items to be selected for actions like delete in the frontend list
-    'multiSelection' => true,
-
-    // Seeder: Configuration for database seeding
-    'seeder' => false,
-    // Uncomment and modify the following to enable seeding with a specific count
-    // 'seeder' => [
-    //     'count' => 10, // Number of records to seed
-    // ],
-
+];
 ```
 
+## Advanced Configuration
+
+### 1. Field Options
+
+You can further customize fields using the following options:
+
+- **keyShowInFront**  
+  **Description:** A custom key to display in the frontend. You can use dynamic values like `{model}.title`.  
+  **Example:**
+  ```php
+  'keyShowInFront' => "{model}.title ? 'Mr. ' + {model}.title : ''"
+  ```
+
+- **notDatabase**  
+  **Description:** If set to true, the field will not be added to the database migration.  
+  **Default Value:** false
+
+- **frontend**  
+  **Description:** Customize how the field behaves in the frontend.
+  - **fullWidth:** Make the field take up the full width.
+  - **visibleList:** Show the field in the list view.
+  - **sortable:** Allow sorting by this field.
+  - **exportable:** Include the field in table exports (e.g., CSV).
+  - **searchable:** Enable searching by this field.
+  - **advancedSearchable:** Enable advanced searching by this field.
+  - **hidden:** Hide the field in specific views (list, show, create, edit).
+
+- **filter**  
+  **Description:** Enable filtering for the field. You can specify `single` or `multi` for filter types.  
+  **Example:**
+  ```php
+  'filter' => 'multi'
+  ```
+
+- **relation**  
+  **Description:** Define relationships for the field. You can specify the relationship type (`belongsTo`, `hasMany`, etc.), foreign key, and other options.  
+  **Example:**
+  ```php
+  'relation' => [
+      'type' => 'belongsTo',
+      'model' => 'App\Models\User',
+      'foreignKey' => 'user_id',
+  ]
+  ```
+
+### 2. Relationships
+
+You can define relationships between models in the relations section. Supported relationship types include:
+
+- `belongsTo`
+- `hasMany`
+- `belongsToMany`
+- `morphOne`
+- `morphMany`
+- `morphToMany`
+- `morphedByMany`
+
+**Example:**
+
+```php
+'relations' => [
+    'user' => [
+        'type' => 'belongsTo',
+        'model' => 'App\Models\User',
+        'foreignKey' => 'user_id',
+    ],
+    'comments' => [
+        'type' => 'hasMany',
+        'model' => 'App\Models\Comment',
+        'foreignKey' => 'post_id',
+    ],
+    'tags' => [
+        'type' => 'belongsToMany',
+        'model' => 'App\Models\Tag',
+        'table' => 'post_tag',
+        'foreignKey' => 'post_id',
+        'localKey' => 'tag_id',
+    ],
+],
+```
+
+### 3. Pivot Table Attributes
+For many-to-many relationships, you can define pivot table attributes using the pivot key.
+
+**Example:**
+```php
+'pivot' => [
+    'active' => [
+        'type' => 'boolean',
+        'nullable' => true,
+        'default' => false,
+    ],
+],
+```

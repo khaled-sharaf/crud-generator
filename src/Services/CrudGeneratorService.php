@@ -1,11 +1,11 @@
 <?php
 
-namespace W88\CrudSystem\Services;
+namespace Khaled\CrudSystem\Services;
 
 use Illuminate\Support\Facades\File;
-use W88\CrudSystem\Facades\Crud;
+use Khaled\CrudSystem\Facades\Crud;
 use Illuminate\Support\Str;
-use W88\CrudSystem\Models\Crud as ModelsCrud;
+use Khaled\CrudSystem\Models\Crud as ModelsCrud;
 use Illuminate\Console\Command;
 
 class CrudGeneratorService
@@ -88,7 +88,7 @@ class CrudGeneratorService
     {
         $fileName = Str::studly($fileName);
         $generatorType = Str::studly($generatorType) . 'Generator';
-        $className = "W88\CrudSystem\Generators\\{$fileName}\\{$generatorType}";
+        $className = "Khaled\CrudSystem\Generators\\{$fileName}\\{$generatorType}";
         if (!class_exists($className)) {
             throw new \Exception('Unknown generator type: ' . $generatorType);
         }

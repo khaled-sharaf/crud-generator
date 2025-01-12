@@ -1,6 +1,6 @@
 <?php
 
-namespace W88\CrudSystem;
+namespace Khaled\CrudSystem;
 
 use Illuminate\Support\ServiceProvider;
 
@@ -20,8 +20,8 @@ class CrudSystemServiceProvider extends ServiceProvider
     protected function registerCommands(): void
     {
         $this->commands([
-            \W88\CrudSystem\Commands\GenerateCrud::class,
-            \W88\CrudSystem\Commands\MakeCrud::class,
+            \Khaled\CrudSystem\Commands\GenerateCrud::class,
+            \Khaled\CrudSystem\Commands\MakeCrud::class,
         ]);
     }
     

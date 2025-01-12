@@ -1,11 +1,11 @@
 <?php
 
-namespace W88\CrudSystem\Generators;
+namespace Khaled\CrudSystem\Generators;
 
-use W88\CrudSystem\Contracts\GeneratorInterface;
+use Khaled\CrudSystem\Contracts\GeneratorInterface;
 use Illuminate\Support\Str;
-use W88\CrudSystem\Facades\Crud;
-use W88\CrudSystem\Facades\Field;
+use Khaled\CrudSystem\Facades\Crud;
+use Khaled\CrudSystem\Facades\Field;
 use Illuminate\Support\Facades\File;
 
 abstract class Generator implements GeneratorInterface

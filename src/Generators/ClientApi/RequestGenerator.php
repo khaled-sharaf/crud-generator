@@ -1,8 +1,8 @@
 <?php
 
-namespace W88\CrudSystem\Generators\ClientApi;
+namespace Khaled\CrudSystem\Generators\ClientApi;
 
-use W88\CrudSystem\Generators\Backend\RequestGenerator as BackendRequestGenerator;
+use Khaled\CrudSystem\Generators\Backend\RequestGenerator as BackendRequestGenerator;
 
 class RequestGenerator extends BackendRequestGenerator
 {

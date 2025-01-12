@@ -1,14 +1,14 @@
 <?php
 
-namespace W88\CrudSystem\Commands;
+namespace Khaled\CrudSystem\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
 use Nwidart\Modules\Facades\Module;
 use Touhidurabir\StubGenerator\StubGenerator;
-use W88\CrudSystem\Facades\Crud as FacadesCrud;
-use W88\CrudSystem\Models\Crud;
+use Khaled\CrudSystem\Facades\Crud as FacadesCrud;
+use Khaled\CrudSystem\Models\Crud;
 
 class MakeCrud extends Command
 {

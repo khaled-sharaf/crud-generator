@@ -1,6 +1,6 @@
 <?php
 
-namespace W88\CrudSystem\Facades;
+namespace Khaled\CrudSystem\Facades;
 
 use Illuminate\Support\Str;
 

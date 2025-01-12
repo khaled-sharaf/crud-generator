@@ -1,11 +1,11 @@
 <?php
 
-namespace W88\CrudSystem\Generators\Backend;
+namespace Khaled\CrudSystem\Generators\Backend;
 
-use W88\CrudSystem\Generators\BackendGenerator;
+use Khaled\CrudSystem\Generators\BackendGenerator;
 use Touhidurabir\StubGenerator\StubGenerator;
 use Illuminate\Support\Str;
-use W88\CrudSystem\Facades\Field;
+use Khaled\CrudSystem\Facades\Field;
 
 class ModelGenerator extends BackendGenerator
 {

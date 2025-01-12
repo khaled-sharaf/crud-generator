@@ -1,9 +1,9 @@
 <?php
 
-namespace W88\CrudSystem\Generators;
+namespace Khaled\CrudSystem\Generators;
 
 use Illuminate\Support\Str;
-use W88\CrudSystem\Facades\Field;
+use Khaled\CrudSystem\Facades\Field;
 
 abstract class BackendGenerator extends Generator
 {

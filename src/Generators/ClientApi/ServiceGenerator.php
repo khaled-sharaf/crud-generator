@@ -1,9 +1,9 @@
 <?php
 
-namespace W88\CrudSystem\Generators\ClientApi;
+namespace Khaled\CrudSystem\Generators\ClientApi;
 
-use W88\CrudSystem\Generators\Backend\ServiceGenerator as BackendServiceGenerator;
-use W88\CrudSystem\Facades\Field;
+use Khaled\CrudSystem\Generators\Backend\ServiceGenerator as BackendServiceGenerator;
+use Khaled\CrudSystem\Facades\Field;
 
 class ServiceGenerator extends BackendServiceGenerator
 {

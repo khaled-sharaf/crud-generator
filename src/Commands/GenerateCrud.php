@@ -1,10 +1,10 @@
 <?php
 
-namespace W88\CrudSystem\Commands;
+namespace Khaled\CrudSystem\Commands;
 
 
 use Illuminate\Console\Command;
-use W88\CrudSystem\Services\CrudGeneratorService;
+use Khaled\CrudSystem\Services\CrudGeneratorService;
 use Illuminate\Support\Str;
 
 class GenerateCrud extends Command

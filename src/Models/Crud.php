@@ -1,6 +1,6 @@
 <?php
 
-namespace W88\CrudSystem\Models;
+namespace Khaled\CrudSystem\Models;
 
 use Illuminate\Database\Eloquent\Model;
 

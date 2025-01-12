@@ -1,8 +1,8 @@
 <?php
 
-namespace W88\CrudSystem\Generators\ClientApi;
+namespace Khaled\CrudSystem\Generators\ClientApi;
 
-use W88\CrudSystem\Generators\Backend\ControllerGenerator as BackendControllerGenerator;
+use Khaled\CrudSystem\Generators\Backend\ControllerGenerator as BackendControllerGenerator;
 
 class ControllerGenerator extends BackendControllerGenerator
 {

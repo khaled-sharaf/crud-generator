@@ -1,8 +1,8 @@
 <?php
 
-namespace W88\CrudSystem\Generators\ClientApi;
+namespace Khaled\CrudSystem\Generators\ClientApi;
 
-use W88\CrudSystem\Generators\Backend\ResourceGenerator as BackendResourceGenerator;
+use Khaled\CrudSystem\Generators\Backend\ResourceGenerator as BackendResourceGenerator;
 
 class ResourceGenerator extends BackendResourceGenerator
 {

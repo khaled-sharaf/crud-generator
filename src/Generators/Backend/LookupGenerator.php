@@ -1,8 +1,8 @@
 <?php
 
-namespace W88\CrudSystem\Generators\Backend;
+namespace Khaled\CrudSystem\Generators\Backend;
 
-use W88\CrudSystem\Generators\BackendGenerator;
+use Khaled\CrudSystem\Generators\BackendGenerator;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
 

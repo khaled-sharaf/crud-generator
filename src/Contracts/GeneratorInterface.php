@@ -1,7 +1,7 @@
 <?php
 
 
-namespace W88\CrudSystem\Contracts;
+namespace Khaled\CrudSystem\Contracts;
 
 interface GeneratorInterface
 {

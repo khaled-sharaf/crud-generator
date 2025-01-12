@@ -1,9 +1,9 @@
 {
-    "name": "w88/crud-system",
+    "name": "khaled/crud-system",
     "description": "A dynamic CRUD system package",
     "autoload": {
         "psr-4": {
-            "W88\\CrudSystem\\": "src/"
+            "Khaled\\CrudSystem\\": "src/"
         }
     },
     "require": {
@@ -14,7 +14,7 @@
     "extra": {
         "laravel": {
             "providers": [
-                "W88\\CrudSystem\\Providers\\CrudSystemServiceProvider"
+                "Khaled\\CrudSystem\\Providers\\CrudSystemServiceProvider"
             ]
         }
     }

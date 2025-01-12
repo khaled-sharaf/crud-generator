@@ -1,8 +1,8 @@
 <?php
 
-namespace W88\CrudSystem\Generators\ClientApi;
+namespace Khaled\CrudSystem\Generators\ClientApi;
 
-use W88\CrudSystem\Generators\Backend\RouteGenerator as BackendRouteGenerator;
+use Khaled\CrudSystem\Generators\Backend\RouteGenerator as BackendRouteGenerator;
 
 class RouteGenerator extends BackendRouteGenerator
 {

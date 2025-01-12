@@ -1,11 +1,11 @@
 <?php
 
-namespace W88\CrudSystem\Generators\Frontend;
+namespace Khaled\CrudSystem\Generators\Frontend;
 
-use W88\CrudSystem\Generators\FrontendGenerator;
+use Khaled\CrudSystem\Generators\FrontendGenerator;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
-use W88\CrudSystem\Facades\Field;
+use Khaled\CrudSystem\Facades\Field;
 
 class LangGenerator extends FrontendGenerator
 {
