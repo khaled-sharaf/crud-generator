@@ -34,6 +34,9 @@ export default {
                             this.$emit('submited', {afterSubmit, res})
                         }
                     })
+                } else {
+                    this.setDefaultLocaleToSwitchLang()
+                    this.scrollToError()
                 }
             })
         },
