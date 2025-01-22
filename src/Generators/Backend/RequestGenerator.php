@@ -50,7 +50,6 @@ class RequestGenerator extends BackendGenerator
     protected function getReplacers(): array
     {
         $rules = $this->getRules();
-        $rules = $this->getRules();
         return [
             'CLASS_NAMESPACE' => $this->getLocalRequestNamespace(),
             'CLASS_NAME' => $this->getRequestName(),
@@ -65,10 +64,19 @@ class RequestGenerator extends BackendGenerator
     protected function getUseClasses(): string
     {
         $rules = implode(',', $this->getAllRules());
-        if (strpos($rules, 'Rule::') !== false || strpos($rules, 'new Rule') !== false) {
-            return "use Illuminate\Validation\Rule;\n";
+        $useClasses = [];
+        $classes = [
+            'Rule' => 'Illuminate\Validation\Rule',
+            'UniqueRule' => 'App\Rules\UniqueRule',
+            'FileRule' => 'App\Rules\FileRule',
+            'File' => 'Illuminate\Validation\Rules\File',
+        ];
+        foreach ($classes as $key => $value) {
+            if (strpos($rules, "{$key}::") !== false || strpos($rules, "new {$key}") !== false) {
+                $useClasses[] = "use {$value};";
+            }
         }
-        return '';
+        return implode("\n", $useClasses) . "\n";
     }
 
     protected function getAllRules(): array
@@ -114,7 +122,15 @@ class RequestGenerator extends BackendGenerator
         return collect($this->getAllRules())->filter(function ($rule, $name) {
             $field = $this->getFieldByName(Str::before($name, '.'));
             return ($field && !Field::isHiddenCreate($field) && !Field::isHiddenEdit($field));
-        })->map(fn($rule, $name) => "\n\t\t\t'{$name}' => $rule")->implode(',');
+        })->map(function($rule, $name) {
+            $field = $this->getFieldByName(Str::before($name, '.'));
+            if (Field::isBackendTranslatable($field)) {
+                $isNullable = Field::isNullable($field) ? 'false' : 'true';
+                return "\n\t\t\t...validationTranslatableKey('{$name}', ['string'], required: {$isNullable})";
+            } else {
+                return "\n\t\t\t'{$name}' => $rule";
+            }
+        })->implode(',');
     }
 
     protected function getCustomRulesWhenCreate(): string

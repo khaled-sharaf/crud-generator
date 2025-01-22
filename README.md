@@ -343,3 +343,38 @@ For many-to-many relationships, you can define pivot table attributes using the 
     ],
 ],
 ```
+
+### 4. Field Types
+
+The following field types are supported:
+
+- text
+- number
+- password
+- textarea
+- editor
+- color
+- boolean
+- time
+- date
+- datetime
+- timestamp
+- image
+- video
+- file
+- checkbox
+- select
+- radio
+- slider
+- range_date
+- multi_date
+- multi_range_date
+- multi_image
+- multi_video
+- multi_file
+- multi_checkbox
+- multi_select
+- range
+- array
+- array_of_object
+- location
