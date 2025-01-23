@@ -69,7 +69,7 @@ class FormGenerator extends FrontendGenerator
             'SCRIPT' => $this->getScript(),
             'TRANSLATABLE_SELECT' => $this->getTranslatableSelect(),
             'KEEP_AFTER_SUBMIT' => $this->hasFormPopup() ? 'no-keep' : '',
-            'FORM_NAME' => $this->getFormFileName(),
+            'FORM_NAME' => lcfirst($this->getFormFileName()),
         ];
     }
 
@@ -155,7 +155,7 @@ class FormGenerator extends FrontendGenerator
                 'IS_USE_CHIPS' => $this->getIsUseChips($field),
                 'CLASS_FIELD' => $this->getClassField($field),
                 'SHOW_CONDITION' => $this->getShowCondition($field),
-                'FORM_NAME' => $this->getFormFileName(),
+                'FORM_NAME' => lcfirst($this->getFormFileName()),
                 'BOOLEAN_COLOR' => $this->getBooleanColor($field),
             ]);
             $fields[] = (new StubGenerator())->from($stubPath, true)->withReplacers($fieldReplacers)->toString();
@@ -275,17 +275,14 @@ class FormGenerator extends FrontendGenerator
         } else if ($validationType == 'array_of_object') {
             return "this.\$vt.array(this.form.{$field['name']}.length, this.\$vt.object({
                 //     key1: 'required',
-                //     key2: 'required',
+                //     key2: this.\$vt.object(this.\$vt.validationTranslatableKey(['max:250'], true)), // if translatable
                 // }))";
         } else if ($validationType == 'translatable') {
-            return "this.\$vt.object({
-                //     en: 'required',
-                //     ar: 'required',
-                // })";
+            return "this.\$vt.object(this.\$vt.validationTranslatableKey(['max:250'], true))";
         } else if ($validationType == 'object') {
             return "this.\$vt.object({
                 //     key1: 'required',
-                //     key2: 'required',
+                //     key2: this.\$vt.object(this.\$vt.validationTranslatableKey(['max:250'], true)), // if translatable
                 // })";
         } else {
             return "'required'";
