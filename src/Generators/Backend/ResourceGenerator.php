@@ -116,16 +116,18 @@ class ResourceGenerator extends BackendGenerator
         $relation = isset($this->getModelRelations()[$relationName]['type']) ? $this->getModelRelations()[$relationName] : null;
 
         if ($relation && in_array($relation['type'], ['belongsTo', 'hasOne'])) {
-            return "{$value},\n\t\t\t'{$relationName}' => \$this->whenLoaded('{$relationName}') ? [
+            return "{$value},\n\t\t\t'{$relationName}' => \$this->whenLoaded('{$relationName}', fn () => [
                 '{$lookupValue}' => \$this->{$relationName}->{$lookupValue},
                 '{$lookupLabel}' => \$this->{$relationName}->{$lookupLabel}
-            ] : null";
+            ], null)";
         } elseif ($relation && in_array($relation['type'], ['belongsToMany', 'morphToMany'])) {
             $relationNameSingular = Str::singular($relationName);
-            return "\$this->whenLoaded('{$relationName}') ? (request('__toForm') ? \$this->{$relationName}->pluck('{$lookupValue}') : \$this->{$relationName}->map(fn (\${$relationNameSingular}) => [
-                '{$lookupValue}' => \${$relationNameSingular}->{$lookupValue},
-                '{$lookupLabel}' => \${$relationNameSingular}->{$lookupLabel},
-            ])) : []";
+            return "\$this->whenLoaded('{$relationName}', fn () => (
+                request('__toForm') ? \$this->{$relationName}->pluck('{$lookupValue}') : \$this->{$relationName}->map(fn (\${$relationNameSingular}) => [
+                    '{$lookupValue}' => \${$relationNameSingular}->{$lookupValue},
+                    '{$lookupLabel}' => \${$relationNameSingular}->{$lookupLabel}
+                ])
+            ), [])";
         } else {
             return "\$this->whenLoaded('{$relationName}')";
         }
