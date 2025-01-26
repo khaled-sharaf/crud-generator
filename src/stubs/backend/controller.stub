@@ -10,6 +10,8 @@ class {{ CLASS_NAME }} extends Controller
 
     public function __construct(
         private {{ SERVICE_NAME }} ${{ SERVICE_NAME_CAMEL }}
-    ) {}{{ METHODS }}
+    ) {
+        {{ PERMISSIONS }}
+    }{{ METHODS }}
 
 }
