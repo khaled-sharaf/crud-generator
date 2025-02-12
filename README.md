@@ -11,24 +11,24 @@ composer require --dev Khaled/crud-system
 ## Usage
 
 ```bash
-php artisan crud-make {name} {--module=}
+php artisan crud:make {name} {--module=}
 ```
 
 ## Example
 
 ```bash
-php artisan crud-make User Users
+php artisan crud:make User Users
 ```
 
 ## Generate a complete crud system for a models
 
 ```bash
-php artisan crud-generate {name?} {--module=} {--force}
+php artisan crud:generate {name?} {--module=} {--force}
 ```
 
 Example:
 ```bash
-php artisan crud-generate User --module=Users
+php artisan crud:generate User --module=Users
 ```
 
 ---

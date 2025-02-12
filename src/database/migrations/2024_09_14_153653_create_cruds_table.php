@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('cruds', function (Blueprint $table) {
+        Schema::connection('crud_sqlite')->create('cruds', function (Blueprint $table) {
             $table->id();
             $table->string('name');
             $table->string('file_name');
@@ -29,6 +29,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('cruds');
+        Schema::connection('crud_sqlite')->dropIfExists('cruds');
     }
 };

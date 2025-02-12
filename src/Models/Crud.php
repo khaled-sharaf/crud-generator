@@ -8,6 +8,13 @@ class Crud extends Model
 {
 
     /**
+     * The connection name for the model.
+     *
+     * @var string
+     */
+    protected $connection = 'crud_sqlite';
+
+    /**
      * The attributes that are mass assignable.
      */
     protected $fillable = [
