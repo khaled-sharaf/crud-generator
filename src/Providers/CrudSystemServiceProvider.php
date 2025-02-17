@@ -1,6 +1,6 @@
 <?php
 
-namespace Khaled\CrudSystem;
+namespace Khaled\CrudSystem\Providers;
 
 use Illuminate\Support\ServiceProvider;
 
@@ -8,6 +8,7 @@ class CrudSystemServiceProvider extends ServiceProvider
 {
     public function register()
     {
+        $this->app->register(RouteServiceProvider::class);
         // Register any services or bindings here
     }
 
