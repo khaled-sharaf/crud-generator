@@ -41,17 +41,17 @@ abstract class Generator implements GeneratorInterface
         $this->config = $configData['config'];
         $this->version = $configData['version'];
         $this->versionNamespace = Str::studly($configData['version']);
-
+        
         $this->moduleName = $configData['moduleName'];
         $this->moduleNamespace = "Modules\\{$this->moduleName}";
         $this->moduleNameSnake = strtolower(Str::snake($this->moduleName));
         $this->moduleNameKebab = strtolower(Str::kebab($this->moduleName));
         $this->modulePath = module_path($this->moduleName);
-        $this->frontendModuleName = $this->config['frontendModule'];
-
+        $this->frontendModuleName = $configData['frontendModule'];
+        
         $this->clientDirectory = Str::studly(Crud::config('generator.client_directory'));
         
-        $this->modelName = Str::studly($this->config['name']);
+        $this->modelName = $configData['modelName'];
         $this->modelNamespace = $this->moduleNamespace . '\\app\\Models';
         $this->modelNameCamel = Str::camel($this->modelName);
         $this->modelNameSnake = strtolower(Str::snake($this->modelName));

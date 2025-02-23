@@ -54,7 +54,7 @@ class MakeCrud extends Command
         ->save();
         Crud::newCrud($crudName, $fileName, $this->module);
         $time = (int) ((microtime(true) * 1000) - $time);
-        $this->line(FacadesCrud::formatCommandRunGenerator($fileName, 'done', $time));
+        $this->line(FacadesCrud::formatCommandRunGenerator($fileName, 'done', 'DONE', $time));
         $this->newLine();
     }
 

@@ -15,7 +15,7 @@ class CrudSystemServiceProvider extends ServiceProvider
     public function boot()
     {
         $this->registerCommands();
-        $this->loadMigrationsFrom(__DIR__ . '/database/migrations');
+        $this->loadMigrationsFrom(__DIR__ . '/../database/migrations');
     }
 
     protected function registerCommands(): void

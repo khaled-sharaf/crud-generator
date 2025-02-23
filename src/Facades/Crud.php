@@ -33,7 +33,7 @@ class Crud
         $command->newLine();
     }
 
-    public static function formatCommandRunGenerator($text, $type, $time = null)
+    public static function formatCommandRunGenerator($text, $type, $message = null, $time = null)
     {
         $statusColorCode = $type === 'done' ? "\033[32m" : "\033[33m";
         $endCode = "\033[0m";
@@ -53,7 +53,8 @@ class Crud
         // Calculate remaining space after the text and spaces around the status and time
         $dotsCount = max(0, $terminalWidth - strlen($text) - strlen($status) - strlen($time) - 4); // 4 for spaces around status and time
         $dots = str_repeat('.', $dotsCount);
-        return "  {$text} {$dotsCode}{$dots}{$time}{$endCode} {$statusColorCode}{$status}{$endCode}  ";
+        $message = $message ?? $status;
+        return "  {$text} {$dotsCode}{$dots}{$time}{$endCode} {$statusColorCode}{$message}{$endCode}  ";
     }
     
 }

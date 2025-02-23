@@ -49,14 +49,14 @@ class CrudGeneratorService
         $time = microtime(true) * 1000;
         $moduleName = $crud->module;
         $config = $this->loadCrudClientConfig($moduleName, $crud->file_name);
-        $lockAfterGenerate = $config['lockAfterGenerate'] ?? false;
+        if ($config === false) {
+            $this->command->line(Crud::formatCommandRunGenerator($crud->file_name, 'done', 'NOT FOUND CONFIG'));
+            return;
+        }
         $this->runAllGenerators($moduleName, $config);
         $crud->markAsGenerated();
-        if ($lockAfterGenerate) {
-            $crud->markAsLocked();
-        }
         $time = (int) ((microtime(true) * 1000) - $time);
-        $this->command->line(Crud::formatCommandRunGenerator($crud->file_name, 'done', $time));
+        $this->command->line(Crud::formatCommandRunGenerator($crud->file_name, 'done', 'DONE', $time));
         $this->command->newLine();
         sleep(1);
     }
@@ -67,8 +67,10 @@ class CrudGeneratorService
         foreach ($this->getGenerators() as $fileName => $generators) {
             foreach ($generators as $generatorType) {
                 $configData = [
-                    'moduleName' => $moduleName,
                     'config' => $config,
+                    'modelName' => Str::studly($config['name']),
+                    'moduleName' => $moduleName,
+                    'frontendModule' => $config['frontendModule'] ?? $moduleName,
                     'version' => $version,
                 ];
                 $generatorClass = $this->getGeneratorClass($fileName, $generatorType);
@@ -99,14 +101,15 @@ class CrudGeneratorService
     {
         $configPath = base_path("Modules/{$moduleName}/config/cruds/" . $crudFileName . '.php');
         if (!File::exists($configPath)) {
-            throw new \Exception('Config not found for ' . $moduleName . ' ' . $crudFileName);
+            // throw new \Exception('Config not found for ' . $moduleName . ' ' . $crudFileName);
+            return false;
         }
         return File::getRequire($configPath);
     }
 
     protected function getCrud(string $moduleName, string $crudName, bool $force = false)
     {
-        $crud = ModelsCrud::where('module', $moduleName)->where('name', $crudName)->locked(false);
+        $crud = ModelsCrud::where('module', $moduleName)->where('name', $crudName);
         if ($force === false) {
             $crud->generated(false);
         }
@@ -115,7 +118,7 @@ class CrudGeneratorService
 
     protected function getAllCruds(string $moduleName = null)
     {
-        return ModelsCrud::query()->generated(false)->locked(false)->when($moduleName, function ($query, $moduleName) {
+        return ModelsCrud::query()->generated(false)->when($moduleName, function ($query, $moduleName) {
             return $query->where('module', $moduleName);
         })->orderBy('created_at')->get();
     }

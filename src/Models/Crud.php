@@ -3,6 +3,7 @@
 namespace Khaled\CrudSystem\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Khaled\CrudSystem\Services\CrudConfigTransformService;
 
 class Crud extends Model
 {
@@ -19,12 +20,12 @@ class Crud extends Model
      */
     protected $fillable = [
         'name',
-        'file_name',
         'module',
+        'frontend_module',
+        'file_name',
         'old_config',
         'current_config',
         'generated_at',
-        'locked',
     ];
 
     protected $dates = [
@@ -34,7 +35,7 @@ class Crud extends Model
     protected $casts = [
         'old_config' => 'array',
         'current_config' => 'array',
-        'locked' => 'boolean',
+        'generated_at' => 'datetime',
     ];
 
 
@@ -46,20 +47,9 @@ class Crud extends Model
         return $query->whereNull('generated_at');
     }
 
-    public function scopeLocked($query, $value = true)
-    {
-        return $query->where('locked', $value);
-    }
-
     public function markAsGenerated($value = true)
     {
         $this->generated_at = $value ? now() : null;
-        $this->save();
-    }
-
-    public function markAsLocked()
-    {
-        $this->locked = true;
         $this->save();
     }
 
@@ -67,7 +57,6 @@ class Crud extends Model
     {
         $this->old_config = $this->current_config;
         $this->current_config = $config;
-        $this->looked = $looked;
         $this->generated_at = now();
         $this->save();
     }
@@ -75,6 +64,12 @@ class Crud extends Model
     public function getIsGeneratedAttribute()
     {
         return $this->generated_at !== null;
+    }
+
+    public function getConfigForFormAttribute()
+    {
+        $crudConfigTransformService = new CrudConfigTransformService();
+        return $crudConfigTransformService->convertConfigToForm($this->current_config ?? []);
     }
 
     public static function newCrud(string $name, string $fileName, string $module)

@@ -6,6 +6,7 @@ use Khaled\CrudSystem\Facades\Crud;
 use Illuminate\Support\Facades\File;
 use Khaled\CrudSystem\Facades\Field;
 use Illuminate\Support\Str;
+
 abstract class FrontendGenerator extends Generator
 {
     

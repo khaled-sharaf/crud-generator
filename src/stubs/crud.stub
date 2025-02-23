@@ -3,7 +3,6 @@
 return [
     'name' => '{{ MODEL_NAME }}',
     'frontendModule' => '{{ MODULE_NAME }}',
-    'lockAfterGenerate' => true,
 
     'dashboardApi' => [
         'create' => true,
