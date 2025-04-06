@@ -25,20 +25,20 @@ class CrudController extends Controller
 
     public function store(CrudBasicInfoRequest  $request)
 	{
-        $this->crudService->create($request->validated());
-        return sendData(__('view.messages.created_success'));
+        $crud = $this->crudService->create($request->validated());
+        return sendData(new CrudResource($crud), __('view.messages.created_success'));
     }
 
     public function updateConfig($id, CrudUpdateConfigRequest  $request)
 	{
-        $this->crudService->updateConfig($id, $request->config);
-        return sendData(__('view.messages.updated_success'));
+        $crud = $this->crudService->updateConfig($id, $request->validated());
+        return sendData(new CrudResource($crud), __('view.messages.updated_success'));
     }
 
     public function generate($id, CrudUpdateConfigRequest  $request)
 	{
-        $this->crudService->generate($id, $request->config);
-        return sendData(__('view.messages.updated_success'));
+        $crud = $this->crudService->generate($id, $request->config);
+        return sendData(new CrudResource($crud), __('view.messages.updated_success'));
     }
 
 	public function show($id)
@@ -48,8 +48,8 @@ class CrudController extends Controller
 
 	public function update($id, CrudBasicInfoRequest $request)
 	{
-        $this->crudService->update($id, $request->validated());
-        return sendData(__('view.messages.updated_success'));
+        $crud = $this->crudService->update($id, $request->validated());
+        return sendData(new CrudResource($crud), __('view.messages.updated_success'));
     }
 
 	public function destroy($id)

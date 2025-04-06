@@ -12,7 +12,9 @@ class CrudUpdateConfigRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'config' => 'required|array',
+            // 'config' => 'required|array',
+            'name' => 'required|array',
+            'name.en' => 'required|array',
         ];
     }
 

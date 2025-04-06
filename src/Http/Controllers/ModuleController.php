@@ -3,36 +3,29 @@
 namespace Khaled\CrudSystem\Http\Controllers;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\File;
-use Nwidart\Modules\Facades\Module;
-use Khaled\CrudSystem\Facades\Crud;
-use Illuminate\Support\Str;
+use Khaled\CrudSystem\Services\CrudService;
 
 class ModuleController extends Controller
 {
     
+    public function __construct(
+        private CrudService $crudService
+    ) {}
+
     public function modules()
     {
-        $backendModules = collect(Module::all())->map(function ($module) {
-            return [
-                'label' => Str::title($module->getName()),
-                'value' => $module->getName(),
-            ];
-        })->values()->all();
-        $frontendPath = Crud::config('generator.frontend_path');
-        $frontendModules = array_map('basename', File::directories(base_path($frontendPath . '/src/modules')));
-        $frontendModules = collect($frontendModules)->filter(fn ($module) => $module != 'crud')->map(function ($module) {
-            return [
-                'label' => Str::title($module),
-                'value' => $module,
-            ];
-        })->values()->all();
-        return sendData([
-            'backend' => $backendModules,
-            'frontend' => $frontendModules,
-        ]);
+        return sendData($this->crudService->getModules());
     }
 
+    /**
+     * Get all model names from the application and modules
+     * 
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function models()
+    {
+        return sendData($this->crudService->getModels());
+    }
 
 
 }
