@@ -84,7 +84,7 @@ return [
             // 'lookupModelValue' => 'id', // optional - default is: id
 
             // add boolean and constant (with options) only to filter
-            // 'filter' => true, // true, 'single', 'multi' | add options for constant and assign it single or multi will be add to filter
+            // 'filter' => true, // true, with boolean only | 'single', 'multi' -> with options or lookupModel
             // 'filterRelationName' => 'categories', // add it with lookupModel only
             // 'filterRelationColumnName' => 'id', // optional - default is: id
 
