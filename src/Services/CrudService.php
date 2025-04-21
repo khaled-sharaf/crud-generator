@@ -50,17 +50,21 @@ class CrudService
         $crud->update(['current_config' => $config]);
         return $crud;
     }
-
-	public function generate($id, $config)
+    
+	public function generate($id)
 	{
-        $crud = $this->updateConfig($id, $config);
-        $this->generateCrud($crud);
-        return true;
+        $crud = $this->show($id);
+        $this->checkIfCrudIsGenerated($crud);
+        return $this->generateCrud($crud);
     }
 
 	public function generateCrud($crud)
 	{
-        // generate the crud
+        $service = new CrudConfigTransformService();
+        $config = $service->convertConfigToGenerate($crud);
+        // return $config;
+        $crudGeneratorService = new CrudGeneratorService();
+        return $crudGeneratorService->generateCrudFromDatabase($crud, $config);
     }
 
 	public function delete($id)

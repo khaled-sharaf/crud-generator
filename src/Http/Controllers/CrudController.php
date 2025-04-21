@@ -34,10 +34,11 @@ class CrudController extends Controller
         return sendData(new CrudResource($crud), __('view.messages.updated_success'));
     }
 
-    public function generate($id, CrudUpdateConfigRequest  $request)
+    public function generate($id)
 	{
-        $crud = $this->crudService->generate($id, $request->config);
-        return sendData(new CrudResource($crud), __('view.messages.updated_success'));
+        $this->crudService->generate($id);
+        return sendData(__('view.messages.generated_success'));
+        // return sendData($this->crudService->generate($id), __('view.messages.generated_success'));
     }
 
 	public function show($id)

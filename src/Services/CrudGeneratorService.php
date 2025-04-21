@@ -12,7 +12,7 @@ class CrudGeneratorService
 {
 
     public function __construct(
-        private Command $command
+        private ?Command $command = null
     ) {}
 
 
@@ -121,6 +121,13 @@ class CrudGeneratorService
         return ModelsCrud::query()->generated(false)->when($moduleName, function ($query, $moduleName) {
             return $query->where('module', $moduleName);
         })->orderBy('created_at')->get();
+    }
+
+    public function generateCrudFromDatabase($crud, $config)
+    {
+        $this->runAllGenerators($crud->module, $config);
+        $crud->markAsGenerated();
+        return $crud;
     }
 
 }
