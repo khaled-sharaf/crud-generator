@@ -37,12 +37,12 @@ return [
         // 'icon' => 'view_list',
         // 'showPopup' => true, // show show in popup
         // 'formPopup' => true, // show create/edit form in popup
-        // 'showPopupWidth' => '800px',
-        // 'formPopupWidth' => '800px',
+        // 'showPopupWidth' => '800',
+        // 'formPopupWidth' => '800',
         // 'permissions' => true, // Add permissions to permission file with translation
         // 'addLogs' => true, // Enable add logs
         // 'softDeletes' => true, // Enable soft deletes
-        // 'seeder' => true, // Enable seeder with factory - will be add seeder file
+        // 'seeder' => false, // Enable seeder with factory - will be add seeder file
         // 'tableSettings' => [
         //     'multiSelection' => false, // Enable multi selection for delete or any action in frontend list
         //     'tableSearch' => false, // Enable table search

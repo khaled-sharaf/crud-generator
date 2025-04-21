@@ -5,7 +5,6 @@ namespace Khaled\CrudSystem\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Khaled\CrudSystem\Http\Requests\CrudBasicInfoRequest;
-use Khaled\CrudSystem\Http\Requests\CrudUpdateConfigRequest;
 use Khaled\CrudSystem\Resources\CrudResource;
 use Khaled\CrudSystem\Services\CrudService;
 
@@ -29,9 +28,9 @@ class CrudController extends Controller
         return sendData(new CrudResource($crud), __('view.messages.created_success'));
     }
 
-    public function updateConfig($id, CrudUpdateConfigRequest  $request)
+    public function updateConfig($id, Request $request)
 	{
-        $crud = $this->crudService->updateConfig($id, $request->validated());
+        $crud = $this->crudService->updateConfig($id, $request->all());
         return sendData(new CrudResource($crud), __('view.messages.updated_success'));
     }
 

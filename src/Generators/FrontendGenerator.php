@@ -46,12 +46,12 @@ abstract class FrontendGenerator extends Generator
 
     protected function getShowPopupWidth(): string
     {
-        return $this->config['options']['showPopupWidth'] ?? '800px';
+        return Str::finish($this->config['options']['showPopupWidth'] ?? '800', 'px');
     }
 
     protected function getFormPopupWidth(): string
     {
-        return $this->config['options']['formPopupWidth'] ?? '800px';
+        return Str::finish($this->config['options']['formPopupWidth'] ?? '800', 'px');
     }
 
     protected function hasMultiSelection(): bool

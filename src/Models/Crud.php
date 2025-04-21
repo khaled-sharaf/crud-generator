@@ -66,12 +66,6 @@ class Crud extends Model
         return $this->generated_at !== null;
     }
 
-    public function getConfigForFormAttribute()
-    {
-        $crudConfigTransformService = new CrudConfigTransformService();
-        return $crudConfigTransformService->convertConfigToForm($this->current_config ?? []);
-    }
-
     public static function newCrud(string $name, string $fileName, string $module)
     {
         return self::create([

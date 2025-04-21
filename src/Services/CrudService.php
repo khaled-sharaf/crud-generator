@@ -47,9 +47,7 @@ class CrudService
 	{
         $crud = $this->show($id);
         $this->checkIfCrudIsGenerated($crud);
-        $crudConfigTransformService = new CrudConfigTransformService();
-        $config =  $crudConfigTransformService->convertConfigToModel($config);
-        // $crud->update(['current_config' => $config]);
+        $crud->update(['current_config' => $config]);
         return $crud;
     }
 
