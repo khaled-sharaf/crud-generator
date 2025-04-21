@@ -143,7 +143,7 @@ class Field
 
     public static function hasConstant(array $field): bool
     {
-        return isset($field['options']);
+        return isset($field['options']) && count($field['options']) > 0;
     }
 
     public static function hasLookup(array $field): bool
