@@ -12,7 +12,7 @@ class CrudService
 {
     public function tableList()
 	{
-        $query = Crud::select(['id', 'name', 'module', 'frontend_module', 'generated_at', 'created_at', 'updated_at']);
+        $query = Crud::query();
         return CrudHelper::tableList($query, [
             \App\Filters\Sorting\SortBy::class,
 			\App\Filters\Date\Date::class,
@@ -20,7 +20,7 @@ class CrudService
 			\App\Filters\Search\AdvancedSearch::class,
 			\App\Filters\Search\TableSearchText::class,
 			\App\Filters\Boolean\Trashed::class,
-			// new \App\Filters\Boolean\ToggleBoolean('locked'),
+			new \App\Filters\Boolean\ToggleDateBoolean('generated_at'),
         ]);
     }
 
