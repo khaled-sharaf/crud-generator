@@ -81,10 +81,12 @@ class ConstantGenerator extends BackendGenerator
             $key = strtolower($key);
             $keyTrans = Str::snake($key);
             $constantName = strtolower(Str::snake($name));
+            $value = $value['value'] ?? $key;
+            $value = is_numeric($value) ? intval($value) : $value;
             return [
                 'name' => strtoupper($keyTrans),
                 'label' => "__('{$this->moduleNameSnake}::view.{$this->modelNameSnake}_crud.constants.{$constantName}.{$keyTrans}')",
-                'value' => json_encode($value['value'] ?? $key),
+                'value' => json_encode($value),
             ];
         })->toArray();
     }
