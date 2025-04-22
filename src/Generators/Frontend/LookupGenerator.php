@@ -66,8 +66,8 @@ class LookupGenerator extends FrontendGenerator
     protected function formatOptions(string $name, array $options): array
     {
         return collect($options)->map(function ($value, $key) use ($name) {
-            $keyTrans = strtolower(Str::snake($key));
-            $constantName = strtolower(Str::snake($name));
+            $keyTrans = Str::snake(strtolower($key));
+            $constantName = Str::snake(strtolower($name));
             $label = $this->getLangPath("lookups.{$constantName}.{$keyTrans}");
             return [
                 'key' => Str::studly($key),

@@ -69,24 +69,91 @@ class CrudConfigTransformService
 
     private function getRelations(array $config): array
     {
-        return $config['relations'];
+        $relations = [];
+        foreach ($config['relations'] as $key => $relation) {
+            $relations[$key] = $this->transformRelation($relation);
+        }
+        return $relations;
     }
     
     private function transformField(array $field): array
     {
-        // $newField = [];
-        // if ($field['keyShowInFront']) {
-        //     $newField['showInFront'] = $field['showInFront'];
-        // }
-        // if ($field['notDatabase'] === true) {
-        //     $newField['notDatabase'] = $field['notDatabase'];
-        // }
-        // if ($field['nullable'] === true) {
-        //     $newField['nullable'] = $field['nullable'];
-        // }
+        $newField = [
+            'type' => $field['type'],
+            'label' => $field['label'],
+            'frontend' => []
+        ];
+        $this->checkBoolean($field, $newField, 'notDatabase');
+        $this->checkBoolean($field, $newField, 'nullable');
+        $this->checkBoolean($field, $newField, 'unique');
+        $this->checkBoolean($field, $newField, 'translatable');
+        $this->checkBoolean($field, $newField, 'lookup');
+        $this->checkBoolean($field, $newField, 'lookupFrontend');
+        $this->checkString($field, $newField, 'lookupModel');
+        $this->checkBoolean($field, $newField, 'lookupModel');
+        $this->checkBoolean($field, $newField, 'filter');
+        $this->checkBoolean($field, $newField, 'relation');
+        $this->checkString($field, $newField, 'keyShowInFront');
+        $this->checkString($field, $newField, 'default');
+        $this->checkString($field, $newField, 'migrationType');
+        $this->checkString($field, $newField, 'validation');
+        $this->checkString($field, $newField, 'route');
+        $this->checkString($field, $newField, 'lookupModelLabel');
+        $this->checkString($field, $newField, 'lookupModelValue');
+        $this->checkString($field, $newField, 'filterRelationName');
+        $this->checkString($field, $newField, 'filterRelationColumnName');
+        $this->checkArray($field, $newField, 'migrationParams');
+        $this->checkArray($field, $newField, 'options');
+        $this->checkArray($field, $newField, 'relation');
         
-        return $field;
+        $this->checkBoolean($field['frontend'], $newField['frontend'], 'fullWidth');
+        $this->checkBoolean($field['frontend'], $newField['frontend'], 'visibleList');
+        $this->checkBoolean($field['frontend'], $newField['frontend'], 'sortable');
+        $this->checkBoolean($field['frontend'], $newField['frontend'], 'exportable');
+        $this->checkBoolean($field['frontend'], $newField['frontend'], 'searchable');
+        $this->checkBoolean($field['frontend'], $newField['frontend'], 'advancedSearchable');
+        $this->checkString($field['frontend'], $newField['frontend'], 'searchableName');
+        $this->checkString($field['frontend'], $newField['frontend'], 'advancedSearchName');
+        $this->checkBoolean($field['frontend'], $newField['frontend'], 'hidden');
+        $this->checkArray($field['frontend'], $newField['frontend'], 'hidden');
+        return $newField;
     }
 
+    private function transformRelation(array $relation): array
+    {
+        $newRelation = [];
+        $this->checkString($relation, $newRelation, 'type');
+        $this->checkString($relation, $newRelation, 'model');
+        $this->checkString($relation, $newRelation, 'morphName');
+        $this->checkString($relation, $newRelation, 'table');
+        $this->checkString($relation, $newRelation, 'foreignKey');
+        $this->checkString($relation, $newRelation, 'localKey');
+        $this->checkBoolean($relation, $newRelation, 'addMigrationFile');
+        $this->checkBoolean($relation, $newRelation, 'deleteRelation');
+        $this->checkBoolean($relation, $newRelation, 'checkOnDelete');
+        $this->checkArray($relation, $newRelation, 'pivot');
+        return $newRelation;
+    }
+
+    private function checkBoolean(array $field, array &$newField, string $key): void
+    {
+        if (isset($field[$key]) && $field[$key] === true) {
+            $newField[$key] = $field[$key];
+        }
+    }
+
+    private function checkString(array $field, array &$newField, string $key): void
+    {
+        if (isset($field[$key]) && !empty($field[$key])) {
+            $newField[$key] = $field[$key];
+        }
+    }
+
+    private function checkArray(array $field, array &$newField, string $key): void
+    {
+        if (isset($field[$key]) && is_array($field[$key]) && !empty($field[$key])) {
+            $newField[$key] = $field[$key];
+        }
+    }
     
 }
