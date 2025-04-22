@@ -174,7 +174,7 @@ class Field
     
     public static function hasLookupModel(array $field): bool
     {
-        return isset($field['lookupModel']);
+        return isset($field['lookupModel']) && ($field['lookupModel'] === true || gettype($field['lookupModel']) === 'string');
     }
 
     public static function getLookupModelRouteName(array $field): string
