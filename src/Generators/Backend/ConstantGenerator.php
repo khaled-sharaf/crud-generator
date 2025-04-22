@@ -78,10 +78,11 @@ class ConstantGenerator extends BackendGenerator
     protected function formatOptions(string $name, array $options): array
     {
         return collect($options)->map(function ($value, $key) use ($name) {
-            $keyTrans = strtolower(Str::snake($key));
+            $key = strtolower($key);
+            $keyTrans = Str::snake($key);
             $constantName = strtolower(Str::snake($name));
             return [
-                'name' => strtoupper(Str::snake($key)),
+                'name' => strtoupper($keyTrans),
                 'label' => "__('{$this->moduleNameSnake}::view.{$this->modelNameSnake}_crud.constants.{$constantName}.{$keyTrans}')",
                 'value' => json_encode($value['value'] ?? $key),
             ];
