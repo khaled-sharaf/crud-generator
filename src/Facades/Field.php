@@ -73,7 +73,11 @@ class Field
 
     public static function hasRelation(array $field): bool
     {
-        return isset($field['relation']);
+        return isset($field['relation']) && (
+            $field['relation'] === true || (
+                is_array($field['relation']) && !empty($field['relation'])
+            )
+        );
     }
 
     public static function getRelationName(array $field): string
@@ -158,7 +162,7 @@ class Field
     
     public static function hasFilterRelation(array $field): bool
     {
-        return isset($field['filterRelationName']);
+        return isset($field['filterRelationName']) && !empty($field['filterRelationName']);
     }
     
     public static function getFilterRelation(array $field): string
@@ -174,7 +178,7 @@ class Field
     
     public static function hasLookupModel(array $field): bool
     {
-        return isset($field['lookupModel']) && ($field['lookupModel'] === true || gettype($field['lookupModel']) === 'string');
+        return isset($field['lookupModel']) && ($field['lookupModel'] === true || (gettype($field['lookupModel']) === 'string' && !empty($field['lookupModel'])));
     }
 
     public static function getLookupModelRouteName(array $field): string
@@ -199,12 +203,12 @@ class Field
 
     public static function hasKeyShowInFront(array $field): bool
     {
-        return isset($field['keyShowInFront']);
+        return isset($field['keyShowInFront']) && !empty($field['keyShowInFront']);
     }
 
     public static function getKeyShowInFront(array $field): string
     {
-        return $field['keyShowInFront'] ?? "{model}.{$field['name']}";
+        return trim($field['keyShowInFront'] ?? '') ?? "{model}.{$field['name']}";
     }
 
     public static function isFilterable(array $field): bool
@@ -219,9 +223,13 @@ class Field
 
     public static function isHidden(array $field): bool
     {
-        return isset($field['hidden']) && (
-            $field['hidden'] === true ||
-            (($field['hidden']['list'] ?? false) === true && ($field['hidden']['create'] ?? false) === true && ($field['hidden']['edit'] ?? false) === true && ($field['hidden']['show'] ?? false) === true)
+        return isset($field['frontend']['hidden']) && (
+            $field['frontend']['hidden'] === true ||
+            (
+                ($field['frontend']['hidden']['list'] ?? false) === true &&
+                ($field['frontend']['hidden']['create'] ?? false) === true &&
+                ($field['frontend']['hidden']['edit'] ?? false) === true &&
+                ($field['frontend']['hidden']['show'] ?? false) === true)
         );
     }
 
@@ -257,27 +265,22 @@ class Field
 
     public static function isHiddenList(array $field): bool
     {
-        return isset($field['hidden']) && ($field['hidden'] === true || ($field['hidden']['list'] ?? false) === true);
+        return isset($field['frontend']['hidden']) && ($field['frontend']['hidden'] === true || ($field['frontend']['hidden']['list'] ?? false) === true);
     }
 
     public static function isHiddenCreate(array $field): bool
     {
-        return isset($field['hidden']) && ($field['hidden'] === true || ($field['hidden']['create'] ?? false) === true);
+        return isset($field['frontend']['hidden']) && ($field['frontend']['hidden'] === true || ($field['frontend']['hidden']['create'] ?? false) === true);
     }
 
     public static function isHiddenEdit(array $field): bool
     {
-        return isset($field['hidden']) && ($field['hidden'] === true || ($field['hidden']['edit'] ?? false) === true);
+        return isset($field['frontend']['hidden']) && ($field['frontend']['hidden'] === true || ($field['frontend']['hidden']['edit'] ?? false) === true);
     }
 
     public static function isHiddenShow(array $field): bool
     {
-        return isset($field['hidden']) && ($field['hidden'] === true || ($field['hidden']['show'] ?? false) === true);
-    }
-
-    public static function hasBoolean(array $field): bool
-    {
-        return $field['type'] === 'boolean' && isset($field['filter']) && $field['filter'] === true;
+        return isset($field['frontend']['hidden']) && ($field['frontend']['hidden'] === true || ($field['frontend']['hidden']['show'] ?? false) === true);
     }
 
     public static function hasBooleanFilter(array $field): bool
@@ -312,7 +315,7 @@ class Field
 
     public static function hasApiRoute(array $field): bool
     {
-        return isset($field['route']) && is_string($field['route']);
+        return isset($field['route']) && is_string($field['route']) && !empty($field['route']);
     }
 
     public static function hasBooleanRouteFilter(array $field): bool
