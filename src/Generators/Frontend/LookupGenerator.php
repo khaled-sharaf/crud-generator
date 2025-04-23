@@ -72,7 +72,7 @@ class LookupGenerator extends FrontendGenerator
             $value = $value['value'] ?? $key;
             $value = is_numeric($value) ? intval($value) : $value;
             return [
-                'key' => Str::studly($key),
+                'key' => Str::studly($keyTrans),
                 'value' => json_encode($value),
                 'label' => "i18n.global.t('{$label}')",
             ];

@@ -208,7 +208,7 @@ class Field
 
     public static function getKeyShowInFront(array $field): string
     {
-        return trim($field['keyShowInFront'] ?? '') ?? "{model}.{$field['name']}";
+        return trim($field['keyShowInFront'] ?? '') != '' ? $field['keyShowInFront'] : "{model}.{$field['name']}";
     }
 
     public static function isFilterable(array $field): bool

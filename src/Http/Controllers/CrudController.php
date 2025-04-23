@@ -36,9 +36,7 @@ class CrudController extends Controller
 
     public function generate($id)
 	{
-        $this->crudService->generate($id);
-        return sendData(__('view.messages.generated_success'));
-        // return sendData($this->crudService->generate($id), __('view.messages.generated_success'));
+        return sendData($this->crudService->generate($id), __('view.messages.generated_success'));
     }
 
 	public function show($id)

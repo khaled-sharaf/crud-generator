@@ -94,7 +94,7 @@ class LangGenerator extends BackendGenerator
             $fieldName = strtolower(Str::snake($fieldName));
             $constants .= "\n\t\t\t'{$fieldName}' => [";
             foreach (Field::getOptions($field) as $key => $value) {
-                $key = strtolower(Str::snake($key));
+                $key = Str::snake(strtolower($key));
                 $value = $value['label'] ?? $value;
                 $constants .= "\n\t\t\t\t'{$key}' => '{$value}',";
             }

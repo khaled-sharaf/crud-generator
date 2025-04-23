@@ -91,7 +91,7 @@ class LangGenerator extends FrontendGenerator
             $fieldName = strtolower(Str::snake($fieldName));
             $lookups[$fieldName] = [];
             foreach (Field::getOptions($field) as $key => $value) {
-                $key = strtolower(Str::snake($key));
+                $key = Str::snake(strtolower($key));
                 $value = $value['label'] ?? $value;
                 $lookups[$fieldName][$key] = $value;
             }
