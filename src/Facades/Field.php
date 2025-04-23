@@ -12,7 +12,7 @@ class Field
         if (isset($field['migrationType'])) return $field['migrationType'];
         if (static::isTranslatable($field)) return static::translatableFields()[$field['type']];
         if (self::isMultiFile($field)) return 'json';
-        if (isset($field['relation'])) {
+        if (isset($field['relation']) && !empty($field['relation'])) {
             return static::isRelationConstrained($field) ? 'foreignId' : 'unsignedBigInteger';
         }
         return isset(static::types()[$field['type']]['migration']) ? static::types()[$field['type']]['migration'] : 'string';
@@ -147,7 +147,7 @@ class Field
 
     public static function hasConstant(array $field): bool
     {
-        return isset($field['options']) && count($field['options']) > 0;
+        return isset($field['options']) && !empty($field['options']);
     }
 
     public static function hasLookup(array $field): bool
@@ -213,7 +213,10 @@ class Field
 
     public static function isFilterable(array $field): bool
     {
-        return isset($field['filter']) && ($field['filter'] === true || in_array($field['filter'], ['single', 'multi']));
+        return isset($field['filter']) && (
+            $field['filter'] === true ||
+            in_array($field['filter'], ['single', 'multi'])
+        );
     }
 
     public static function isNotDatabase(array $field): bool
