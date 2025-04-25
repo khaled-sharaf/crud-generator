@@ -11,6 +11,8 @@
                 <SsrError />
             </q-card-section>
 
+            <q-separator />
+
             <q-card-section class="flex justify-end">
                 <FormAction
                     :formType="formType"

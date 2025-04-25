@@ -65,9 +65,9 @@ class LookupGenerator extends BackendGenerator
         $lookupRouteOption = $this->getLookupRouteOption();
         if (!$lookupRouteOption) return '';
         $labelColumn = is_string($lookupRouteOption) ? $lookupRouteOption : ($lookupRouteOption['label'] ?? null);
-        $labelColumnPrint = $labelColumn ? "->labelColumn('{$labelColumn}')" : '';
+        $labelColumnPrint = $labelColumn ? "->columnOfLabel('{$labelColumn}')" : '';
         $valueColumn = $lookupRouteOption['value'] ?? null;
-        $valueColumnPrint = $valueColumn ? "->valueColumn('{$valueColumn}')" : '';
+        $valueColumnPrint = $valueColumn ? "->columnOfValue('{$valueColumn}')" : '';
         return "Lookup::register(\\{$this->modelNamespace}\\{$this->modelName}::class){$labelColumnPrint}{$valueColumnPrint};";
     }
 

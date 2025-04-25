@@ -64,7 +64,7 @@ class ModelGenerator extends BackendGenerator
 
     protected function getUseClassesString(): string
     {
-        $useClasses = $this->getUseClasses();
+        $useClasses = array_unique($this->getUseClasses());
         return count($useClasses) ? collect($useClasses)->implode(";\n") . ';' : '';
     }
 

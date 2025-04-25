@@ -359,7 +359,12 @@ class Field
     {
         return collect($field['options'])->filter(function ($value, $key) {
             return is_string($value) || (isset($value['label']) && isset($value['value']));
-        })->toArray();
+        })->mapWithKeys(function ($value, $key) {
+            $key = is_numeric($key) && preg_match('/^\d/', (string)$key) ? "var_" . $key : $key;
+            return [
+                $key => $value
+            ];
+        })->all();
     }
 
     public static function getFilter(array $field)
