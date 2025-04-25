@@ -13,7 +13,7 @@
 
             <q-separator />
 
-            <q-card-section class="flex justify-end">
+            <q-card-actions class="flex justify-end">
                 <FormAction
                     :formType="formType"
                     :validate="validate"
@@ -21,7 +21,7 @@
                     :submit="createOrUpdate"
                     {{ KEEP_AFTER_SUBMIT }}
                 />
-            </q-card-section>
+            </q-card-actions>
         </v-form>
         <q-card-section v-else style="min-height: 500px">
             <q-inner-loading  showing color="primary" />
