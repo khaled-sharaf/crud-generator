@@ -91,7 +91,9 @@ class CrudConfigTransformService
         $this->checkBoolean($field, $newField, 'lookupFrontend');
         $this->checkString($field, $newField, 'lookupModel');
         $this->checkBoolean($field, $newField, 'lookupModel');
+        $this->checkString($field, $newField, 'filter');
         $this->checkBoolean($field, $newField, 'filter');
+        $this->checkArray($field, $newField, 'relation');
         $this->checkBoolean($field, $newField, 'relation');
         $this->checkString($field, $newField, 'keyShowInFront');
         $this->checkString($field, $newField, 'default');
@@ -104,7 +106,6 @@ class CrudConfigTransformService
         $this->checkString($field, $newField, 'filterRelationColumnName');
         $this->checkArray($field, $newField, 'migrationParams');
         $this->checkArray($field, $newField, 'options');
-        $this->checkArray($field, $newField, 'relation');
         
         $this->checkBoolean($field['frontend'], $newField['frontend'], 'fullWidth');
         $this->checkBoolean($field['frontend'], $newField['frontend'], 'visibleList');
