@@ -27,8 +27,7 @@ export default {
                     const method = this.formType == 'edit' ? 'put{{ FORMDATA_TYPE }}' : 'post{{ FORMDATA_TYPE }}'
                     const url = `{{API_ROUTE_NAME}}${this.formType == 'edit' ? `/${this.form.id}` : ''}`
                     this.$request(method).url(url).body(this.form).loadingPage().send().then(res => {
-                        resetForm()
-                        this.resetFormValue()
+                        this.resetFormValue(resetForm)
                         this.$emit('submit', {afterSubmit, res})
                         if (afterSubmit === 'noKeep') {
                             this.$emit('submited', {afterSubmit, res})
@@ -46,6 +45,7 @@ export default {
             this.form = this.$cloneArrayOfObject(this.originalForm)
             this.ready = false
             setTimeout(() => {
+                resetForm({values: this.form})
                 this.ready = true
             }, 100)
         },

@@ -14,17 +14,19 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('cruds', function (Blueprint $table) {
-            $table->id();
-            $table->string('name');
-            $table->string('module');
-            $table->string('frontend_module')->nullable();
-            $table->string('file_name')->nullable(); // when create crud by command line only
-            $table->json('old_config')->nullable();
-            $table->json('current_config')->nullable(); // get config from here when create crud by dashboard
-            $table->timestamp('generated_at')->nullable();
-            $table->timestamps();
-        });
+        if (!Schema::hasTable('cruds')) {
+            Schema::create('cruds', function (Blueprint $table) {
+                $table->id();
+                $table->string('name');
+                $table->string('module');
+                $table->string('frontend_module')->nullable();
+                $table->string('file_name')->nullable(); // when create crud by command line only
+                $table->json('old_config')->nullable();
+                $table->json('current_config')->nullable(); // get config from here when create crud by dashboard
+                $table->timestamp('generated_at')->nullable();
+                $table->timestamps();
+            });
+        }
     }
 
     /**
