@@ -40,7 +40,7 @@ export default {
             })
         },
 
-        resetFormValue() {
+        resetFormValue(resetForm) {
             if (this.formType == 'edit') return
             this.form = this.$cloneArrayOfObject(this.originalForm)
             this.ready = false
