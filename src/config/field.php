@@ -37,8 +37,8 @@ return [
             'color' => [
                 'migration' => 'string',
                 'seeder' => 'fake()->hexColor()',
-                // 'stub_view' => 'color',
-                // 'stub_form' => 'color',
+                'stub_view' => 'color',
+                'stub_form' => 'color',
             ],
             'boolean' => [
                 'migration' => 'boolean',

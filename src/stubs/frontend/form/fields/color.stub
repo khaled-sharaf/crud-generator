@@ -1,0 +1,42 @@
+
+                <!-- ================= {{ NAME }} ================= -->
+                <div class="{{ CLASS_FIELD }}"{{ SHOW_CONDITION }}>
+                    <v-field name="{{ NAME }}" :label="$t('{{ LABEL }}').toLowerCase()" v-slot="{ field, errorMessage }">
+                        <q-input
+                            outlined
+                            readonly
+                            label-slot
+                            class="readonly-clickable cursor-pointer"
+                            v-model="form.{{ NAME }}"
+                            :error="Boolean($getFormErrorMessage(errorMessage, formName, '{{ NAME }}'))"
+                            :error-message="$getFormErrorMessage(errorMessage, formName, '{{ NAME }}')"
+                            @click.stop="$refs[`settingColor_{{ NAME }}`].show()"
+                        >
+                            <template v-slot:label>
+                                {{ $t('{{ LABEL }}') }} <span v-if="field.required == 1" class="req-star"></span>
+                            </template>
+                            <template v-slot:append>
+                                <q-icon name="close" v-if="form.{{ NAME }}" @click.prevent.stop="form.{{ NAME }} = null" class="cursor-pointer" />
+                            </template>
+                            <template v-slot:prepend>
+                                <q-icon name="colorize" class="cursor-pointer" />
+                                <div v-if="form.{{ NAME }}" class="ml-2 w-[20px] h-[20px] rounded" :style="form.{{ NAME }} ? `background-color: ${form.{{ NAME }}};` : ''"></div>
+                            </template>
+                            <q-popup-proxy
+                                :ref="`settingColor_{{ NAME }}`"
+                                :breakpoint="600"
+                                cover
+                                transition-show="scale"
+                                transition-hide="scale"
+                                class="!min-w-[250px]"
+                            >
+                                <q-color
+                                    v-model="form.{{ NAME }}"
+                                    default-view="palette"
+                                />
+                            </q-popup-proxy>
+                        </q-input>
+                    </v-field>
+                </div>
+                <!-- ================= ./{{ NAME }} ================= -->
+

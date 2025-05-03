@@ -1,0 +1,13 @@
+                                    
+                                    <!-- ================= {{ NAME }} ================= -->
+                                    <div class="{{ CLASS_FIELD }}">
+                                        <div class="item">
+                                            <div class="label" v-text="$t('{{ LABEL }}')"></div>
+                                            <div class="value">
+                                                <q-badge class="px-2 py-1" :style="model.{{ NAME }} ? `background-color: ${model.{{ NAME }}};` : 'background-color: #DDDDDD;'" rounded>
+                                                    {{ model.{{ NAME }} }}
+                                                </q-badge>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- ================= ./{{ NAME }} ================= -->

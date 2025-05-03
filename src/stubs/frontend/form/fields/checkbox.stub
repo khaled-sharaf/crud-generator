@@ -2,14 +2,14 @@
                 <!-- ================= {{ NAME }} ================= -->
                 <div class="{{ CLASS_FIELD }} pb-5"{{ SHOW_CONDITION }}>
                     <v-field name="{{ NAME }}" :label="$t('{{ LABEL }}').toLowerCase()" v-slot="{ field, errorMessage }">
-                        <div :class="{'toggle-error': Boolean(errorMessage)}">
+                        <div :class="{'toggle-error': Boolean($getFormErrorMessage(errorMessage, formName, '{{ NAME }}'))}">
                             <q-checkbox
                                 v-model="form.{{ NAME }}"
                                 :label="$t('{{ LABEL }}')"
                                 v-bind="field"
                             />
                         </div>
-                        <div class="custom-error-feedback" v-if="Boolean(errorMessage)" v-text="errorMessage"></div>
+                        <div class="custom-error-feedback" v-if="Boolean($getFormErrorMessage(errorMessage, formName, '{{ NAME }}'))" v-text="$getFormErrorMessage(errorMessage, formName, '{{ NAME }}')"></div>
                     </v-field>
                 </div>
                 <!-- ================= ./{{ NAME }} ================= -->

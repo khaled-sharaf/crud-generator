@@ -93,6 +93,7 @@ class FormGenerator extends FrontendGenerator
     {
         return [
             'FIELDS' => $this->getJsFormFields(),
+            'FORM_NAME' => lcfirst($this->getFormFileName()),
             'FORMDATA_TYPE' => count($this->getFileFields()) ? 'Form' : '',
             'API_ROUTE_NAME' => $this->getApiRouteName(),
             'VALIDATION_FIELDS' => $this->getJsFormFieldsValidation(),
