@@ -49,7 +49,7 @@ return [
             'time' => [
                 'migration' => 'time',
                 'seeder' => 'fake()->time()',
-                // 'stub_view' => 'time',
+                'stub_view' => 'time',
                 'stub_form' => 'time',
             ],
             'date' => [
@@ -61,13 +61,13 @@ return [
             'datetime' => [
                 'migration' => 'dateTime',
                 'seeder' => 'fake()->dateTime()',
-                // 'stub_view' => 'datetime',
+                'stub_view' => 'datetime',
                 'stub_form' => 'datetime',
             ],
             'timestamp' => [
                 'migration' => 'timestamp',
                 'seeder' => 'fake()->dateTime()',
-                // 'stub_view' => 'datetime',
+                'stub_view' => 'datetime',
                 'stub_form' => 'datetime',
             ],
             'image' => [
@@ -119,19 +119,19 @@ return [
             'range_date' => [
                 'migration' => 'json',
                 'seeder' => '[]',
-                // 'stub_view' => 'range',
+                'stub_view' => 'rangeDate',
                 'stub_form' => 'date',
             ],
             'multi_date' => [
                 'migration' => 'json',
                 'seeder' => '[]',
-                // 'stub_view' => 'arrayOfText',
+                'stub_view' => 'multiDate',
                 'stub_form' => 'date',
             ],
             'multi_range_date' => [
                 'migration' => 'json',
                 'seeder' => '[]',
-                // 'stub_view' => 'arrayOfText',
+                'stub_view' => 'multiRangeDate',
                 'stub_form' => 'date',
             ],
             'multi_image' => [
@@ -167,7 +167,7 @@ return [
             'range' => [
                 'migration' => 'json',
                 'seeder' => '[]',
-                // 'stub_view' => 'range',
+                'stub_view' => 'range',
                 'stub_form' => 'range',
             ],
             'array' => [

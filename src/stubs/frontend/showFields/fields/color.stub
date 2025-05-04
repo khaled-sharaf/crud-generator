@@ -4,9 +4,7 @@
                                         <div class="item">
                                             <div class="label" v-text="$t('{{ LABEL }}')"></div>
                                             <div class="value">
-                                                <q-badge class="px-2 py-1" :style="model.{{ NAME }} ? `background-color: ${model.{{ NAME }}};` : 'background-color: #DDDDDD;'" rounded>
-                                                    {{ model.{{ NAME }} }}
-                                                </q-badge>
+                                                <ColorView :value="model.{{ NAME }}" />
                                             </div>
                                         </div>
                                     </div>

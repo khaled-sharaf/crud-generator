@@ -3,7 +3,9 @@
                                     <div class="{{ CLASS_FIELD }}">
                                         <div class="item">
                                             <div class="label" v-text="$t('{{ LABEL }}')"></div>
-                                            <div class="value">{{ formatRangeInput({{ PRINT_VALUE_IN_TEXT }}) }}</div>
+                                            <div class="value">
+                                                <ArrayOfTextView :list="{{ PRINT_VALUE_IN_TEXT }}" icon="event" />
+                                            </div>
                                         </div>
                                     </div>
                                     <!-- ================= ./{{ NAME }} ================= -->

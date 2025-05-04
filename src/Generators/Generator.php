@@ -184,9 +184,19 @@ abstract class Generator implements GeneratorInterface
         return collect($this->getFields())->filter(fn ($field) => Field::isBoolean($field))->toArray();
     }
 
+    protected function getBooleanFieldsVisibleInList(): array
+    {
+        return collect($this->getFieldsVisibleInList())->filter(fn ($field) => Field::isBoolean($field))->toArray();
+    }
+
     protected function getConstantFields(): array
     {
         return collect($this->getFields())->filter(fn ($field) => Field::hasConstant($field))->toArray();
+    }
+
+    protected function getConstantFieldsVisibleInList(): array
+    {
+        return collect($this->getFieldsVisibleInList())->filter(fn ($field) => Field::hasConstant($field))->toArray();
     }
     
     protected function getNotHiddenFields(): array

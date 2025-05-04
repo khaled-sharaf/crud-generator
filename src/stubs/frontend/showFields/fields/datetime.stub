@@ -3,7 +3,7 @@
                                     <div class="{{ CLASS_FIELD }}">
                                         <div class="item">
                                             <div class="label" v-text="$t('{{ LABEL }}')"></div>
-                                            <div class="value">{{ formatRangeInput({{ PRINT_VALUE_IN_TEXT }}) }}</div>
+                                            <div class="value">{{ formatDatetime({{ PRINT_VALUE_IN_TEXT }}) }}</div>
                                         </div>
                                     </div>
                                     <!-- ================= ./{{ NAME }} ================= -->

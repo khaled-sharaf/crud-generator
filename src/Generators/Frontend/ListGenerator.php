@@ -87,8 +87,16 @@ class ListGenerator extends FrontendGenerator
     protected function getVueBodyCells(): string
     {
         $cells = [];
-        $booleanFields = $this->getBooleanFields();
+        $booleanFields = $this->getBooleanFieldsVisibleInList();
         $activationRouteOption = $this->getActivationRouteOption();
+        $typesViewMethods = [
+            'color' => 'handleBodyCellColorField',
+            'checkbox' => 'handleBodyCellCheckboxField',
+            'array' => 'handleBodyCellArrayField',
+            'multi_date' => 'handleBodyCellArrayField',
+            'range_date' => 'handleBodyCellRangeDateField',
+            'multi_range_date' => 'handleBodyCellMultiRangeDateField',
+        ];
         if ($activationRouteOption) {
             $name = $activationRouteOption['column'] ?? 'is_active';
             $booleanFields[$name] = [
@@ -101,8 +109,14 @@ class ListGenerator extends FrontendGenerator
         foreach ($booleanFields as $field) {
             $cells[] = $this->handleBodyCellBooleanField($field);
         }
-        foreach ($this->getConstantFields() as $field) {
+        foreach ($this->getConstantFieldsVisibleInList() as $field) {
             $cells[] = $this->handleBodyCellConstantField($field);
+        }
+        foreach ($this->getFieldsVisibleInList() as $field) {
+            $method = $typesViewMethods[$field['type']] ?? false;
+            if ($method) {
+                $cells[] = $this->{$method}($field);
+            }
         }
         return count($cells) ? collect($cells)->implode("\n") . "\n" : '';
     }
@@ -173,6 +187,71 @@ class ListGenerator extends FrontendGenerator
                         color=\"primary\"
                         rounded
                     />
+                </q-td>
+            </template>";
+    }
+
+    protected function handleBodyCellColorField(array $field): string
+    {
+        $showKey = str_replace('{model}', 'row', Field::getKeyShowInFront($field));
+        return "\n\t\t\t<!-- =========================== Body {$field['name']} =========================== -->
+            <template v-slot:body-cell-{$field['name']}=\"props\">
+                <q-td :props=\"props\">
+                    <ColorView :value=\"props.{$showKey}\" />
+                </q-td>
+            </template>";
+    }
+
+    protected function handleBodyCellCheckboxField(array $field): string
+    {
+        $showKey = str_replace('{model}', 'row', Field::getKeyShowInFront($field));
+        return "\n\t\t\t<!-- =========================== Body {$field['name']} =========================== -->
+            <template v-slot:body-cell-{$field['name']}=\"props\">
+                <q-td :props=\"props\">
+                    <q-badge rounded class=\"px-2 py-1\" :class=\"{
+                        'bg-green-7': props.{$showKey},
+                        'bg-grey': !props.{$showKey}
+                    }\">
+                        {{ props.{$showKey} ? \$t('checked') : \$t('unchecked') }}
+                    </q-badge>
+                </q-td>
+            </template>";
+    }
+
+    protected function handleBodyCellArrayField(array $field): string
+    {
+        $showKey = str_replace('{model}', 'row', Field::getKeyShowInFront($field));
+        $icon = $field['type'] === 'multi_date' ? ' icon="event"' : '';
+        return "\n\t\t\t<!-- =========================== Body {$field['name']} =========================== -->
+            <template v-slot:body-cell-{$field['name']}=\"props\">
+                <q-td :props=\"props\">
+                    <ArrayOfTextView :list=\"props.{$showKey}\"{$icon} />
+                </q-td>
+            </template>";
+    }
+
+    protected function handleBodyCellRangeDateField(array $field): string
+    {
+        $showKey = str_replace('{model}', 'row', Field::getKeyShowInFront($field));
+        return "\n\t\t\t<!-- =========================== Body {$field['name']} =========================== -->
+            <template v-slot:body-cell-{$field['name']}=\"props\">
+                <q-td :props=\"props\">
+                    <RangeDateView :value=\"props.{$showKey}\" />
+                </q-td>
+            </template>";
+    }
+
+    protected function handleBodyCellMultiRangeDateField(array $field): string
+    {
+        $showKey = str_replace('{model}', 'row', Field::getKeyShowInFront($field));
+        return "\n\t\t\t<!-- =========================== Body {$field['name']} =========================== -->
+            <template v-slot:body-cell-{$field['name']}=\"props\">
+                <q-td :props=\"props\">
+                    <ArrayOfTextView :list=\"props.{$showKey}\" icon=\"event\">
+                        <template v-slot=\"{ item }\">
+                            <RangeDateView :value=\"item\" />
+                        </template>
+                    </ArrayOfTextView>
                 </q-td>
             </template>";
     }
@@ -496,6 +575,8 @@ class ListGenerator extends FrontendGenerator
             $showKey = "{model}.{$relationName}?.{$lookupLabel}";
         } else if (!Field::hasLookupFrontend($field) && Field::hasLookup($field) && !Field::isJson($field)) {
             $showKey = "{model}.{$name}_view";
+        } else {
+            $showKey = $this->getShowKeyForFieldBasedOnType($field);
         }
         $showKey = str_replace('{model}', 'row', $showKey);
         $columnProperties = collect($columnProperties)->filter(fn ($property) => !empty($property))->implode("\n\t\t\t\t\t\t");
@@ -505,6 +586,22 @@ class ListGenerator extends FrontendGenerator
                         field: row => {$showKey},
                         {$columnProperties}
                     },";
+    }
+
+    protected function getShowKeyForFieldBasedOnType(array $field): string
+    {
+        $name = $field['name'];
+        $showKey = "{model}.{$name}";
+        if ($field['type'] === 'checkbox') {
+            $showKey = "{model}.{$name} ? this.\$t('checked') : this.\$t('unchecked')";
+        } else if ($field['type'] === 'datetime' || $field['type'] === 'timestamp') {
+            $showKey = "{model}.{$name} ? this.formatDatetime({model}.{$name}) : null";
+        } else if ($field['type'] === 'time') {
+            $showKey = "{model}.{$name} ? this.formatTime({model}.{$name}) : null";
+        } else if ($field['type'] === 'range') {
+            $showKey = "{model}.{$name} ? this.formatRangeInput({model}.{$name}) : null";
+        }
+        return $showKey;
     }
 
 }
