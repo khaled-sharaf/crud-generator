@@ -55,8 +55,8 @@ return [
             'date' => [
                 'migration' => 'date',
                 'seeder' => 'fake()->date()',
-                // 'stub_view' => 'text',
-                // 'stub_form' => 'date',
+                'stub_view' => 'text',
+                'stub_form' => 'date',
             ],
             'datetime' => [
                 'migration' => 'dateTime',
@@ -120,19 +120,19 @@ return [
                 'migration' => 'json',
                 'seeder' => '[]',
                 // 'stub_view' => 'range',
-                // 'stub_form' => 'date',
+                'stub_form' => 'date',
             ],
             'multi_date' => [
                 'migration' => 'json',
                 'seeder' => '[]',
                 // 'stub_view' => 'arrayOfText',
-                // 'stub_form' => 'date',
+                'stub_form' => 'date',
             ],
             'multi_range_date' => [
                 'migration' => 'json',
                 'seeder' => '[]',
                 // 'stub_view' => 'arrayOfText',
-                // 'stub_form' => 'date',
+                'stub_form' => 'date',
             ],
             'multi_image' => [
                 'migration' => 'json',

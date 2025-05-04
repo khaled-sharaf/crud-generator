@@ -158,6 +158,8 @@ class FormGenerator extends FrontendGenerator
                 'SHOW_CONDITION' => $this->getShowCondition($field),
                 'FORM_NAME' => lcfirst($this->getFormFileName()),
                 'BOOLEAN_COLOR' => $this->getBooleanColor($field),
+                'IS_RANGE_DATE' => $this->getIsRangeDate($field),
+                'IS_MULTIPLE_DATE' => $this->getIsMultipleDate($field),
             ]);
             $fields[] = (new StubGenerator())->from($stubPath, true)->withReplacers($fieldReplacers)->toString();
         }
@@ -215,6 +217,16 @@ class FormGenerator extends FrontendGenerator
     protected function getIsMultiSelect(array $field, $tabs = "\n\t\t\t\t\t\t"): string
     {
         return $field['type'] == 'multi_select' ? "{$tabs}multiple" : '';
+    }
+
+    protected function getIsRangeDate(array $field, $tabs = "\n\t\t\t\t\t\t"): string
+    {
+        return in_array($field['type'], ['range_date', 'multi_range_date']) ? "{$tabs}range" : '';
+    }
+
+    protected function getIsMultipleDate(array $field, $tabs = "\n\t\t\t\t\t\t"): string
+    {
+        return in_array($field['type'], ['multi_date', 'multi_range_date']) ? "{$tabs}multiple" : '';
     }
 
     protected function getIsUseChips(array $field, $tabs = "\n\t\t\t\t\t\t"): string

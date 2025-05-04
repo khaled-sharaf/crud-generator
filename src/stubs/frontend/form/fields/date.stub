@@ -1,0 +1,10 @@
+                
+                <!-- ================= {{ NAME }} ================= -->
+                <div class="{{ CLASS_FIELD }}"{{ SHOW_CONDITION }}>
+                    <DateInput
+                        :form="form"
+                        name="{{ NAME }}"
+                        :label="$t('{{ LABEL }}')"{{ IS_RANGE_DATE }}{{ IS_MULTIPLE_DATE }}{{ REQUIRED }}
+                    />
+                </div>
+                <!-- ================= ./{{ NAME }} ================= -->
