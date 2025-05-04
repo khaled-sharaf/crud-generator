@@ -1,0 +1,10 @@
+                
+                <!-- ================= {{ NAME }} ================= -->
+                <div class="{{ CLASS_FIELD }}"{{ SHOW_CONDITION }}>
+                    <DatetimeInput
+                        :form="form"
+                        name="{{ NAME }}"
+                        :label="$t('{{ LABEL }}')"{{ REQUIRED }}
+                    />
+                </div>
+                <!-- ================= ./{{ NAME }} ================= -->

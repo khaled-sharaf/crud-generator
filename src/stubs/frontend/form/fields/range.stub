@@ -1,0 +1,12 @@
+                
+                <!-- ================= {{ NAME }} ================= -->
+                <div class="{{ CLASS_FIELD }}"{{ SHOW_CONDITION }}>
+                    <RangeInput
+                        :form="form"
+                        name="{{ NAME }}"
+                        :min="0"
+                        :max="10"
+                        :label="$t('{{ LABEL }}')"{{ REQUIRED }}
+                    />
+                </div>
+                <!-- ================= ./{{ NAME }} ================= -->

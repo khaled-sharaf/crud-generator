@@ -49,8 +49,8 @@ return [
             'time' => [
                 'migration' => 'time',
                 'seeder' => 'fake()->time()',
-                // 'stub_view' => 'text',
-                // 'stub_form' => 'time',
+                // 'stub_view' => 'time',
+                'stub_form' => 'time',
             ],
             'date' => [
                 'migration' => 'date',
@@ -61,14 +61,14 @@ return [
             'datetime' => [
                 'migration' => 'dateTime',
                 'seeder' => 'fake()->dateTime()',
-                // 'stub_view' => 'text',
-                // 'stub_form' => 'datetime',
+                // 'stub_view' => 'datetime',
+                'stub_form' => 'datetime',
             ],
             'timestamp' => [
                 'migration' => 'timestamp',
                 'seeder' => 'fake()->dateTime()',
-                // 'stub_view' => 'text',
-                // 'stub_form' => 'datetime',
+                // 'stub_view' => 'datetime',
+                'stub_form' => 'datetime',
             ],
             'image' => [
                 'migration' => 'string',
@@ -109,8 +109,8 @@ return [
             'slider' => [
                 'migration' => 'unsignedInteger',
                 'seeder' => 'fake()->numberBetween(1, 10)',
-                // 'stub_view' => 'text',
-                // 'stub_form' => 'slider',
+                'stub_view' => 'text',
+                'stub_form' => 'slider',
             ],
         ],
 
@@ -168,7 +168,7 @@ return [
                 'migration' => 'json',
                 'seeder' => '[]',
                 // 'stub_view' => 'range',
-                // 'stub_form' => 'range',
+                'stub_form' => 'range',
             ],
             'array' => [
                 'migration' => 'json',
